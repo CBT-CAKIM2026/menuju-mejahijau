@@ -4255,11 +4255,14 @@
                 }]
             },
             options: {
+				animation: {
+            	duration: 2000,      // Durasi 2 detik (makin gede makin lambat)
+            	easing: 'easeInOutQuart' 
+        },
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: { y: { beginAtZero: true, max: 100 } },
                 plugins: { legend: { display: false } },
-                animation: { duration: 1000, easing: 'easeOutQuart' } 
 	}
 }); 
 }  // <--- INI BATAS SUCI (PENUTUP GRAFIK)
@@ -4294,3 +4297,4 @@
 </script> </body>
 
 </html>
+
