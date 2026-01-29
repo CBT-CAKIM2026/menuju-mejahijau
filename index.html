@@ -4210,7 +4210,14 @@
                     fill: false
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+				options: {
+					animation: {
+						duration: 2000,
+						easing: 'easeInOutQuart'
+					},
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: { y: { beginAtZero: true, max: 100 } }
         });
     }
 
@@ -4243,6 +4250,9 @@
             backgroundColors.push(colors[index % colors.length]);
         });
 
+		if (window.allModulesChartInstance) {
+		window.allModulesChartInstance.destroy();
+}
         window.allModulesChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -4297,4 +4307,5 @@
 </script> </body>
 
 </html>
+
 
