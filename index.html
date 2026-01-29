@@ -427,7 +427,7 @@
                 <button class="modul-btn" id="btn-modul12" onclick="switchDatabase('modul12')">Modul 12: Perkawinan (UU 1/1974)</button>
                 <button class="modul-btn" id="btn-modul12a" onclick="switchDatabase('modul12a')">Modul 12a: Pelaksana Perkawinan (PP 9/1975)</button>
                 <button class="modul-btn" id="btn-modul13" onclick="switchDatabase('modul13')">Modul 13: Wasiat & Hibah (KHI)</button>
-      c         <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan (KHI)</button>
+                <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan (KHI)</button>
                 <button class="modul-btn" id="btn-modul15" onclick="switchDatabase('modul15')">Modul 15: Kekuasaan Kehakiman</button>
                 <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Peradilan Agama</button>
                 <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: Mahkamah Agung</button>
@@ -3246,17 +3246,6 @@
 							document.getElementById('resultOverlay').style.display = 'none';
 							document.getElementById('statsOverlay').style.display = 'none';
 							document.getElementById('leaderboardOverlay').style.display = 'none';
-							
-					window.backToMenu = function() {
-					if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
-						
-						// 1. Matikan Timer
-						if(timerInterval) clearInterval(timerInterval);
-
-						// 2. Tutup semua jendela Popup/Overlay
-						document.getElementById('resultOverlay').style.display = 'none';
-						document.getElementById('statsOverlay').style.display = 'none';
-						document.getElementById('leaderboardOverlay').style.display = 'none';
 
 						// 3. PANGGIL LOBBY KEREN KITA DI SINI
 						tampilkanLobby(); 
@@ -3479,5 +3468,4 @@
 				}
 
 				</script> </body>
-
 				</html>
