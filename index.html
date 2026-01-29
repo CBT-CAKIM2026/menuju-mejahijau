@@ -3238,27 +3238,34 @@
 						}
 					}
 
-					// --- FITUR 4: BACK TO MENU & SHOW RESULT ---
 					window.backToMenu = function() {
 						if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
 							if(timerInterval) clearInterval(timerInterval);
-							
+
 							document.getElementById('resultOverlay').style.display = 'none';
 							document.getElementById('statsOverlay').style.display = 'none';
 							document.getElementById('leaderboardOverlay').style.display = 'none';
 
-						// 3. PANGGIL LOBBY KEREN KITA DI SINI
-						tampilkanLobby(); 
+							// 3. PANGGIL LOBBY
+							tampilkanLobby();
 
-						// 4. Pastikan tombol "Selesai" (Finish) juga ikut hilang
-						const finishBtn = document.querySelector('.finish-container');
-						if(finishBtn) finishBtn.style.display = 'none';
-						
-						// 5. Reset Judul
-						document.getElementById('modulTitle').innerText = "Menu Utama";
-						document.getElementById('qNum').innerText = "-";
+							// 4. Sembunyikan tombol Selesai
+							const finishBtn = document.querySelector('.finish-container');
+							if(finishBtn) finishBtn.style.display = 'none';
+							
+							// 5. Reset Judul & Variabel
+							document.getElementById('modulTitle').innerText = "Menu Utama";
+							document.getElementById('qNum').innerText = "-";
+
+							currentQuestions = [];
+							isSubmitted = false;
+							isReviewMode = false;
+							
+							document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
+							document.getElementById('timerDisplay').innerText = "00:00:00";
+							document.getElementById('floatingTimer').innerText = "00:00:00";
 						}
-					}
+					};					
 							currentQuestions = [];
 							isSubmitted = false;
 							isReviewMode = false;
