@@ -435,7 +435,7 @@
                 <button class="modul-btn" id="btn-modul18a" onclick="switchDatabase('modul18a')">Modul 18a: Buku Saku PA 1.1</button>
                 <button class="modul-btn" id="btn-modul18b" onclick="switchDatabase('modul18b')">Modul 18b: Buku Saku PA 1.2</button>
                 <button class="modul-btn" id="btn-modul18c" onclick="switchDatabase('modul18c')">Modul 18c: Buku Saku PA 1.3</button>
-            </div>
+           </div>
         </div>
 
         <div class="main-content">
@@ -640,6 +640,7 @@
                 currentUser = user;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appSection').style.display = 'flex';
+				tampilkanLobby();
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
             } else {
@@ -666,53 +667,80 @@
         }
     };
 
-    // Fungsi Buka Leaderboard
-    window.openLeaderboard = async () => {
+// --- FUNGSI BUKA LEADERBOARD (VERSI FILTER JUARA) ---
+		window.openLeaderboard = async () => {
         if (!db) { alert("Database belum connect"); return; }
+        
         document.getElementById('leaderboardOverlay').style.display = 'flex';
         const tbody = document.getElementById('leaderboardBody');
-        tbody.innerHTML = '<tr><td colspan="4">Sedang memuat...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4">Sedang memuat data...</td></tr>';
 
-        // Ambil ID modul yang lagi aktif (nanti kita set logicnya)
-        // Sementara kita ambil text dari judul
+        // 1. Ambil Judul Modul yang Aktif
         let activeTitle = document.getElementById('modulTitle').innerText;
         document.getElementById('lbModulName').innerText = activeTitle;
 
-        // Query Firestore
+        // 2. Query Firestore 
+        // (Kita ambil 100 data teratas dulu, baru nanti disaring biar gak ada duplikat nama)
         const q = query(
             collection(db, "leaderboard"), 
-            where("modul", "==", currentDatabaseId || "modul1"), // currentDatabaseId nanti ada di script bawah
+            where("modul", "==", currentDatabaseId || "modul1"), 
             orderBy("skor", "desc"),
-            limit(20)
+            limit(100) 
         );
 
         try {
-            const querySnapshot = await getDocs(q);
-            tbody.innerHTML = "";
-            let rank = 1;
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const dateObj = data.tanggal.toDate ? data.tanggal.toDate() : new Date(data.tanggal);
-                const dateStr = dateObj.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
-                
-                let rowClass = "";
-                if(rank===1) rowClass="rank-1";
-                else if(rank===2) rowClass="rank-2";
-                else if(rank===3) rowClass="rank-3";
+            const snapshot = await getDocs(q); 
+            const bestScores = {}; // Dompet buat nyimpen skor tertinggi
 
-                tbody.innerHTML += `
-                    <tr class="${rowClass}">
-                        <td style="text-align:center; font-weight:bold;">${rank++}</td>
-                        <td style="text-align:left;">${data.nama}</td>
-                        <td style="text-align:center; font-weight:bold;">${data.skor}</td>
-                        <td style="font-size:0.8rem; color:#666;">${dateStr}</td>
-                    </tr>
-                `;
+            // 3. LOGIKA FILTER: HANYA AMBIL NILAI TERTINGGI PER NAMA
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const nama = data.nama;
+                const skor = parseInt(data.skor);
+
+                // Cek: Kalau nama belum ada ATAU skor baru lebih tinggi dari yang lama
+                if (!bestScores[nama] || skor > parseInt(bestScores[nama].skor)) {
+                    bestScores[nama] = data; // Update data di dompet
+                }
             });
-            if(rank === 1) tbody.innerHTML = '<tr><td colspan="4">Belum ada data skor untuk modul ini.</td></tr>';
-        } catch (e) {
-            console.error(e);
-            tbody.innerHTML = '<tr><td colspan="4">Gagal memuat data (Cek Console/Rules).</td></tr>';
+
+            // 4. Ubah ke Array & Urutkan Ulang (Ranking)
+            let sortedData = Object.values(bestScores);
+            sortedData.sort((a, b) => b.skor - a.skor);
+
+            // 5. Tampilkan ke Tabel
+            tbody.innerHTML = ''; // Bersihkan loading
+            
+            if (sortedData.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="4">Belum ada data. Jadilah yang pertama!</td></tr>';
+            } else {
+                sortedData.forEach((val, index) => {
+                    // Styling: Kasih warna beda buat Juara 1, 2, 3
+                    let rowStyle = '';
+                    if(index === 0) rowStyle = 'style="background:#fff3cd; font-weight:bold;"'; // Emas
+                    else if(index === 1) rowStyle = 'style="background:#f8f9fa; font-weight:bold;"'; // Perak
+                    else if(index === 2) rowStyle = 'style="background:#fff;"'; // Putih polos
+
+                    // Format Tanggal (Biar rapi)
+                    let tgl = '-';
+                    if (val.tanggal && val.tanggal.seconds) {
+                        tgl = new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID');
+                    }
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td ${rowStyle}>${index + 1}</td>
+                        <td ${rowStyle}>${val.nama}</td>
+                        <td ${rowStyle}>${val.skor}</td>
+                        <td ${rowStyle}>${tgl}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+        } catch (error) {
+            console.error("Error ambil leaderboard:", error);
+            tbody.innerHTML = '<tr><td colspan="4">Gagal memuat. Cek koneksi internet.</td></tr>';
         }
     };
 
@@ -3696,539 +3724,564 @@
 		 ]
             }
         };
-    // ================================================================
-    // BAGIAN 2: LOGIKA APLIKASI (SUDAH TERINTEGRASI FIREBASE)
-    // ================================================================
+// ================================================================
+// BAGIAN 2: LOGIKA APLIKASI (SUDAH TERINTEGRASI FIREBASE)
+// ================================================================
 
-    // --- VARIABEL GLOBAL ---
-    let currentModulKey = 'modul1';
-    let currentQuestions = []; 
-    let currentIdx = 0;
-    let userAnswers = [];
-    let raguStatus = [];
-    let isSubmitted = false;
-    let timerInterval;
-    let timeRemaining; 
-    let totalExamTime = 0;
-    
-    // --- FITUR 3: VARIABEL REVIEW ---
-    let isReviewMode = false;
-    let wrongIndices = [];
+// --- VARIABEL GLOBAL ---
+let currentModulKey = 'modul1';
+let currentQuestions = [];
+let currentIdx = 0;
+let userAnswers = [];
+let raguStatus = [];
+let isSubmitted = false;
+let timerInterval;
+let timeRemaining;
+let totalExamTime = 0;
 
-    // --- (MODIFIKASI) START APP ---
-    // Fungsi ini sekarang dipanggil otomatis oleh Firebase (Part 1) saat login sukses
-    // Jadi kita ga butuh function handleLogin manual lagi.
+// --- FITUR 3: VARIABEL REVIEW ---
+let isReviewMode = false;
+let wrongIndices = [];
+
+// --- LISTENER KEYBOARD ---
+document.addEventListener('keydown', function(event) {
+    if(document.getElementById('appSection').style.display === 'none') return;
+    switch(event.key) {
+        case "ArrowRight": changeQuestion(1); break;
+        case "ArrowLeft": changeQuestion(-1); break;
+        case "a": case "A": selectKey(0); break;
+        case "b": case "B": selectKey(1); break;
+        case "c": case "C": selectKey(2); break;
+        case "d": case "D": selectKey(3); break;
+        case "e": case "E":
+            if(!isSubmitted) {
+                const chk = document.getElementById('checkRagu');
+                if(chk) { chk.checked = !chk.checked; toggleRagu(); }
+            }
+            break;
+    }
+});
+
+function selectKey(idx) {
+    if(!isSubmitted && !isReviewMode) {
+        let labels = document.getElementsByClassName('option-label');
+        if(labels[idx]) labels[idx].click();
+    }
+}
+
+// --- SWITCH DATABASE (DENGAN RANDOMIZER) ---
+window.switchDatabase = function(key) {
+    // Cek ketersediaan database
+    if(typeof databases === 'undefined' || !databases[key] || databases[key].questions.length === 0) {
+        alert("⚠️ Modul ini belum ada soalnya, Bro!");
+        return;
+    }
+
+    if (timerInterval) clearInterval(timerInterval);
+    currentModulKey = key;
     
-    document.addEventListener('keydown', function(event) {
-        if(document.getElementById('appSection').style.display === 'none') return;
-        switch(event.key) {
-            case "ArrowRight": changeQuestion(1); break;
-            case "ArrowLeft": changeQuestion(-1); break;
-            case "a": case "A": selectKey(0); break;
-            case "b": case "B": selectKey(1); break;
-            case "c": case "C": selectKey(2); break;
-            case "d": case "D": selectKey(3); break;
-            case "e": case "E":
-                if(!isSubmitted) {
-                    const chk = document.getElementById('checkRagu');
-                    if(chk) { chk.checked = !chk.checked; toggleRagu(); }
-                }
-                break;
-        }
+    // Update ID Global biar Leaderboard tau kita di modul mana
+    window.currentDatabaseId = key;
+    
+    let rawQuestions = JSON.parse(JSON.stringify(databases[key].questions));
+    shuffleArray(rawQuestions); // Acak Soal
+
+    rawQuestions.forEach(q => {
+        let correctText = q.options[q.answer];
+        shuffleArray(q.options); // Acak Opsi
+        q.answer = q.options.indexOf(correctText);
     });
 
-    function selectKey(idx) {
-        if(!isSubmitted && !isReviewMode) {
-            let labels = document.getElementsByClassName('option-label');
-            if(labels[idx]) labels[idx].click();
-        }
-    }
+    currentQuestions = rawQuestions;
+    
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    raguStatus = new Array(currentQuestions.length).fill(false);
+    isSubmitted = false;
+    isReviewMode = false;
+    currentIdx = 0;
 
-    // --- SWITCH DATABASE (DENGAN RANDOMIZER) ---
-    window.switchDatabase = function(key) {
-        // Cek ketersediaan database (mengambil dari variabel databases yg ada di tengah)
-        if(typeof databases === 'undefined' || !databases[key] || databases[key].questions.length === 0) {
-            alert("⚠️ Modul ini belum ada soalnya, Bro!");
-            return;
-        }
+    document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
+    const activeBtn = document.getElementById('btn-'+key);
+    if(activeBtn) activeBtn.classList.add('active-modul');
 
-        if (timerInterval) clearInterval(timerInterval);
-        currentModulKey = key;
+    document.getElementById('modulTitle').innerText = databases[key].title;
+    document.getElementById('modeIndicator').innerText = "Mode: Ujian";
+    document.getElementById('modeIndicator').className = "";
+    document.getElementById('modeIndicator').style = "color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2;";
+    
+    // Reset UI
+    document.querySelector('.finish-container').style.display = 'block';
+    document.getElementById('resultOverlay').style.display = 'none';
+    document.getElementById('statsOverlay').style.display = 'none';
+    document.getElementById('leaderboardOverlay').style.display = 'none';
+    document.getElementById('btnShowScore').style.display = 'none';
+    
+    // Reset Tampilan Navigasi
+    document.querySelector('.footer-nav').style.display = 'flex';
+    document.getElementById('questionText').style.display = 'block';
+    document.getElementById('modeIndicator').style.display = 'block';
+    
+    totalExamTime = currentQuestions.length * 25;
+    timeRemaining = totalExamTime;
+    
+    updateTimerDisplay();
+    startTimer();
+    renderSidebarGrid();
+    loadQuestion(0);
+};
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        if(timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
+        else { clearInterval(timerInterval); finishTime(); }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const m = Math.floor(timeRemaining / 60);
+    const s = timeRemaining % 60;
+    const textWaktu = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const t1 = document.getElementById('timerDisplay');
+    const t2 = document.getElementById('floatingTimer');
+    if(t1) t1.innerText = textWaktu;
+    if(t2) t2.innerText = textWaktu;
+    
+    let persentase = (timeRemaining / totalExamTime) * 100;
+    let colorClass = 'timer-green';
+    if (persentase <= 10) colorClass = 'timer-panic';
+    else if (persentase <= 30) colorClass = 'timer-yellow';
+
+    if(t1) t1.className = 'timer-container ' + colorClass;
+    if(t2) t2.className = colorClass;
+}
+
+function finishTime() { alert("Waktu Habis!"); submitQuiz(); }
+
+function renderSidebarGrid() {
+    const grid = document.getElementById('navGrid');
+    grid.innerHTML = '';
+    currentQuestions.forEach((_, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${idx}`;
+        btn.innerText = idx + 1;
+        btn.onclick = () => loadQuestion(idx);
+        grid.appendChild(btn);
+    });
+    updateSidebarStatus();
+}
+
+function updateSidebarStatus() {
+    currentQuestions.forEach((q, idx) => {
+        const btn = document.getElementById(`nav-${idx}`);
+        if(!btn) return;
+        btn.classList.remove('active', 'filled', 'correct', 'wrong', 'ragu');
         
-        // (MODIFIKASI) Update ID Global biar Leaderboard tau kita di modul mana
-        window.currentDatabaseId = key;
+        if (idx === currentIdx) btn.classList.add('active');
         
-        let rawQuestions = JSON.parse(JSON.stringify(databases[key].questions));
-        shuffleArray(rawQuestions); // Acak Soal
-
-        rawQuestions.forEach(q => {
-            let correctText = q.options[q.answer]; 
-            shuffleArray(q.options); // Acak Opsi
-            q.answer = q.options.indexOf(correctText); 
-        });
-
-        currentQuestions = rawQuestions;
-        
-        userAnswers = new Array(currentQuestions.length).fill(null);
-        raguStatus = new Array(currentQuestions.length).fill(false);
-        isSubmitted = false;
-        isReviewMode = false; 
-        currentIdx = 0;
-
-        document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
-        const activeBtn = document.getElementById('btn-'+key);
-        if(activeBtn) activeBtn.classList.add('active-modul');
-
-        document.getElementById('modulTitle').innerText = databases[key].title;
-        document.getElementById('modeIndicator').innerText = "Mode: Ujian";
-        document.getElementById('modeIndicator').className = ""; 
-        document.getElementById('modeIndicator').style = "color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2;";
-        
-        // Reset UI
-        document.querySelector('.finish-container').style.display = 'block';
-        document.getElementById('resultOverlay').style.display = 'none';
-        document.getElementById('statsOverlay').style.display = 'none'; 
-        document.getElementById('leaderboardOverlay').style.display = 'none'; // Tutup leaderboard kalau kebuka
-        document.getElementById('btnShowScore').style.display = 'none'; 
-        
-        // Reset Tampilan Navigasi
-        document.querySelector('.footer-nav').style.display = 'flex';
-        document.getElementById('questionText').style.display = 'block';
-        document.getElementById('modeIndicator').style.display = 'block';
-        
-        totalExamTime = currentQuestions.length * 25; 
-        timeRemaining = totalExamTime;
-        
-        updateTimerDisplay();
-        startTimer();
-        renderSidebarGrid();
-        loadQuestion(0);
-    }
-
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            if(timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
-            else { clearInterval(timerInterval); finishTime(); }
-        }, 1000);
-    }
-
-    function updateTimerDisplay() {
-        const m = Math.floor(timeRemaining / 60);
-        const s = timeRemaining % 60;
-        const textWaktu = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        const t1 = document.getElementById('timerDisplay');
-        const t2 = document.getElementById('floatingTimer');
-        if(t1) t1.innerText = textWaktu;
-        if(t2) t2.innerText = textWaktu;
-        
-        let persentase = (timeRemaining / totalExamTime) * 100;
-        let colorClass = 'timer-green';
-        if (persentase <= 10) colorClass = 'timer-panic';
-        else if (persentase <= 30) colorClass = 'timer-yellow';
-
-        if(t1) t1.className = 'timer-container ' + colorClass;
-        if(t2) t2.className = colorClass; 
-    }
-
-    function finishTime() { alert("Waktu Habis!"); submitQuiz(); }
-
-    function renderSidebarGrid() {
-        const grid = document.getElementById('navGrid');
-        grid.innerHTML = '';
-        currentQuestions.forEach((_, idx) => {
-            const btn = document.createElement('div');
-            btn.className = 'nav-btn';
-            btn.id = `nav-${idx}`;
-            btn.innerText = idx + 1;
-            btn.onclick = () => loadQuestion(idx); 
-            grid.appendChild(btn);
-        });
-        updateSidebarStatus();
-    }
-
-    function updateSidebarStatus() {
-        currentQuestions.forEach((q, idx) => {
-            const btn = document.getElementById(`nav-${idx}`);
-            if(!btn) return;
-            btn.classList.remove('active', 'filled', 'correct', 'wrong', 'ragu');
-            
-            if (idx === currentIdx) btn.classList.add('active');
-            
-            if (isSubmitted) {
-                if (userAnswers[idx] === q.answer) btn.classList.add('correct');
-                else btn.classList.add('wrong');
-            } else {
-                if (raguStatus[idx]) btn.classList.add('ragu');
-                else if (userAnswers[idx] !== null) btn.classList.add('filled');
-            }
-        });
-    }
-
-    function loadQuestion(idx) {
-        currentIdx = idx;
-        const q = currentQuestions[idx];
-        if (!q) return;
-
-        document.getElementById('qNum').innerText = idx + 1;
-        document.getElementById('questionText').innerText = q.q;
-        
-        updateSidebarStatus();
-        updateProgress();
-        
-        document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
-        document.getElementById('nextBtn').style.display = (isReviewMode ? 'block' : (idx === currentQuestions.length - 1) ? 'none' : 'block');
-
-        const fb = document.getElementById('feedbackBox');
         if (isSubmitted) {
-            fb.classList.add('show');
-            document.getElementById('feedbackText').innerText = q.explanation;
-            document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
-        } else { fb.classList.remove('show'); }
-
-        const cont = document.getElementById('optionsContainer');
-        cont.innerHTML = '';
-        q.options.forEach((opt, i) => {
-            const div = document.createElement('div');
-            div.className = 'option-label';
-            if(isSubmitted) {
-                div.style.cursor = 'default';
-                if(userAnswers[idx] === i) {
-                    div.innerHTML = i === q.answer ? opt + ' ✅' : opt + ' ❌';
-                    div.classList.add(i === q.answer ? 'review-correct' : 'review-wrong');
-                }
-                if(userAnswers[idx] !== i && i === q.answer) {
-                    div.innerHTML = opt + ' ⬅️ (Jawaban Benar)';
-                    div.classList.add('review-correct');
-                } else if(userAnswers[idx] !== i && i !== q.answer) {
-                    div.innerHTML = opt;
-                }
-            } else {
-                div.innerHTML = opt;
-                div.onclick = () => { 
-                    if(!isSubmitted) { 
-                        userAnswers[idx] = i; 
-                        loadQuestion(idx); 
-                    } 
-                };
-                if(userAnswers[idx] === i) div.classList.add('selected');
-            }
-            cont.appendChild(div);
-        });
-
-        const chk = document.getElementById('checkRagu');
-        chk.checked = raguStatus[idx] || false;
-        chk.disabled = isSubmitted;
-    }
-
-    // --- FITUR 2 & 3: SUBMIT QUIZ LENGKAP ---
-    function submitQuiz() {
-        if(timerInterval) clearInterval(timerInterval);
-        isSubmitted = true;
-        
-        let score = 0;
-        let correctCount = 0;
-        let wrongCount = 0;
-        
-        wrongIndices = []; 
-
-        userAnswers.forEach((a, i) => { 
-            if(a === currentQuestions[i].answer) { 
-                score++; correctCount++; 
-            } else { 
-                wrongCount++; 
-                wrongIndices.push(i); 
-            }
-        });
-        
-        const final = Math.round((score/currentQuestions.length)*100);
-        
-        // ==========================================================
-        // (MODIFIKASI) KIRIM DATA KE FIREBASE LEADERBOARD
-        // ==========================================================
-        if (typeof window.saveScoreToCloud === 'function') {
-            window.saveScoreToCloud(currentModulKey, final);
+            if (userAnswers[idx] === q.answer) btn.classList.add('correct');
+            else btn.classList.add('wrong');
         } else {
-            console.log("Fungsi Cloud belum siap");
+            if (raguStatus[idx]) btn.classList.add('ragu');
+            else if (userAnswers[idx] !== null) btn.classList.add('filled');
         }
-        // ==========================================================
-        
-        document.getElementById('resultOverlay').style.display = 'flex';
-        
-        // --- PASSING GRADE ---
-        const scoreCircle = document.getElementById('finalScore');
-        const passStatus = document.getElementById('passStatus');
-        const msg = document.getElementById('resultMsg');
-        
-        scoreCircle.innerText = final;
-        
-        if (final >= 70) {
-            scoreCircle.style.background = "var(--pass)";
-            passStatus.innerText = "LULUS";
-            passStatus.style.color = "var(--pass)";
-            msg.innerText = "Selamat! Anda memenuhi standar Cakim.";
-        } else {
-            scoreCircle.style.background = "var(--fail)";
-            passStatus.innerText = "TIDAK LULUS";
-            passStatus.style.color = "var(--fail)";
-            msg.innerText = "Perbaiki lagi, target minimal 70.";
-        }
-        
-        // --- TOMBOL REVIEW ---
-        const btnReview = document.getElementById('btnReviewWrong');
-        if (wrongCount > 0) {
-            btnReview.style.display = 'block'; 
-            btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
-        } else {
-            btnReview.style.display = 'none'; 
-        }
-
-        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
-        document.getElementById('modeIndicator').style.color = "var(--success)";
-        document.querySelector('.finish-container').style.display = 'none';
-        
-        // --- TOMBOL SHOW SCORE (FITUR 4) ---
-        document.getElementById('btnShowScore').style.display = 'flex';
-
-        saveAndShowChart(final, correctCount, wrongCount);
-        loadQuestion(currentIdx); 
-    }
-
-    window.confirmFinish = function() {
-        const n = userAnswers.filter(a => a === null).length;
-        if(confirm(n > 0 ? `Masih ada ${n} soal kosong. Yakin?` : "Selesai sekarang?")) submitQuiz();
-    }
-
-    window.closeResult = function() { document.getElementById('resultOverlay').style.display = 'none'; }
-
-    // --- FITUR 3: FUNGSI AKTIVASI REVIEW MODE ---
-    window.startReviewWrong = function() {
-        if (wrongIndices.length === 0) return;
-        
-        isReviewMode = true; 
-        document.getElementById('resultOverlay').style.display = 'none'; 
-        
-        const ind = document.getElementById('modeIndicator');
-        ind.innerText = "MODE: REVIEW SALAH";
-        ind.style.background = "#ffebee";
-        ind.style.color = "#c62828";
-        ind.style.border = "1px solid #ffcdd2";
-
-        loadQuestion(wrongIndices[0]);
-    }
-
-    // --- FITUR 3 & 4: NAVIGASI PINTAR (Next/Prev) ---
-    window.changeQuestion = function(step) {
-        if (isReviewMode) {
-            let currentWrongPos = wrongIndices.indexOf(currentIdx);
-            let nextWrongPos = currentWrongPos + step;
-
-            if (nextWrongPos >= wrongIndices.length) nextWrongPos = 0; 
-            if (nextWrongPos < 0) nextWrongPos = wrongIndices.length - 1; 
-
-            loadQuestion(wrongIndices[nextWrongPos]);
-        } else {
-            const next = currentIdx + step;
-            if (next >= 0 && next < currentQuestions.length) loadQuestion(next);
-        }
-    }
-
-    // --- FITUR 4: BACK TO MENU & SHOW RESULT ---
-    window.backToMenu = function() {
-        if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
-            if(timerInterval) clearInterval(timerInterval);
-            
-            document.getElementById('resultOverlay').style.display = 'none';
-            document.getElementById('statsOverlay').style.display = 'none';
-            document.getElementById('leaderboardOverlay').style.display = 'none';
-            
-            document.getElementById('questionText').innerText = "Silakan pilih modul di menu samping untuk memulai ujian.";
-            document.getElementById('optionsContainer').innerHTML = '';
-            document.getElementById('feedbackBox').classList.remove('show');
-            document.querySelector('.footer-nav').style.display = 'none'; 
-            document.querySelector('.finish-container').style.display = 'none';
-            
-            document.getElementById('modulTitle').innerText = "Menu Utama";
-            document.getElementById('qNum').innerText = "-";
-            document.getElementById('modeIndicator').style.display = 'none';
-            document.getElementById('btnShowScore').style.display = 'none'; 
-
-            currentQuestions = [];
-            isSubmitted = false;
-            isReviewMode = false;
-            
-            document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
-            document.getElementById('timerDisplay').innerText = "00:00:00";
-            document.getElementById('floatingTimer').innerText = "00:00:00";
-        }
-    }
-
-    window.showResult = function() {
-        if(isSubmitted) {
-            document.getElementById('resultOverlay').style.display = 'flex';
-        } else {
-            alert("Belum ada nilai! Kerjain dulu soalnya, Bro.");
-        }
-    }
-
-    window.toggleRagu = function() {
-        if(isSubmitted) return;
-        raguStatus[currentIdx] = document.getElementById('checkRagu').checked;
-        updateSidebarStatus();
-    }
-
-    window.toggleFocusMode = function() { document.body.classList.toggle('mode-focus'); }
-
-    function updateProgress() {
-        let answered = userAnswers.filter(a => a !== null).length;
-        let total = currentQuestions.length;
-        let txt = document.getElementById('progressText');
-        if(txt) txt.innerText = `Menjawab: ${answered} / ${total}`;
-    }
-
-    // --- CHART & STATS ---
-    function saveAndShowChart(finalScore, correct, wrong) {
-        const usedSeconds = totalExamTime - timeRemaining;
-        const resultData = {
-            date: new Date().toLocaleString('id-ID'), 
-            score: finalScore,
-            correct: correct,
-            wrong: wrong,
-            duration: usedSeconds
-        };
-        const storageKey = 'history_' + currentModulKey; 
-        let history = JSON.parse(localStorage.getItem(storageKey)) || [];
-        history.push(resultData);
-        if(history.length > 20) history.shift(); 
-        localStorage.setItem(storageKey, JSON.stringify(history));
-    }
-
-    window.resetStats = function() {
-        if(confirm("Hapus riwayat modul ini?")) {
-            localStorage.removeItem('history_' + currentModulKey);
-            openStats(); 
-            alert("Data modul ini berhasil direset.");
-        }
-    }
-
-    window.openStats = function() {
-        if(!databases[currentModulKey]) { alert("Pilih modul dulu"); return; }
-        document.getElementById('statsOverlay').style.display = 'flex';
-        document.getElementById('watermark').style.display = 'none'; 
-        document.getElementById('statsTitle').innerText = "Data Modul: " + databases[currentModulKey].title;
-        renderCurrentModuleStats();
-        renderAllModulesStats();
-    }
-
-    window.closeStats = function() {
-        document.getElementById('statsOverlay').style.display = 'none';
-        document.getElementById('watermark').style.display = 'block';
-    }
-
-    function renderCurrentModuleStats() {
-        const storageKey = 'history_' + currentModulKey; 
-        const history = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const tbody = document.getElementById('statsTableBody');
-        tbody.innerHTML = '';
-        
-        if (history.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">Belum ada data.</td></tr>';
-        } else {
-            [...history].reverse().forEach((d, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct||'-'} ✅</td><td>${d.wrong||'-'} ❌</td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        const ctx = document.getElementById('statsChart').getContext('2d');
-        if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
-
-        window.statsChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: history.map((_, i) => "Tes " + (i+1)),
-                datasets: [{
-                    label: 'Nilai',
-                    data: history.map(d => d.score),
-                    borderColor: '#2980b9',
-                    backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }, {
-                    label: 'Batas Lulus (70)',
-                    data: history.map(() => 70),
-                    borderColor: '#c0392b',
-                    borderWidth: 1,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    fill: false
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
-        });
-    }
-
-    function renderAllModulesStats() {
-        const ctx = document.getElementById('allModulesChart').getContext('2d');
-        if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
-
-        const labels = [];
-        const dataScores = [];
-        const backgroundColors = [];
-        
-        const colors = [
-            '#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', 
-            '#e67e22', '#1abc9c', '#34495e', '#d35400', '#7f8c8d',
-            '#c0392b', '#2980b9', '#8e44ad', '#f39c12', '#27ae60'
-        ];
-
-        Object.keys(databases).forEach((key, index) => {
-            const hist = JSON.parse(localStorage.getItem('history_' + key)) || [];
-            
-            let avgScore = 0;
-            if (hist.length > 0) {
-                const total = hist.reduce((sum, h) => sum + h.score, 0);
-                avgScore = Math.round(total / hist.length);
-            }
-
-            labels.push(databases[key].title.split(':')[0]); 
-            dataScores.push(avgScore);
-            
-            backgroundColors.push(colors[index % colors.length]);
-        });
-
-        window.allModulesChartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Rata-rata Nilai',
-                    data: dataScores,
-                    backgroundColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, max: 100 } },
-                plugins: { legend: { display: false } },
-                animation: { duration: 1000, easing: 'easeOutQuart' } 
-
-	}
-}); 
-}  // <--- INI BATAS SUCI (PENUTUP GRAFIK)
-
-// KODE BARU LO ADA DI SINI (DI LUAR BATAS SUCI):
-const btnLogin = document.getElementById('googleLoginBtn');
-if (btnLogin) {
-    btnLogin.addEventListener('click', async () => {
-       // ... isinya ...
-       await window.handleLogin();
-       // ... isinya ...
     });
 }
 
-</script> </body>
+function loadQuestion(idx) {
+    document.querySelector('.question-header').style.visibility = 'visible';
+    document.querySelector('.footer-nav').style.visibility = 'visible';
+    currentIdx = idx;
+    const q = currentQuestions[idx];
+    if (!q) return;
+
+    document.getElementById('qNum').innerText = idx + 1;
+    document.getElementById('questionText').innerText = q.q;
+    
+    updateSidebarStatus();
+    updateProgress();
+    
+    document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
+    document.getElementById('nextBtn').style.display = (isReviewMode ? 'block' : (idx === currentQuestions.length - 1) ? 'none' : 'block');
+
+    const fb = document.getElementById('feedbackBox');
+    if (isSubmitted) {
+        fb.classList.add('show');
+        document.getElementById('feedbackText').innerText = q.explanation;
+        document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
+    } else { fb.classList.remove('show'); }
+
+    const cont = document.getElementById('optionsContainer');
+    cont.innerHTML = '';
+    q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option-label';
+        if(isSubmitted) {
+            div.style.cursor = 'default';
+            if(userAnswers[idx] === i) {
+                div.innerHTML = i === q.answer ? opt + ' ✅' : opt + ' ❌';
+                div.classList.add(i === q.answer ? 'review-correct' : 'review-wrong');
+            }
+            if(userAnswers[idx] !== i && i === q.answer) {
+                div.innerHTML = opt + ' ⬅️ (Jawaban Benar)';
+                div.classList.add('review-correct');
+            } else if(userAnswers[idx] !== i && i !== q.answer) {
+                div.innerHTML = opt;
+            }
+        } else {
+            div.innerHTML = opt;
+            div.onclick = () => {
+                if(!isSubmitted) {
+                    userAnswers[idx] = i;
+                    loadQuestion(idx);
+                }
+            };
+            if(userAnswers[idx] === i) div.classList.add('selected');
+        }
+        cont.appendChild(div);
+    });
+
+    const chk = document.getElementById('checkRagu');
+    chk.checked = raguStatus[idx] || false;
+    chk.disabled = isSubmitted;
+}
+
+// --- SUBMIT QUIZ ---
+function submitQuiz() {
+    if(timerInterval) clearInterval(timerInterval);
+    isSubmitted = true;
+    
+    let score = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    
+    wrongIndices = [];
+
+    userAnswers.forEach((a, i) => {
+        if(a === currentQuestions[i].answer) {
+            score++; correctCount++;
+        } else {
+            wrongCount++;
+            wrongIndices.push(i);
+        }
+    });
+    
+    const final = Math.round((score/currentQuestions.length)*100);
+    
+    // KIRIM DATA KE FIREBASE
+    if (typeof window.saveScoreToCloud === 'function') {
+        window.saveScoreToCloud(currentModulKey, final);
+    } else {
+        console.log("Fungsi Cloud belum siap");
+    }
+    
+    document.getElementById('resultOverlay').style.display = 'flex';
+    
+    // PASSING GRADE
+    const scoreCircle = document.getElementById('finalScore');
+    const passStatus = document.getElementById('passStatus');
+    const msg = document.getElementById('resultMsg');
+    
+    scoreCircle.innerText = final;
+    
+    if (final >= 70) {
+        scoreCircle.style.background = "var(--pass)";
+        passStatus.innerText = "LULUS";
+        passStatus.style.color = "var(--pass)";
+        msg.innerText = "Selamat! Anda memenuhi standar Cakim.";
+    } else {
+        scoreCircle.style.background = "var(--fail)";
+        passStatus.innerText = "TIDAK LULUS";
+        passStatus.style.color = "var(--fail)";
+        msg.innerText = "Perbaiki lagi, target minimal 70.";
+    }
+    
+    // TOMBOL REVIEW
+    const btnReview = document.getElementById('btnReviewWrong');
+    if (wrongCount > 0) {
+        btnReview.style.display = 'block';
+        btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
+    } else {
+        btnReview.style.display = 'none';
+    }
+
+    document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
+    document.getElementById('modeIndicator').style.color = "var(--success)";
+    document.querySelector('.finish-container').style.display = 'none';
+    
+    document.getElementById('btnShowScore').style.display = 'flex';
+
+    saveAndShowChart(final, correctCount, wrongCount);
+    loadQuestion(currentIdx);
+}
+
+window.confirmFinish = function() {
+    const n = userAnswers.filter(a => a === null).length;
+    if(confirm(n > 0 ? `Masih ada ${n} soal kosong. Yakin?` : "Selesai sekarang?")) submitQuiz();
+};
+
+window.closeResult = function() { 
+    document.getElementById('resultOverlay').style.display = 'none';
+    tampilkanLobby();
+};
+
+// --- FITUR REVIEW ---
+window.startReviewWrong = function() {
+    if (wrongIndices.length === 0) return;
+    
+    isReviewMode = true;
+    document.getElementById('resultOverlay').style.display = 'none';
+    
+    const ind = document.getElementById('modeIndicator');
+    ind.innerText = "MODE: REVIEW SALAH";
+    ind.style.background = "#ffebee";
+    ind.style.color = "#c62828";
+    ind.style.border = "1px solid #ffcdd2";
+
+    loadQuestion(wrongIndices[0]);
+};
+
+// --- NAVIGASI ---
+window.changeQuestion = function(step) {
+    if (isReviewMode) {
+        let currentWrongPos = wrongIndices.indexOf(currentIdx);
+        let nextWrongPos = currentWrongPos + step;
+
+        if (nextWrongPos >= wrongIndices.length) nextWrongPos = 0;
+        if (nextWrongPos < 0) nextWrongPos = wrongIndices.length - 1;
+
+        loadQuestion(wrongIndices[nextWrongPos]);
+    } else {
+        const next = currentIdx + step;
+        if (next >= 0 && next < currentQuestions.length) loadQuestion(next);
+    }
+};
+
+// --- FUNGSI BACK TO MENU (SUDAH DIPERBAIKI) ---
+window.backToMenu = function() {
+    if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
+        if(timerInterval) clearInterval(timerInterval);
+
+        document.getElementById('resultOverlay').style.display = 'none';
+        document.getElementById('statsOverlay').style.display = 'none';
+        document.getElementById('leaderboardOverlay').style.display = 'none';
+
+        // PANGGIL LOBBY
+        tampilkanLobby();
+
+        // Sembunyikan tombol Selesai
+        const finishBtn = document.querySelector('.finish-container');
+        if(finishBtn) finishBtn.style.display = 'none';
+        
+        // Reset Judul & Variabel
+        document.getElementById('modulTitle').innerText = "Menu Utama";
+        document.getElementById('qNum').innerText = "-";
+
+        currentQuestions = [];
+        isSubmitted = false;
+        isReviewMode = false;
+        
+        document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
+        document.getElementById('timerDisplay').innerText = "00:00:00";
+        document.getElementById('floatingTimer').innerText = "00:00:00";
+    }
+};
+
+window.showResult = function() {
+    if(isSubmitted) {
+        document.getElementById('resultOverlay').style.display = 'flex';
+    } else {
+        alert("Belum ada nilai! Silahkan kerjakan dulu soalnya");
+    }
+};
+
+window.toggleRagu = function() {
+    if(isSubmitted) return;
+    raguStatus[currentIdx] = document.getElementById('checkRagu').checked;
+    updateSidebarStatus();
+};
+
+window.toggleFocusMode = function() { document.body.classList.toggle('mode-focus'); };
+
+function updateProgress() {
+    let answered = userAnswers.filter(a => a !== null).length;
+    let total = currentQuestions.length;
+    let txt = document.getElementById('progressText');
+    if(txt) txt.innerText = `Menjawab: ${answered} / ${total}`;
+}
+
+// --- CHART & STATS ---
+function saveAndShowChart(finalScore, correct, wrong) {
+    const usedSeconds = totalExamTime - timeRemaining;
+    const resultData = {
+        date: new Date().toLocaleString('id-ID'),
+        score: finalScore,
+        correct: correct,
+        wrong: wrong,
+        duration: usedSeconds
+    };
+    const storageKey = 'history_' + currentModulKey;
+    let history = JSON.parse(localStorage.getItem(storageKey)) || [];
+    history.push(resultData);
+    if(history.length > 20) history.shift();
+    localStorage.setItem(storageKey, JSON.stringify(history));
+}
+
+window.resetStats = function() {
+    if(confirm("Hapus riwayat modul ini?")) {
+        localStorage.removeItem('history_' + currentModulKey);
+        openStats();
+        alert("Data modul ini berhasil direset.");
+    }
+};
+
+window.openStats = function() {
+    if(!databases[currentModulKey]) { alert("Pilih modul dulu"); return; }
+    document.getElementById('statsOverlay').style.display = 'flex';
+    document.getElementById('watermark').style.display = 'none';
+    document.getElementById('statsTitle').innerText = "Data Modul: " + databases[currentModulKey].title;
+    renderCurrentModuleStats();
+    renderAllModulesStats();
+};
+
+window.closeStats = function() {
+    document.getElementById('statsOverlay').style.display = 'none';
+    document.getElementById('watermark').style.display = 'block';
+};
+
+// --- FUNGSI GRAFIK 1 (LINE CHART) ---
+function renderCurrentModuleStats() {
+    const storageKey = 'history_' + currentModulKey;
+    const history = JSON.parse(localStorage.getItem(storageKey)) || [];
+    const tbody = document.getElementById('statsTableBody');
+    tbody.innerHTML = '';
+    
+    if (history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Belum ada data.</td></tr>';
+    } else {
+        [...history].reverse().forEach((d, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct||'-'} ✅</td><td>${d.wrong||'-'} ❌</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    
+    if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+
+    window.statsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.map((_, i) => "Tes " + (i+1)),
+            datasets: [{
+                label: 'Nilai',
+                data: history.map(d => d.score),
+                borderColor: '#2980b9',
+                backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            }, {
+                label: 'Batas Lulus (70)',
+                data: history.map(() => 70),
+                borderColor: '#c0392b',
+                borderWidth: 1,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                fill: false
+            }]
+        },
+        options: {
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    });
+}
+
+// --- FUNGSI GRAFIK 2 (BAR CHART) ---
+function renderAllModulesStats() {
+    const ctx = document.getElementById('allModulesChart').getContext('2d');
+    
+    if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+
+    const labels = [];
+    const dataScores = [];
+    const backgroundColors = [];
+    
+    const colors = [
+        '#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71',
+        '#e67e22', '#1abc9c', '#34495e', '#d35400', '#7f8c8d',
+        '#c0392b', '#2980b9', '#8e44ad', '#f39c12', '#27ae60'
+    ];
+
+    Object.keys(databases).forEach((key, index) => {
+        const hist = JSON.parse(localStorage.getItem('history_' + key)) || [];
+        
+        let avgScore = 0;
+        if (hist.length > 0) {
+            const total = hist.reduce((sum, h) => sum + h.score, 0);
+            avgScore = Math.round(total / hist.length);
+        }
+
+        labels.push(databases[key].title.split(':')[0]);
+        dataScores.push(avgScore);
+        
+        backgroundColors.push(colors[index % colors.length]);
+    });
+    
+    window.allModulesChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Rata-rata Nilai',
+                data: dataScores,
+                backgroundColor: backgroundColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } },
+        }
+    });
+}
+
+// --- FUNGSI TAMPILAN AWAL (LOBBY) ---
+function tampilkanLobby() {
+    document.querySelector('.question-header').style.visibility = 'hidden';
+    document.querySelector('.footer-nav').style.visibility = 'hidden';
+
+    const qText = document.getElementById('questionText');
+    qText.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
+            <p style="font-size: 1.2rem; color: #555;">
+                Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
+            </p>
+        </div>
+    `;
+
+    document.getElementById('optionsContainer').innerHTML = '';
+    document.getElementById('feedbackBox').style.display = 'none';
+    
+    document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
+}
+
+</script>
+</body>
 </html>
