@@ -3650,9 +3650,9 @@ window.confirmFinish = function() {
     if(confirm(n > 0 ? `Masih ada ${n} soal kosong. Yakin?` : "Selesai sekarang?")) submitQuiz();
 };
 
-window.closeResult = function() { 
+window.closeResult = function() {
+    // Cuma sembunyiin nilai, biar lo tetep di layar soal buat review
     document.getElementById('resultOverlay').style.display = 'none';
-    tampilkanLobby();
 };
 
 // --- FITUR REVIEW ---
@@ -3914,6 +3914,7 @@ function tampilkanLobby() {
 </script>
 </body>
 </html>
+
 
 
 
