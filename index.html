@@ -2776,13 +2776,18 @@ function loadQuestion(idx) {
     document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
     document.getElementById('nextBtn').style.display = (isReviewMode ? 'block' : (idx === currentQuestions.length - 1) ? 'none' : 'block');
 
+   // --- UPDATE BAGIAN INI DI DALAM loadQuestion ---
     const fb = document.getElementById('feedbackBox');
     if (isSubmitted) {
+        fb.style.display = 'block'; // <--- TAMBAHAN PENTING! (Paksa Muncul)
         fb.classList.add('show');
         document.getElementById('feedbackText').innerText = q.explanation;
         document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
-    } else { fb.classList.remove('show'); }
-
+    } else { 
+        fb.style.display = 'none'; // Sembunyiin kalo belum submit
+        fb.classList.remove('show'); 
+    }
+	
     const cont = document.getElementById('optionsContainer');
     cont.innerHTML = '';
     q.options.forEach((opt, i) => {
@@ -3156,6 +3161,7 @@ function tampilkanLobby() {
 </script>
 </body>
 </html>
+
 
 
 
