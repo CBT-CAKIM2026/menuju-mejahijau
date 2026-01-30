@@ -519,10 +519,7 @@
             
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
                 
-                <button class="btn" id="btnReviewWrong" onclick="startReviewWrong()" style="width:100%; display:none; margin-bottom:10px; background-color: #e67e22;">
-                    🔍 Review Jawaban Salah
-                </button>
-                
+                <button class="btn" id="btnReviewWrong" onclick="startReviewWrong()" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
                 <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
                 <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
                 <button class="btn" onclick="closeResult(); openStats();" style="width:100%; background:var(--primary);">Lihat Grafik Lengkap</button>
@@ -2898,8 +2895,31 @@ window.confirmFinish = function() {
 };
 
 window.closeResult = function() {
-    // Cuma sembunyiin nilai, biar lo tetep di layar soal buat review
+    // 1. Tutup Popup Nilai
     document.getElementById('resultOverlay').style.display = 'none';
+    
+    // 2. MATIKAN Mode Review Salah (Biar navigasi normal lagi) [PENTING!]
+    isReviewMode = false; 
+    
+    // 3. Ubah Indikator jadi "PEMBAHASAN" (Hijau)
+    const ind = document.getElementById('modeIndicator');
+    if (ind) {
+        ind.innerText = "PEMBAHASAN";
+        ind.style.background = "#e8f5e9"; // Hijau soft
+        ind.style.color = "#2e7d32";      // Hijau tua
+        ind.style.border = "1px solid #c8e6c9";
+    }
+
+    // 4. Pastikan tombol navigasi (Next/Prev) aktif semua
+    document.getElementById('prevBtn').disabled = false;
+    document.getElementById('nextBtn').style.display = 'block';
+
+    // 5. Scroll layar ke paling atas
+    const mainContent = document.querySelector('.main-content');
+    if(mainContent) mainContent.scrollTop = 0;
+    
+    // 6. Refresh tampilan soal saat ini
+    loadQuestion(currentIdx);
 };
 
 // --- FITUR REVIEW ---
@@ -3161,6 +3181,7 @@ function tampilkanLobby() {
 </script>
 </body>
 </html>
+
 
 
 
