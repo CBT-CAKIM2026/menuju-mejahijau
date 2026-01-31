@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIMULASI CBT CAKIM PA 2026</title>
+    <title>BISMILLAH LOLOS HAKIM 2026</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -94,12 +94,8 @@
         }
 
         /* MODE FOKUS DESKTOP (Sidebar Kiri Ngumpet) */
-        body.mode-focus .sidebar-left {
-            margin-left: -280px;
-        }
-        body.mode-focus #floatingTimer { 
-            display: block !important; 
-        }
+        body.mode-focus .sidebar-left { margin-left: -280px; }
+        body.mode-focus #floatingTimer { display: block !important; }
 
         .sidebar-header {
             padding: 20px;
@@ -114,114 +110,61 @@
         }
         .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
 
-        /* TIMER DI SIDEBAR (WAJIB MUNCUL DI DESKTOP) */
+        /* TIMER DI SIDEBAR (MUNCUL DI DESKTOP) */
         .timer-container {
             background: rgba(0,0,0,0.2);
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 5px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ffeb3b; 
-            border: 2px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease; 
-            display: block; /* Pastikan selalu muncul */
+            padding: 10px; margin-top: 15px; border-radius: 5px;
+            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; 
+            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
+            display: block; 
         }
         
         .timer-green { background-color: #27ae60 !important; color: white !important; border-color: #2ecc71 !important; }
         .timer-yellow { background-color: #f39c12 !important; color: black !important; border-color: #f1c40f !important; }
-        .timer-panic { 
-            background-color: #c0392b !important; 
-            color: white !important; 
-            border-color: #e74c3c !important; 
-            animation: panicPulse 0.5s infinite alternate;
-        }
+        .timer-panic { background-color: #c0392b !important; color: white !important; border-color: #e74c3c !important; animation: panicPulse 0.5s infinite alternate; }
         @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
 
         .modul-selector {
-            flex: 1;
-            padding: 10px;
-            background: #f8f9fa;
-            overflow-y: auto;
+            flex: 1; padding: 10px; background: #f8f9fa; overflow-y: auto;
         }
 
         .modul-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--secondary);
-            transition: 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
+            background: white; border: 1px solid #ddd; border-radius: 6px;
+            cursor: pointer; text-align: left; font-size: 0.9rem; font-weight: 600;
+            color: var(--secondary); transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .modul-btn:hover { background: var(--light); transform: translateX(2px); }
         .modul-btn.active-modul { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* --- MAIN CONTENT (AREA SOAL) --- */
+        /* --- MAIN CONTENT --- */
         .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 40px;
-            overflow-y: auto;
-            background: #f4f7f6;
-            transition: all 0.3s ease;
+            flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
+            overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease;
         }
 
         .card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-            margin-bottom: 50px;
+            background: white; padding: 40px; border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 900px;
+            margin: 0 auto; width: 100%; margin-bottom: 50px;
         }
 
-        /* --- SIDEBAR KANAN (NAVIGASI SOAL) --- */
+        /* --- SIDEBAR KANAN --- */
         .sidebar-right {
-            width: 300px;
-            background-color: white;
-            border-left: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            flex-shrink: 0;
-            z-index: 10;
+            width: 300px; background-color: white; border-left: 1px solid #ddd;
+            display: flex; flex-direction: column; height: 100vh;
+            flex-shrink: 0; z-index: 10;
         }
 
         .right-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between; 
-            background: #fff;
-            gap: 5px;
-            flex-wrap: wrap;
+            padding: 15px; border-bottom: 1px solid #eee; display: flex;
+            justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap;
         }
 
         .btn-small {
-            border: none;
-            padding: 8px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.2s;
-            color: white;
-            flex: 1;
-            justify-content: center;
+            border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;
+            font-size: 0.75rem; font-weight: bold; display: flex; align-items: center;
+            gap: 5px; transition: 0.2s; color: white; flex: 1; justify-content: center;
         }
         .btn-logout { background: var(--danger); }
         .btn-stats { background: var(--accent); }
@@ -229,57 +172,32 @@
         .btn-small:hover { opacity: 0.9; }
 
         .sidebar-info {
-            padding: 15px;
-            font-size: 0.8rem;
-            text-align: center;
-            background: #f9f9f9;
-            border-bottom: 1px solid #eee;
+            padding: 15px; font-size: 0.8rem; text-align: center;
+            background: #f9f9f9; border-bottom: 1px solid #eee;
         }
 
         .nav-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: white;
+            flex: 1; overflow-y: auto; padding: 15px; background: white;
         }
 
         .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
         }
 
         .nav-btn {
-            aspect-ratio: 1;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            color: #555;
-            transition: all 0.2s;
+            aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
+            border-radius: 6px; font-weight: bold; display: flex; align-items: center;
+            justify-content: center; font-size: 0.9rem; color: #555; transition: all 0.2s;
         }
         .nav-btn:hover { background-color: var(--light); }
-        
         .nav-btn.active { border: 2px solid var(--accent); box-shadow: 0 0 8px rgba(41, 128, 185, 0.4); transform: scale(1.1); z-index: 2; color: var(--accent); }
         .nav-btn.filled { background-color: var(--secondary); color: white; border-color: var(--secondary); }
         .nav-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
         .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
-        
-        .nav-btn.ragu { 
-            background-color: #f1c40f !important; 
-            color: black !important; 
-            border-color: #f39c12 !important; 
-        }
+        .nav-btn.ragu { background-color: #f1c40f !important; color: black !important; border-color: #f39c12 !important; }
 
         .finish-container {
-            padding: 20px;
-            border-top: 1px solid #eee;
-            background: #f9f9f9;
+            padding: 20px; border-top: 1px solid #eee; background: #f9f9f9;
         }
 
         /* --- QUESTION STYLES --- */
@@ -293,7 +211,6 @@
         }
         .option-label:hover { background-color: #f8f9fa; border-color: var(--accent); }
         .option-label.selected { background-color: #eaf6ff; border-color: var(--accent); }
-        
         .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
         .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
 
@@ -303,21 +220,25 @@
         .btn-finish { background-color: var(--success); width: 100%; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* --- FEEDBACK & WATERMARK --- */
         .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid #f39c12; display: none; }
         .feedback-box.show { display: block; }
 
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(255,255,255,0.5);
-            text-align: center; padding: 12px 0; color: #2c3e50;
-            font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
+            border-top: 1px solid rgba(255,255,255,0.5); text-align: center; padding: 12px 0;
+            color: #2c3e50; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
         }
 
-        /* --- OVERLAYS --- */
-        .result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center;  align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
+        /* --- POPUPS (Z-INDEX SUPER TINGGI 20000) --- */
+        .result-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.85); display: none; 
+            justify-content: center; align-items: center; 
+            z-index: 20000 !important; 
+            backdrop-filter: blur(5px); 
+        }
         
         .result-box { 
             background: white; padding: 20px; border-radius: 15px; text-align: center; 
@@ -326,22 +247,18 @@
         }
         
         .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--accent); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
-        
         .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .stats-table th, .stats-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         .stats-table th { background-color: var(--primary); color: white; }
         .stats-table tr:nth-child(even) { background-color: #f9f9f9; }
-
         .stats-section-title { text-align: left; margin: 15px 0 5px 0; font-weight: bold; color: #555; border-bottom: 2px solid #eee; padding-bottom: 5px; }
 
         .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
-
         .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #f39c12; cursor: pointer; user-select: none; }
         .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
-
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        /* Timer Melayang (Muncul di Focus Mode atau HP) */
+        /* Timer Melayang (Default Desktop) */
         #floatingTimer {
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
@@ -350,7 +267,7 @@
         }
 
         /* =========================================
-           RESPONSIVE MOBILE (TAMPILAN HP)
+           RESPONSIVE MOBILE (TAMPILAN HP) - FINAL V3
            ========================================= */
         @media (max-width: 768px) {
             body { 
@@ -359,93 +276,66 @@
                 overflow-y: auto; 
             }
 
-            /* --- SIDEBAR KIRI (MODUL) FULL WIDTH --- */
-            .sidebar-left {
-                width: 100% !important; /* REQUEST: Full lebar */
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #ddd;
-                z-index: 100;
-                position: relative;
-            }
-            
-            /* Sembunyikan Timer Sidebar Kiri di HP (Sesuai request) */
-            .sidebar-left .timer-container {
-                display: none !important;
+            /* 1. LOGIN ESTETIK (KECIL) */
+            .login-box {
+                width: 85%; max-width: 320px; padding: 25px; border-radius: 15px;
             }
 
-            /* Batasi tinggi daftar modul biar gak kepanjangan scrollnya */
-            .modul-selector {
-                max-height: 250px; 
+            /* 2. SIDEBAR KIRI (FULL LAYAR) */
+            .sidebar-left {
+                width: 100% !important; /* Full width */
+                height: 100vh !important; /* Full Height */
+                border-right: none;
+                z-index: 100;
+                position: fixed; /* Kunci biar full */
+                top: 0; left: 0;
+            }
+            .sidebar-left .timer-container { display: none !important; }
+            
+            /* Pilihan Modul Full Layar */
+            .modul-selector { 
+                max-height: none !important; 
+                height: calc(100% - 80px); /* Sisa tinggi dikurangi header */
+                overflow-y: auto;
             }
 
             .main-content {
-                width: 100% !important; 
-                margin: 0 !important; 
-                padding: 15px !important;
-                flex: 1;
+                width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1;
             }
 
-            /* --- SIDEBAR KANAN (NAVIGASI) --- */
-            .sidebar-right {
-                display: none; /* Default hide */
-            }
-
+            /* 3. SIDEBAR KANAN ESTETIK */
+            .sidebar-right { display: none; }
             .sidebar-right.show-mobile {
-                display: flex !important; /* PENTING: Pake Flex biar struktur rapi */
-                flex-direction: column;
+                display: flex !important; flex-direction: column;
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 9999; 
-                background: white;
-                padding-top: 60px; /* Space buat tombol tutup */
-                margin-right: 0 !important;
+                z-index: 15000; /* Di bawah Popup */
+                background: white; padding-top: 50px; margin-right: 0 !important;
             }
+            .nav-grid { gap: 6px !important; }
+            .nav-btn { font-size: 0.8rem !important; aspect-ratio: 1; border-radius: 6px; }
+            .finish-container { margin-top: auto; border-top: 1px solid #eee; padding: 15px; }
 
-            /* REQUEST: Tombol Nomor Soal KECILIN */
-            .nav-grid {
-                gap: 5px !important; /* Rapatkan jarak */
-            }
-            .nav-btn {
-                font-size: 0.8rem !important; /* Huruf kecil */
-                border-radius: 4px; /* Sudut lebih tajam dikit */
-            }
-
-            /* REQUEST: Tombol Selesai GAK KETUTUP */
-            .finish-container {
-                /* Kita bikin sticky di bawah sidebar kanan pas dibuka */
-                margin-top: auto; 
-                padding: 15px;
-                background: #f9f9f9;
-                border-top: 1px solid #eee;
-            }
-
-            /* --- TIMER MELAYANG (HP) --- */
+            /* 4. TIMER HP (POJOK KIRI ATAS) */
             #floatingTimer {
-                /* Timer di HP: Fixed di pojok kanan atas, kecil */
                 display: none; 
-                position: fixed; top: 10px; right: 10px; left: auto; 
-                font-size: 14px; padding: 6px 12px;
-                z-index: 99999;
-                border-radius: 20px;
+                position: fixed; top: 10px; left: 10px; right: auto; /* KIRI */
+                font-size: 13px; padding: 6px 12px;
+                z-index: 99999; border-radius: 20px;
             }
 
-            /* --- TOMBOL NEXT/PREV (HP) --- */
-            /* REQUEST: Sesuaikan font & size */
+            /* 5. UI TOMBOL ESTETIK */
             .footer-nav .btn {
-                padding: 10px 15px !important; /* Kecilin padding */
-                font-size: 0.9rem !important;  /* Kecilin font */
-                width: 48%; /* Bagi dua rata */
+                padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px;
             }
             
             #btnMobileNav { display: flex !important; }
             .close-sidebar-btn { display: block !important; }
-            .question-box { font-size: 16px; }
+            .question-box { font-size: 15px; line-height: 1.5; }
+            .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
             .question-header .focus-btn { display: none; } 
             
-            /* Sembunyikan Sidebar Kiri (Modul) SAAT UJIAN BERLANGSUNG */
-            body.ujian-berjalan .sidebar-left {
-                display: none;
-            }
+            /* Pas Ujian, Sidebar Kiri Hilang */
+            body.ujian-berjalan .sidebar-left { display: none; }
         }
 
         #btnMobileNav {
@@ -461,7 +351,6 @@
             color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
             font-weight: bold; font-size: 16px; z-index: 10000;
         }
-
     </style>
 </head>
 <body>
@@ -505,6 +394,7 @@
             </div>
             <div class="modul-selector">
                 <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
+                
                 <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
                 <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
                 <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
@@ -562,8 +452,8 @@
                         <label for="checkRagu">Ragu-Ragu</label>
                     </div>
 
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-prev" id="prevBtn" onclick="changeQuestion(-1)">❮ Sebelumnya</button>
+                    <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end;">
+                        <button class="btn btn-prev" id="prevBtn" onclick="changeQuestion(-1)" style="margin-right: auto;">❮ Sebelumnya</button>
                         <button class="btn btn-next" id="nextBtn" onclick="changeQuestion(1)">Selanjutnya ❯</button>
                     </div>
                 </div>
@@ -572,9 +462,7 @@
 
         <div class="sidebar-right">
             <div class="right-header">
-                <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">
-                    🏆 Nilai
-                </button>
+                <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
                 <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
                 <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
                 <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
@@ -582,17 +470,10 @@
             
             <div class="sidebar-info">
                 <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--accent);">Menjawab: 0/0</div>
-
                 <div style="display:flex; justify-content:center; gap:15px;">
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab
-                    </div>
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:12px; height:12px; background:#f1c40f; border-radius:2px;"></span> Ragu
-                    </div>
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum
-                    </div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:#f1c40f; border-radius:2px;"></span> Ragu</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
                 </div>
             </div>
 
@@ -609,19 +490,15 @@
     <div id="resultOverlay" class="result-overlay">
         <div class="result-box" style="width:400px;">
             <h2>Hasil Ujian</h2>
-            
             <p id="passStatus" style="font-size:1.5rem; font-weight:bold; margin:5px 0;"></p>
-
             <p>Skor Akhir:</p>
             <div class="score-circle" id="finalScore">0</div>
             <p id="resultMsg" style="font-weight:500; color:#555;"></p>
-            
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
                 <button onclick="startReviewWrong()" id="btnReviewWrong" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
                 <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
                 <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
                 <button class="btn" onclick="closeResult(); openStats();" style="width:100%; background:var(--primary);">Lihat Grafik Lengkap</button>
-                
                 <button class="btn" onclick="backToMenu()" style="width:100%; background:#7f8c8d; margin-top:5px;">🏠 Kembali ke Menu Utama</button>
             </div>
         </div>
@@ -635,17 +512,8 @@
             </div>
             <div style="max-height: 400px; overflow-y: auto;">
                 <table class="stats-table">
-                    <thead>
-                        <tr>
-                            <th style="width:10%">#</th>
-                            <th>Nama</th>
-                            <th style="width:20%">Skor</th>
-                            <th style="width:25%">Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody">
-                        <tr><td colspan="4">Memuat data...</td></tr>
-                    </tbody>
+                    <thead><tr><th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th></tr></thead>
+                    <tbody id="leaderboardBody"><tr><td colspan="4">Memuat data...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -661,27 +529,20 @@
                 </div>
             </div>
             <h4 id="statsTitle" class="stats-section-title">Data Modul Ini: -</h4>
-            <div style="width: 100%; height: 200px; margin-bottom: 20px;">
-                <canvas id="statsChart"></canvas>
-            </div>
+            <div style="width: 100%; height: 200px; margin-bottom: 20px;"><canvas id="statsChart"></canvas></div>
             <div style="max-height: 150px; overflow-y: auto; margin-bottom:20px;">
                 <table class="stats-table">
                     <thead><tr><th>No</th><th>Tanggal & Jam</th><th>Skor</th><th>Benar</th><th>Salah</th></tr></thead>
                     <tbody id="statsTableBody"></tbody>
                 </table>
             </div>
-            <h4 class="stats-section-title">🏆 Peta Kekuatan (Rata-Rata Nilai Semua Modul)</h4>
-            <div style="width: 100%; height: 250px; margin-bottom: 20px;">
-                <canvas id="allModulesChart"></canvas>
-            </div>
-            <div style="margin-top:20px;">
-                <button class="btn" onclick="closeStats()" style="width:100%; background-color: var(--danger);">Tutup</button>
-            </div>
+            <h4 class="stats-section-title">🏆 Peta Kekuatan</h4>
+            <div style="width: 100%; height: 250px; margin-bottom: 20px;"><canvas id="allModulesChart"></canvas></div>
+            <div style="margin-top:20px;"><button class="btn" onclick="closeStats()" style="width:100%; background-color: var(--danger);">Tutup</button></div>
         </div>
     </div>
 
 <script type="module">
-    // 1. FIREBASE SETUP
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -697,7 +558,6 @@
     };
 
     let db, auth, provider, currentUser;
-    
     if (firebaseConfig.apiKey) {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
@@ -711,9 +571,7 @@
         catch (error) { document.getElementById('loginError').innerText = error.message; }
     };
 
-    window.handleLogout = () => {
-        if(auth) signOut(auth).then(() => location.reload());
-    };
+    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
 
     if(auth) {
         onAuthStateChanged(auth, (user) => {
@@ -724,14 +582,10 @@
                 tampilkanLobby();
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
-                
-                // Pastikan Timer Login HILANG saat masuk
                 document.getElementById('floatingTimer').style.display = 'none';
             } else {
                 document.getElementById('loginPage').style.display = 'flex';
                 document.getElementById('appSection').style.display = 'none';
-                
-                // Pastikan Timer TIDAK MUNCUL di login
                 document.getElementById('floatingTimer').style.display = 'none';
             }
         });
@@ -741,11 +595,7 @@
         if (!currentUser || !db) return;
         try {
             await addDoc(collection(db, "leaderboard"), {
-                uid: currentUser.uid,
-                nama: currentUser.displayName,
-                modul: modulId,
-                skor: skor,
-                tanggal: new Date()
+                uid: currentUser.uid, nama: currentUser.displayName, modul: modulId, skor: skor, tanggal: new Date()
             });
         } catch (e) { console.error("Gagal simpan skor:", e); }
     };
@@ -755,52 +605,31 @@
         document.getElementById('leaderboardOverlay').style.display = 'flex';
         const tbody = document.getElementById('leaderboardBody');
         tbody.innerHTML = '<tr><td colspan="4">Sedang memuat data...</td></tr>';
+        document.getElementById('lbModulName').innerText = document.getElementById('modulTitle').innerText;
 
-        let activeTitle = document.getElementById('modulTitle').innerText;
-        document.getElementById('lbModulName').innerText = activeTitle;
-
-        const q = query(
-            collection(db, "leaderboard"), 
-            where("modul", "==", currentDatabaseId || "modul1"), 
-            orderBy("skor", "desc"),
-            limit(100) 
-        );
-
+        const q = query(collection(db, "leaderboard"), where("modul", "==", currentDatabaseId || "modul1"), orderBy("skor", "desc"), limit(100));
         try {
             const snapshot = await getDocs(q); 
             const bestScores = {};
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const nama = data.nama;
-                const skor = parseInt(data.skor);
-                if (!bestScores[nama] || skor > parseInt(bestScores[nama].skor)) {
-                    bestScores[nama] = data;
+                if (!bestScores[data.nama] || parseInt(data.skor) > parseInt(bestScores[data.nama].skor)) {
+                    bestScores[data.nama] = data;
                 }
             });
-            let sortedData = Object.values(bestScores);
-            sortedData.sort((a, b) => b.skor - a.skor);
-
+            let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
             tbody.innerHTML = '';
-            if (sortedData.length === 0) {
-                 tbody.innerHTML = '<tr><td colspan="4">Belum ada data. Jadilah yang pertama!</td></tr>';
-            } else {
+            if (sortedData.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
+            else {
                 sortedData.forEach((val, index) => {
-                    let rowStyle = '';
-                    if(index === 0) rowStyle = 'style="background:#fff3cd; font-weight:bold;"';
-                    else if(index === 1) rowStyle = 'style="background:#f8f9fa; font-weight:bold;"';
-                    let tgl = '-';
-                    if (val.tanggal && val.tanggal.seconds) {
-                        tgl = new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID');
-                    }
+                    let rowStyle = index === 0 ? 'style="background:#fff3cd; font-weight:bold;"' : (index === 1 ? 'style="background:#f8f9fa; font-weight:bold;"' : '');
+                    let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
                     let tr = document.createElement('tr');
                     tr.innerHTML = `<td ${rowStyle}>${index + 1}</td><td ${rowStyle}>${val.nama}</td><td ${rowStyle}>${val.skor}</td><td ${rowStyle}>${tgl}</td>`;
                     tbody.appendChild(tr);
                 });
             }
-        } catch (error) {
-            console.error("Error ambil leaderboard:", error);
-            tbody.innerHTML = '<tr><td colspan="4">Gagal memuat. Cek koneksi internet.</td></tr>';
-        }
+        } catch (error) { console.error(error); tbody.innerHTML = '<tr><td colspan="4">Gagal memuat.</td></tr>'; }
     };
 
     window.closeLeaderboard = () => { document.getElementById('leaderboardOverlay').style.display = 'none'; };
@@ -2667,7 +2496,6 @@
 
     window.currentDatabaseId = 'modul1';
 
-    // MOBILE SIDEBAR TOGGLE
     window.toggleMobileSidebar = function() {
         const sidebar = document.querySelector('.sidebar-right');
         if (!document.getElementById('btnCloseMobile')) {
@@ -2758,13 +2586,11 @@
         renderSidebarGrid();
         loadQuestion(0);
         
-        // LOGIKA MOBILE (HP): SAAT MULAI UJIAN, SEMBUNYIKAN SIDEBAR KIRI (MODUL)
+        // LOGIKA MOBILE: Saat ujian mulai, modul hilang, timer muncul
         if(window.innerWidth <= 768) {
-            document.body.classList.add('ujian-berjalan'); // Tambah class buat hide modul
+            document.body.classList.add('ujian-berjalan'); 
             const sidebarRight = document.querySelector('.sidebar-right');
-            if(sidebarRight) sidebarRight.classList.remove('show-mobile'); // Tutup sidebar kanan juga
-            
-            // Tampilkan Timer HP
+            if(sidebarRight) sidebarRight.classList.remove('show-mobile'); 
             document.getElementById('floatingTimer').style.display = 'block';
         }
     }
@@ -2840,7 +2666,23 @@
         updateProgress();
         
         document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
-        document.getElementById('nextBtn').style.display = (isReviewMode ? 'block' : (idx === currentQuestions.length - 1) ? 'none' : 'block');
+        
+        // --- LOGIKA TOMBOL NEXT vs SELESAI ---
+        const btnNext = document.getElementById('nextBtn');
+        if (!isReviewMode && idx === currentQuestions.length - 1) {
+            btnNext.innerHTML = "Selesai ✅";
+            btnNext.className = "btn btn-finish"; // Hijau
+            btnNext.onclick = confirmFinish; // Klik jadi Submit
+        } else {
+            btnNext.innerHTML = "Selanjutnya ❯";
+            btnNext.className = "btn btn-next"; // Biru
+            btnNext.onclick = () => changeQuestion(1);
+        }
+        
+        if (isReviewMode) {
+             btnNext.style.display = 'block';
+             btnNext.onclick = () => changeQuestion(1);
+        }
 
         const fb = document.getElementById('feedbackBox');
         if (isSubmitted) {
@@ -3022,9 +2864,7 @@
             
             tampilkanLobby();
             
-            // RESET TAMPILAN MOBILE (Munculin lagi sidebar kiri)
             document.body.classList.remove('ujian-berjalan');
-            // Hide Timer HP
             document.getElementById('floatingTimer').style.display = 'none';
 
             const finishBtn = document.querySelector('.finish-container');
@@ -3199,6 +3039,7 @@
 </script>
 </body>
 </html>
+
 
 
 
