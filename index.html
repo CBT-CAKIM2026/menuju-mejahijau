@@ -3003,42 +3003,48 @@
         }
     };
 
-    window.backToMenu = function() {
+	window.backToMenu = function() {
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
-            if(timerInterval) clearInterval(timerInterval);
-			// KHUSUS HP: Umpetin tombol Daftar Soal pas balik menu
-           // 1. Umpetin Tombol Daftar Soal & Modul
+            // Matikan timer interval
+            if(window.timerInterval) clearInterval(window.timerInterval);
+            
+            // 1. Umpetin Tombol-Tombol Mobile (Soal & Modul)
             const btnMobile = document.getElementById('btnMobileNav');
             const btnModul = document.getElementById('btnMobileModul');
             if(btnMobile) btnMobile.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none'; 
 
-            // 2. Hapus tombol "Tutup Modul" (X) biar bersih
-            const btnCloseModul = document.getElementById('btnCloseModul');
-            if(btnCloseModul) btnCloseModul.remove();
-            
-            // 3. Reset Sidebar Left biar normal lagi buat Lobby
-            const sbLeft = document.querySelector('.sidebar-left');
-            if(sbLeft) sbLeft.style.display = '';
+            // 2. Tutup semua Overlay (Hasil, Stats, Peringkat)
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('statsOverlay').style.display = 'none';
             document.getElementById('leaderboardOverlay').style.display = 'none';
-            
-            tampilkanLobby();
-            
-            document.body.classList.remove('ujian-berjalan');
-            document.getElementById('floatingTimer').style.display = 'none';
 
-            const finishBtn = document.querySelector('.finish-container');
-            if(finishBtn) finishBtn.style.display = 'none';
-            document.getElementById('modulTitle').innerText = "Menu Utama";
+            // 3. RESET SIDEBAR KIRI (Modul)
+            const sbLeft = document.querySelector('.sidebar-left');
+            if(sbLeft) {
+                sbLeft.style.display = ''; // Reset CSS biar muncul normal di Lobby
+            }
+
+            // 4. RESET SIDEBAR KANAN (Soal) - FIX KHUSUS HP
+            const sbRight = document.querySelector('.sidebar-right');
+            if(sbRight) {
+                sbRight.classList.remove('show-mobile'); // Hapus mode mobile yang nyangkut
+                sbRight.style.display = ''; // Reset display aman buat laptop
+            }
+
+            // 5. Reset Class Mode Ujian di Body
+            document.body.classList.remove('ujian-berjalan');
+            
+            // 6. Umpetin Timer & Reset Judul Header
+            const timer = document.getElementById('floatingTimer');
+            if(timer) timer.style.display = 'none';
+            
+            const modulTitle = document.getElementById('modulTitle');
+            if(modulTitle) modulTitle.innerText = "Menu Utama";
             document.getElementById('qNum').innerText = "-";
-            currentQuestions = [];
-            isSubmitted = false;
-            isReviewMode = false;
-            document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
-            document.getElementById('timerDisplay').innerText = "00:00:00";
-            document.getElementById('floatingTimer').innerText = "00:00:00";
+
+            // 7. Balik ke Tampilan Awal (Lobby)
+            tampilkanLobby();
         }
     };
 
@@ -3261,6 +3267,7 @@
 </script>
 </body>
 </html>
+
 
 
 
