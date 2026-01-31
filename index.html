@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BISMILLAH LOLOS HAKIM 2026</title>
+    <title>SIMULASI CBT CAKIM PA 2026</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -93,13 +93,9 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* MODE FOKUS (HANYA SEMBUNYIKAN SIDEBAR KIRI) */
+        /* MODE FOKUS DESKTOP (Sidebar Kiri Ngumpet) */
         body.mode-focus .sidebar-left {
             margin-left: -280px;
-        }
-        /* Sidebar Kanan Tetap Muncul di Desktop saat Fokus */
-        body.mode-focus .sidebar-right {
-            /* Tidak ada perubahan margin-right */
         }
         body.mode-focus #floatingTimer { 
             display: block !important; 
@@ -118,6 +114,7 @@
         }
         .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
 
+        /* TIMER DI SIDEBAR (WAJIB MUNCUL DI DESKTOP) */
         .timer-container {
             background: rgba(0,0,0,0.2);
             padding: 10px;
@@ -128,6 +125,7 @@
             color: #ffeb3b; 
             border: 2px solid rgba(255,255,255,0.1);
             transition: all 0.3s ease; 
+            display: block; /* Pastikan selalu muncul */
         }
         
         .timer-green { background-color: #27ae60 !important; color: white !important; border-color: #2ecc71 !important; }
@@ -343,14 +341,13 @@
 
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        /* Timer Melayang (Hanya muncul saat login sukses) */
+        /* Timer Melayang (Muncul di Focus Mode atau HP) */
         #floatingTimer {
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
             color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
         }
-        body.mode-focus #floatingTimer { display: block !important; }
 
         /* =========================================
            RESPONSIVE MOBILE (TAMPILAN HP)
@@ -358,31 +355,28 @@
         @media (max-width: 768px) {
             body { 
                 padding-bottom: 60px; 
-                flex-direction: column; /* Ubah arah flex jadi kolom di HP */
-                overflow-y: auto; /* Izinkan scroll body */
+                flex-direction: column; 
+                overflow-y: auto; 
             }
 
-            /* HANYA SIDEBAR KANAN YG DI-HIDE (Kiri buat menu modul tetep perlu akses, tapi kita bikin toggle nanti) */
-            .sidebar-right {
-                display: none; 
-            }
-            
-            /* Sidebar Kiri (Modul) di HP: Kita bikin jadi Drawer/Modal kalau mau rapi, 
-               TAPI request lo: "gue gabisa milih modul soal". 
-               JADI: Kita tampilkan sidebar kiri di awal, lalu hide pas ujian? 
-               Atau kita bikin tombol menu modul. */
-               
-            /* SOLUSI TERBAIK: Tampilkan Sidebar Kiri di atas konten */
+            /* --- SIDEBAR KIRI (MODUL) FULL WIDTH --- */
             .sidebar-left {
-                width: 100%;
+                width: 100% !important; /* REQUEST: Full lebar */
                 height: auto;
                 border-right: none;
                 border-bottom: 1px solid #ddd;
                 z-index: 100;
+                position: relative;
             }
             
+            /* Sembunyikan Timer Sidebar Kiri di HP (Sesuai request) */
+            .sidebar-left .timer-container {
+                display: none !important;
+            }
+
+            /* Batasi tinggi daftar modul biar gak kepanjangan scrollnya */
             .modul-selector {
-                max-height: 200px; /* Batasi tinggi biar gak menuhin layar */
+                max-height: 250px; 
             }
 
             .main-content {
@@ -392,28 +386,63 @@
                 flex: 1;
             }
 
-            /* Sidebar Kanan (Nomor Soal) Muncul Fullscreen pas diklik */
-            .sidebar-right.show-mobile {
-                display: block !important; 
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 9999; overflow-y: auto; padding-top: 50px; margin-right: 0 !important;
-                background: white;
+            /* --- SIDEBAR KANAN (NAVIGASI) --- */
+            .sidebar-right {
+                display: none; /* Default hide */
             }
 
+            .sidebar-right.show-mobile {
+                display: flex !important; /* PENTING: Pake Flex biar struktur rapi */
+                flex-direction: column;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                z-index: 9999; 
+                background: white;
+                padding-top: 60px; /* Space buat tombol tutup */
+                margin-right: 0 !important;
+            }
+
+            /* REQUEST: Tombol Nomor Soal KECILIN */
+            .nav-grid {
+                gap: 5px !important; /* Rapatkan jarak */
+            }
+            .nav-btn {
+                font-size: 0.8rem !important; /* Huruf kecil */
+                border-radius: 4px; /* Sudut lebih tajam dikit */
+            }
+
+            /* REQUEST: Tombol Selesai GAK KETUTUP */
+            .finish-container {
+                /* Kita bikin sticky di bawah sidebar kanan pas dibuka */
+                margin-top: auto; 
+                padding: 15px;
+                background: #f9f9f9;
+                border-top: 1px solid #eee;
+            }
+
+            /* --- TIMER MELAYANG (HP) --- */
             #floatingTimer {
                 /* Timer di HP: Fixed di pojok kanan atas, kecil */
-                display: none; /* Default hide, dimunculkan via JS pas ujian */
-                position: fixed; top: 10px; right: 10px; left: auto; font-size: 14px; padding: 5px 10px;
+                display: none; 
+                position: fixed; top: 10px; right: 10px; left: auto; 
+                font-size: 14px; padding: 6px 12px;
                 z-index: 99999;
+                border-radius: 20px;
             }
 
+            /* --- TOMBOL NEXT/PREV (HP) --- */
+            /* REQUEST: Sesuaikan font & size */
+            .footer-nav .btn {
+                padding: 10px 15px !important; /* Kecilin padding */
+                font-size: 0.9rem !important;  /* Kecilin font */
+                width: 48%; /* Bagi dua rata */
+            }
+            
             #btnMobileNav { display: flex !important; }
             .close-sidebar-btn { display: block !important; }
             .question-box { font-size: 16px; }
-            .option-label { padding: 15px; margin-bottom: 12px; }
-            .question-header .focus-btn { display: none; } /* Hide focus btn on mobile */
+            .question-header .focus-btn { display: none; } 
             
-            /* Sembunyikan Sidebar Kiri (Modul) SAAT UJIAN BERLANGSUNG (biar fokus) */
+            /* Sembunyikan Sidebar Kiri (Modul) SAAT UJIAN BERLANGSUNG */
             body.ujian-berjalan .sidebar-left {
                 display: none;
             }
@@ -429,8 +458,8 @@
 
         .close-sidebar-btn {
             display: none; width: 100%; padding: 15px; background: #e74c3c;
-            color: white; border: none; border-radius: 8px; margin-bottom: 20px;
-            font-weight: bold; font-size: 16px;
+            color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
+            font-weight: bold; font-size: 16px; z-index: 10000;
         }
 
     </style>
@@ -472,6 +501,7 @@
                    <img id="userAvatar" src="" class="user-avatar" alt="">
                    <span id="roleDisplay">Peserta</span>
                 </div>
+                <div class="timer-container" id="timerDisplay">00:00:00</div>
             </div>
             <div class="modul-selector">
                 <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
