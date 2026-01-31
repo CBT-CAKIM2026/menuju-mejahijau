@@ -643,35 +643,6 @@
         if(auth) signOut(auth).then(() => location.reload()); 
     };
 
-// --- CEK STATUS USER (ANTI LUPA & ANTI LAYAR KOSONG) ---
-    onAuthStateChanged(auth, (user) => {
-        const loginBox = document.getElementById('loginPage');
-        
-        if (user) {
-            // 1. Kalo User Login: Simpan Data
-            window.currentUser = user;
-            window.isLoggedIn = true;
-            console.log("Login Sukses:", user.displayName);
-            
-            // 2. Update Nama di Header
-            updateUIForLogin(user); 
-            
-            // 3. INI KUNCINYA: Munculin Menu Utama!
-            tampilkanLobby(); 
-
-            // 4. Pastikan Kotak Login Ilang
-            if(loginBox) loginBox.style.display = 'none';
-
-        } else {
-            // 1. Kalo Belum Login: Reset Data
-            window.currentUser = null;
-            window.isLoggedIn = false;
-            
-            // 2. MUNCULIN Kotak Login Lagi
-            if(loginBox) loginBox.style.display = 'flex';
-        }
-    });
-
     // --- FUNGSI UPDATE TAMPILAN (DEFINISI FUNGSI) ---
     // Pastikan fungsi ini BERADA DI LUAR 'onAuthStateChanged', tapi SEBELUM 'saveScoreToCloud'
     function updateUIForLogin(user) {
@@ -3304,10 +3275,48 @@
         document.getElementById('feedbackBox').style.display = 'none';
         document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
     }
+	
+	// --- TARUH INI DI PALING BAWAH (SEBELUM </script>) ---
+    // Biarkan data soal dimuat dulu, baru cek login
+    onAuthStateChanged(window.auth, (user) => {
+        const loginBox = document.getElementById('loginPage');
+        
+        if (user) {
+            // 1. User Login -> Simpan Status
+            window.currentUser = user;
+            window.isLoggedIn = true;
+            console.log("Login Sukses, Memuat Menu...", user.displayName);
+            
+            // 2. Update Header
+            if(typeof updateUIForLogin === 'function') {
+                updateUIForLogin(user);
+            }
+            
+            // 3. Umpetin Kotak Login
+            if(loginBox) loginBox.style.display = 'none';
+
+            // 4. MUNCULIN MENU UTAMA (Pastikan databases sudah siap)
+            if(typeof tampilkanLobby === 'function') {
+                tampilkanLobby();
+            } else {
+                console.error("Fungsi tampilkanLobby belum siap!");
+                // Fallback darurat: Paksa reload kalau macet
+                // location.reload(); 
+            }
+
+        } else {
+            // Belum Login -> Munculin Kotak Login
+            window.currentUser = null;
+            window.isLoggedIn = false;
+            
+            if(loginBox) loginBox.style.display = 'flex';
+        }
+    });
 
 </script>
 </body>
 </html>
+
 
 
 
