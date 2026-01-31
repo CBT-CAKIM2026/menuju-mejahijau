@@ -358,6 +358,23 @@
             align-items: center; gap: 8px;
         }
 
+		#btnMobileModul {
+            display: none; /* Default ngumpet */
+            position: fixed; 
+            bottom: 55px; /* Sejajar sama Daftar Soal */
+            left: 20px;   /* DI SEBELAH KIRI */
+            background: #2c3e50; 
+            color: white; 
+            padding: 12px 20px;
+            border-radius: 50px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer;
+            align-items: center; gap: 8px;
+        }
+
         .close-sidebar-btn {
             display: none; width: 100%; padding: 15px; background: #e74c3c;
             color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
@@ -399,7 +416,11 @@
 
     <div id="floatingTimer">00:00:00</div>
 
-    <button id="btnMobileNav" onclick="toggleMobileSidebar()">
+	<button id="btnMobileModul" onclick="toggleMobileModul()">
+        📚 Daftar Modul
+    </button>
+	
+	<button id="btnMobileNav" onclick="toggleMobileSidebar()">
         📱 Daftar Soal
     </button>
 
@@ -2567,6 +2588,29 @@
         }
     }
 
+	// FITUR BARU: Logic Buka/Tutup Sidebar Modul di HP
+    window.toggleMobileModul = function() {
+        const sidebar = document.querySelector('.sidebar-left');
+        
+        // Logika Toggle (Buka/Tutup)
+        if (sidebar.style.display === 'flex') {
+            sidebar.style.display = ''; // Tutup (Balikin ke default)
+        } else {
+            sidebar.style.display = 'flex'; // Paksa Muncul
+            
+            // Bikin Tombol Tutup (X) Merah kalau belum ada
+            if (!document.getElementById('btnCloseModul')) {
+                const btnClose = document.createElement('button');
+                btnClose.id = 'btnCloseModul';
+                btnClose.className = 'close-sidebar-btn';
+                btnClose.innerHTML = 'Tutup Modul ✖️';
+                btnClose.style.background = '#e74c3c'; // Warna Merah
+                btnClose.onclick = window.toggleMobileModul;
+                sidebar.insertBefore(btnClose, sidebar.firstChild);
+            }
+        }
+    }
+
     document.addEventListener('keydown', function(event) {
         if(document.getElementById('appSection').style.display === 'none') return;
         switch(event.key) {
@@ -2651,8 +2695,17 @@
             if(sidebarRight) sidebarRight.classList.remove('show-mobile'); 
             document.getElementById('floatingTimer').style.display = 'block';
 			// KHUSUS HP: Munculin tombol Daftar Soal
+            // 1. Munculin Tombol Daftar Soal
             const btnMobile = document.getElementById('btnMobileNav');
             if(btnMobile) btnMobile.style.display = 'flex';
+
+            // 2. Munculin Tombol Daftar Modul (BARU)
+            const btnModul = document.getElementById('btnMobileModul');
+            if(btnModul) btnModul.style.display = 'flex';
+
+            // 3. Pastikan sidebar modul ketutup dulu pas awal mulai
+            const sbLeft = document.querySelector('.sidebar-left');
+            if(sbLeft) sbLeft.style.display = '';
         }
     }
 
@@ -2956,8 +3009,19 @@
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
             if(timerInterval) clearInterval(timerInterval);
 			// KHUSUS HP: Umpetin tombol Daftar Soal pas balik menu
+           // 1. Umpetin Tombol Daftar Soal & Modul
             const btnMobile = document.getElementById('btnMobileNav');
+            const btnModul = document.getElementById('btnMobileModul');
             if(btnMobile) btnMobile.style.display = 'none';
+            if(btnModul) btnModul.style.display = 'none'; 
+
+            // 2. Hapus tombol "Tutup Modul" (X) biar bersih
+            const btnCloseModul = document.getElementById('btnCloseModul');
+            if(btnCloseModul) btnCloseModul.remove();
+            
+            // 3. Reset Sidebar Left biar normal lagi buat Lobby
+            const sbLeft = document.querySelector('.sidebar-left');
+            if(sbLeft) sbLeft.style.display = '';
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('statsOverlay').style.display = 'none';
             document.getElementById('leaderboardOverlay').style.display = 'none';
@@ -3139,6 +3203,7 @@
 </script>
 </body>
 </html>
+
 
 
 
