@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +7,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
+    <style>
         :root {
             --primary: #2c3e50;
             --secondary: #34495e;
@@ -35,7 +36,7 @@
             transition: all 0.3s;
         }
 
-        /* --- LOGIN SCREEN (FIX BACKGROUND) --- */
+        /* --- LOGIN SCREEN --- */
         .login-wrapper {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -43,17 +44,16 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            /* REVISI: Ganti putih tebal jadi transparan/gelap dikit biar gambar MA kelihatan */
-            background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(3px); /* Efek blur dikit biar elegan */
+            background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(5px);
         }
 
         .login-box {
             background: white;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); /* Bayangan lebih tajam */
-            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            width: 90%;
             max-width: 350px;
             text-align: center;
             animation: slideUp 0.5s ease-out;
@@ -80,7 +80,7 @@
             display: flex;
         }
 
-        /* --- SIDEBAR KIRI --- */
+        /* --- SIDEBAR KIRI (MODUL) --- */
         .sidebar-left {
             width: 280px;
             background-color: white;
@@ -90,7 +90,19 @@
             height: 100vh;
             flex-shrink: 0;
             z-index: 10;
-            transition: margin-left 0.3s ease; /* Animasi geser */
+            transition: margin-left 0.3s ease;
+        }
+
+        /* MODE FOKUS (HANYA SEMBUNYIKAN SIDEBAR KIRI) */
+        body.mode-focus .sidebar-left {
+            margin-left: -280px;
+        }
+        /* Sidebar Kanan Tetap Muncul di Desktop saat Fokus */
+        body.mode-focus .sidebar-right {
+            /* Tidak ada perubahan margin-right */
+        }
+        body.mode-focus #floatingTimer { 
+            display: block !important; 
         }
 
         .sidebar-header {
@@ -154,7 +166,7 @@
         .modul-btn:hover { background: var(--light); transform: translateX(2px); }
         .modul-btn.active-modul { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* --- MAIN CONTENT --- */
+        /* --- MAIN CONTENT (AREA SOAL) --- */
         .main-content {
             flex: 1;
             display: flex;
@@ -162,7 +174,7 @@
             padding: 20px 40px;
             overflow-y: auto;
             background: #f4f7f6;
-            transition: all 0.3s ease; /* Biar pas mode fokus dia melebar halus */
+            transition: all 0.3s ease;
         }
 
         .card {
@@ -176,7 +188,7 @@
             margin-bottom: 50px;
         }
 
-        /* --- SIDEBAR KANAN --- */
+        /* --- SIDEBAR KANAN (NAVIGASI SOAL) --- */
         .sidebar-right {
             width: 300px;
             background-color: white;
@@ -186,22 +198,6 @@
             height: 100vh;
             flex-shrink: 0;
             z-index: 10;
-            transition: margin-right 0.3s ease; /* REVISI: Tambah animasi geser kanan */
-        }
-
-        /* --- LOGIKA MODE FOKUS (REVISI TOTAL) --- */
-        /* Kalau body punya class 'mode-focus': */
-        body.mode-focus .sidebar-left {
-            margin-left: -280px; /* Sembunyiin ke kiri */
-        }
-        body.mode-focus .sidebar-right {
-            margin-right: -300px; /* Sembunyiin ke kanan */
-        }
-        body.mode-focus .watermark {
-            left: 0; /* Watermark menyesuaikan */
-        }
-        body.mode-focus #floatingTimer { 
-            display: block !important; /* Munculin timer melayang */
         }
 
         .right-header {
@@ -347,39 +343,80 @@
 
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        /* Timer Melayang (Default Hide di Desktop, Show di Focus Mode) */
+        /* Timer Melayang (Hanya muncul saat login sukses) */
         #floatingTimer {
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
             color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
         }
+        body.mode-focus #floatingTimer { display: block !important; }
 
         /* =========================================
            RESPONSIVE MOBILE (TAMPILAN HP)
            ========================================= */
         @media (max-width: 768px) {
-            body { padding-bottom: 60px; }
-            .sidebar-left, .sidebar-right {
-                display: none; /* Hide default sidebars on mobile */
+            body { 
+                padding-bottom: 60px; 
+                flex-direction: column; /* Ubah arah flex jadi kolom di HP */
+                overflow-y: auto; /* Izinkan scroll body */
             }
+
+            /* HANYA SIDEBAR KANAN YG DI-HIDE (Kiri buat menu modul tetep perlu akses, tapi kita bikin toggle nanti) */
+            .sidebar-right {
+                display: none; 
+            }
+            
+            /* Sidebar Kiri (Modul) di HP: Kita bikin jadi Drawer/Modal kalau mau rapi, 
+               TAPI request lo: "gue gabisa milih modul soal". 
+               JADI: Kita tampilkan sidebar kiri di awal, lalu hide pas ujian? 
+               Atau kita bikin tombol menu modul. */
+               
+            /* SOLUSI TERBAIK: Tampilkan Sidebar Kiri di atas konten */
+            .sidebar-left {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                z-index: 100;
+            }
+            
+            .modul-selector {
+                max-height: 200px; /* Batasi tinggi biar gak menuhin layar */
+            }
+
             .main-content {
-                width: 100% !important; margin: 0 !important; padding: 15px !important;
+                width: 100% !important; 
+                margin: 0 !important; 
+                padding: 15px !important;
+                flex: 1;
             }
-            /* Sidebar Kanan Muncul di HP */
+
+            /* Sidebar Kanan (Nomor Soal) Muncul Fullscreen pas diklik */
             .sidebar-right.show-mobile {
-                display: block !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                display: block !important; 
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 z-index: 9999; overflow-y: auto; padding-top: 50px; margin-right: 0 !important;
+                background: white;
             }
+
             #floatingTimer {
-                display: block !important; /* Always show timer on mobile */
+                /* Timer di HP: Fixed di pojok kanan atas, kecil */
+                display: none; /* Default hide, dimunculkan via JS pas ujian */
                 position: fixed; top: 10px; right: 10px; left: auto; font-size: 14px; padding: 5px 10px;
+                z-index: 99999;
             }
+
             #btnMobileNav { display: flex !important; }
             .close-sidebar-btn { display: block !important; }
             .question-box { font-size: 16px; }
             .option-label { padding: 15px; margin-bottom: 12px; }
             .question-header .focus-btn { display: none; } /* Hide focus btn on mobile */
+            
+            /* Sembunyikan Sidebar Kiri (Modul) SAAT UJIAN BERLANGSUNG (biar fokus) */
+            body.ujian-berjalan .sidebar-left {
+                display: none;
+            }
         }
 
         #btnMobileNav {
@@ -395,6 +432,7 @@
             color: white; border: none; border-radius: 8px; margin-bottom: 20px;
             font-weight: bold; font-size: 16px;
         }
+
     </style>
 </head>
 <body>
@@ -434,7 +472,6 @@
                    <img id="userAvatar" src="" class="user-avatar" alt="">
                    <span id="roleDisplay">Peserta</span>
                 </div>
-                <div class="timer-container" id="timerDisplay">00:00:00</div>
             </div>
             <div class="modul-selector">
                 <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
@@ -657,9 +694,15 @@
                 tampilkanLobby();
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
+                
+                // Pastikan Timer Login HILANG saat masuk
+                document.getElementById('floatingTimer').style.display = 'none';
             } else {
                 document.getElementById('loginPage').style.display = 'flex';
                 document.getElementById('appSection').style.display = 'none';
+                
+                // Pastikan Timer TIDAK MUNCUL di login
+                document.getElementById('floatingTimer').style.display = 'none';
             }
         });
     }
@@ -738,9 +781,9 @@
             [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
-    }       
+    }
 		// ==========================================
-        // 1. DATABASE SOAL LENGKAP (MODUL 1 - 17)
+        // 1. DATABASE SOAL LENGKAP (MODUL 1 - 15)
         // ==========================================
 		const databases = {		
 			'modul1': {
@@ -2685,10 +2728,14 @@
         renderSidebarGrid();
         loadQuestion(0);
         
-        // Tutup sidebar mobile kalau abis milih modul
+        // LOGIKA MOBILE (HP): SAAT MULAI UJIAN, SEMBUNYIKAN SIDEBAR KIRI (MODUL)
         if(window.innerWidth <= 768) {
-             const sidebar = document.querySelector('.sidebar-right');
-             if(sidebar) sidebar.classList.remove('show-mobile');
+            document.body.classList.add('ujian-berjalan'); // Tambah class buat hide modul
+            const sidebarRight = document.querySelector('.sidebar-right');
+            if(sidebarRight) sidebarRight.classList.remove('show-mobile'); // Tutup sidebar kanan juga
+            
+            // Tampilkan Timer HP
+            document.getElementById('floatingTimer').style.display = 'block';
         }
     }
 
@@ -2942,7 +2989,14 @@
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('statsOverlay').style.display = 'none';
             document.getElementById('leaderboardOverlay').style.display = 'none';
+            
             tampilkanLobby();
+            
+            // RESET TAMPILAN MOBILE (Munculin lagi sidebar kiri)
+            document.body.classList.remove('ujian-berjalan');
+            // Hide Timer HP
+            document.getElementById('floatingTimer').style.display = 'none';
+
             const finishBtn = document.querySelector('.finish-container');
             if(finishBtn) finishBtn.style.display = 'none';
             document.getElementById('modulTitle').innerText = "Menu Utama";
@@ -3115,6 +3169,7 @@
 </script>
 </body>
 </html>
+
 
 
 
