@@ -2588,26 +2588,26 @@
         }
     }
 
-	// FITUR BARU: Logic Buka/Tutup Sidebar Modul di HP
+	// REVISI: Buka Sidebar Modul dengan Mode BERSIH (Tanpa Timer/Tombol Lain)
     window.toggleMobileModul = function() {
         const sidebar = document.querySelector('.sidebar-left');
-        
-        // Logika Toggle (Buka/Tutup)
+        const timer = document.getElementById('floatingTimer');
+        const btnSoal = document.getElementById('btnMobileNav');
+        const btnModul = document.getElementById('btnMobileModul');
+
         if (sidebar.style.display === 'flex') {
-            sidebar.style.display = ''; // Tutup (Balikin ke default)
+            // Kalau mau TUTUP (Manual/Otomatis)
+            sidebar.style.display = ''; 
         } else {
-            sidebar.style.display = 'flex'; // Paksa Muncul
+            // Kalau mau BUKA
+            sidebar.style.display = 'flex'; 
             
-            // Bikin Tombol Tutup (X) Merah kalau belum ada
-            if (!document.getElementById('btnCloseModul')) {
-                const btnClose = document.createElement('button');
-                btnClose.id = 'btnCloseModul';
-                btnClose.className = 'close-sidebar-btn';
-                btnClose.innerHTML = 'Tutup Modul ✖️';
-                btnClose.style.background = '#e74c3c'; // Warna Merah
-                btnClose.onclick = window.toggleMobileModul;
-                sidebar.insertBefore(btnClose, sidebar.firstChild);
-            }
+            // 1. Umpetin Timer biar bersih
+            if(timer) timer.style.display = 'none';
+
+            // 2. Umpetin Tombol Navigasi Bawah
+            if(btnSoal) btnSoal.style.display = 'none';
+            if(btnModul) btnModul.style.display = 'none';
         }
     }
 
@@ -2688,26 +2688,25 @@
         renderSidebarGrid();
         loadQuestion(0);
         
-        // LOGIKA MOBILE: Saat ujian mulai, modul hilang, timer muncul
+        // KHUSUS HP:
         if(window.innerWidth <= 768) {
             document.body.classList.add('ujian-berjalan'); 
-            const sidebarRight = document.querySelector('.sidebar-right');
-            if(sidebarRight) sidebarRight.classList.remove('show-mobile'); 
-            document.getElementById('floatingTimer').style.display = 'block';
-			// KHUSUS HP: Munculin tombol Daftar Soal
-            // 1. Munculin Tombol Daftar Soal
+            
+            // 1. Munculin Tombol Daftar Soal & Modul
             const btnMobile = document.getElementById('btnMobileNav');
             if(btnMobile) btnMobile.style.display = 'flex';
-
-            // 2. Munculin Tombol Daftar Modul (BARU)
+            
             const btnModul = document.getElementById('btnMobileModul');
             if(btnModul) btnModul.style.display = 'flex';
 
-            // 3. Pastikan sidebar modul ketutup dulu pas awal mulai
+            // 2. MUNCULIN TIMER LAGI (PENTING! Karena tadi diumpetin)
+            const timer = document.getElementById('floatingTimer');
+            if(timer) timer.style.display = 'block';
+
+            // 3. Pastikan sidebar modul ketutup
             const sbLeft = document.querySelector('.sidebar-left');
-            if(sbLeft) sbLeft.style.display = '';
+            if(sbLeft) sbLeft.style.display = ''; 
         }
-    }
 
     function startTimer() {
         timerInterval = setInterval(() => {
@@ -3203,6 +3202,7 @@
 </script>
 </body>
 </html>
+
 
 
 
