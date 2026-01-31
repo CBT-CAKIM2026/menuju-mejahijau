@@ -265,9 +265,9 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
             color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
         }
-
-        /* =========================================
-           RESPONSIVE MOBILE (TAMPILAN HP) - FINAL V3
+		
+		/* =========================================
+           RESPONSIVE MOBILE (TAMPILAN HP) - REVISI FINAL
            ========================================= */
         @media (max-width: 768px) {
             body { 
@@ -311,9 +311,16 @@
                 z-index: 15000; /* Di bawah Popup */
                 background: white; padding-top: 50px; margin-right: 0 !important;
             }
-            .nav-grid { gap: 6px !important; }
-            .nav-btn { font-size: 0.8rem !important; aspect-ratio: 1; border-radius: 6px; }
-            .finish-container { margin-top: auto; border-top: 1px solid #eee; padding: 15px; }
+            
+            /* REVISI: Grid 6 Kolom di HP biar muat banyak & kecil */
+            .nav-grid { 
+                grid-template-columns: repeat(6, 1fr) !important; 
+                gap: 5px !important; 
+            }
+            .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
+            
+            /* REVISI PENTING LANGKAH 2: Hilangkan tombol Selesai di sidebar HP */
+            .finish-container { display: none !important; }
 
             /* 4. TIMER HP (POJOK KIRI ATAS) */
             #floatingTimer {
@@ -328,7 +335,12 @@
                 padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px;
             }
             
-            #btnMobileNav { display: flex !important; }
+            #btnMobileNav { 
+                display: none; /* Default Hidden, muncul via JS */
+                bottom: 55px !important; /* Naik dikit biar aman dari watermark */
+                right: 20px;
+            }
+            
             .close-sidebar-btn { display: block !important; }
             .question-box { font-size: 15px; line-height: 1.5; }
             .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
@@ -2686,15 +2698,27 @@
         
         document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
         
-        // --- LOGIKA TOMBOL NEXT vs SELESAI ---
+        // --- LOGIKA TOMBOL NEXT vs SELESAI (REVISI FINAL) ---
         const btnNext = document.getElementById('nextBtn');
+        btnNext.style.display = 'block'; // Reset dulu biar muncul default
+
         if (!isReviewMode && idx === currentQuestions.length - 1) {
-            btnNext.innerHTML = "Selesai ✅";
-            btnNext.className = "btn btn-finish"; // Hijau
-            btnNext.onclick = confirmFinish; // Klik jadi Submit
+            // KONDISI: INI SOAL TERAKHIR
+            
+            if (window.innerWidth > 768) {
+                // MODUS LAPTOP: Tombol Next diumpetin (Biar pake tombol Sidebar aja)
+                btnNext.style.display = 'none';
+            } else {
+                // MODUS HP: Tombol Next berubah jadi SELESAI (Wajib ada)
+                btnNext.innerHTML = "Selesai ✅";
+                btnNext.className = "btn btn-finish"; 
+                btnNext.onclick = confirmFinish; 
+            }
+
         } else {
+            // KONDISI: BUKAN SOAL TERAKHIR (Normal)
             btnNext.innerHTML = "Selanjutnya ❯";
-            btnNext.className = "btn btn-next"; // Biru
+            btnNext.className = "btn btn-next"; 
             btnNext.onclick = () => changeQuestion(1);
         }
         
@@ -3061,6 +3085,7 @@
 </script>
 </body>
 </html>
+
 
 
 
