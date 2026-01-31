@@ -635,23 +635,21 @@
 
     window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
 
-    if(auth) {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('appSection').style.display = 'flex';
-                tampilkanLobby();
-                document.getElementById('roleDisplay').innerText = user.displayName;
-                document.getElementById('userAvatar').src = user.photoURL;
-                document.getElementById('floatingTimer').style.display = 'none';
-            } else {
-                document.getElementById('loginPage').style.display = 'flex';
-                document.getElementById('appSection').style.display = 'none';
-                document.getElementById('floatingTimer').style.display = 'none';
-            }
-        });
-    }
+    // --- CEK STATUS USER (ANTI LUPA) ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // PENTING: Set variabel global biar bisa dibaca semua fungsi
+            window.currentUser = user;
+            window.isLoggedIn = true; // Penanda tambahan
+            
+            console.log("Status: User Terdeteksi ->", user.displayName);
+            updateUIForLogin(user); // Update tampilan nama
+        } else {
+            window.currentUser = null;
+            window.isLoggedIn = false;
+            console.log("Status: User Belum Login");
+        }
+    });
 
     window.saveScoreToCloud = async (modulId, skor) => {
         if (!currentUser || !db) return;
@@ -3124,11 +3122,19 @@
         // Tampilan Loading
         document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">Sedang mengambil data dari server... ☁️</td></tr>';
 
-        // 1. CEK LOGIN
-        if (!window.currentUser || !window.db) {
-            document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Silakan Login dulu untuk melihat data.</td></tr>';
-            return;
-        }
+        // 1. CEK LOGIN (VERSI LEBIH CANGGIH & AKURAT)
+    // Kita cek variable global ATAU langsung tanya ke Auth Firebase
+    const userAktif = window.currentUser || (window.auth ? window.auth.currentUser : null);
+
+    if (!userAktif || !window.db) {
+        console.error("Gagal Cek Login. User:", userAktif, "DB:", window.db);
+        document.getElementById('statsTableBody').innerHTML = 
+            '<tr><td colspan="5" style="color:red; font-weight:bold; text-align:center;">⚠️ Sistem tidak mendeteksi Login.<br>Coba Refresh halaman & Login ulang.</td></tr>';
+        return;
+    }
+
+    // Update variable global biar sinkron ke depannya
+    window.currentUser = userAktif;
         
         try {
             // 2. QUERY FIREBASE: Ambil riwayat user ini
@@ -3267,6 +3273,7 @@
 </script>
 </body>
 </html>
+
 
 
 
