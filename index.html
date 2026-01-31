@@ -363,6 +363,37 @@
             color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
             font-weight: bold; font-size: 16px; z-index: 10000;
         }
+		/* =========================================
+           KHUSUS LAPTOP / PC (Revisi Tombol Kanan & Ragu Luas)
+           ========================================= */
+        @media (min-width: 769px) {
+            
+            /* 1. Bikin area Ragu-ragu jadi panjang ngisi ruang kosong kiri */
+            .ragu-wrapper {
+                flex: 1;                 /* Ambil sisa ruang kosong */
+                background-color: #fdfdfd; 
+                border: 1px dashed #ccc; 
+                padding: 12px 20px;      /* Gue gedein dikit paddingnya biar enak kliknya */
+                border-radius: 8px;
+                margin-right: 20px;      /* Jarak ke tombol */
+                cursor: pointer;
+            }
+            .ragu-wrapper:hover {
+                background-color: #fff3e0; 
+                border-color: var(--warning);
+            }
+
+            /* 2. RESET Tombol 'Sebelumnya' biar GAK mojok kiri lagi */
+            #prevBtn {
+                margin-right: 0 !important; /* Timpa style lama */
+            }
+
+            /* 3. Container tombol dibikin auto, biar gak menuhin layar */
+            .footer-nav > div:last-child {
+                width: auto !important;  
+                gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
+            }
+        }
     </style>
 </head>
 <body>
@@ -3085,6 +3116,7 @@
 </script>
 </body>
 </html>
+
 
 
 
