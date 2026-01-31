@@ -643,21 +643,32 @@
         if(auth) signOut(auth).then(() => location.reload()); 
     };
 
-    // --- CEK STATUS USER (ANTI LUPA) ---
+// --- CEK STATUS USER (ANTI LUPA & ANTI LAYAR KOSONG) ---
     onAuthStateChanged(auth, (user) => {
+        const loginBox = document.getElementById('loginPage');
+        
         if (user) {
-            // PENTING: Set variabel global
+            // 1. Kalo User Login: Simpan Data
             window.currentUser = user;
             window.isLoggedIn = true;
+            console.log("Login Sukses:", user.displayName);
             
-            console.log("Status: User Terdeteksi ->", user.displayName);
-            
-            // Panggil fungsi update tampilan (Fungsinya ada di bawah)
+            // 2. Update Nama di Header
             updateUIForLogin(user); 
+            
+            // 3. INI KUNCINYA: Munculin Menu Utama!
+            tampilkanLobby(); 
+
+            // 4. Pastikan Kotak Login Ilang
+            if(loginBox) loginBox.style.display = 'none';
+
         } else {
+            // 1. Kalo Belum Login: Reset Data
             window.currentUser = null;
             window.isLoggedIn = false;
-            console.log("Status: User Belum Login");
+            
+            // 2. MUNCULIN Kotak Login Lagi
+            if(loginBox) loginBox.style.display = 'flex';
         }
     });
 
@@ -3297,6 +3308,7 @@
 </script>
 </body>
 </html>
+
 
 
 
