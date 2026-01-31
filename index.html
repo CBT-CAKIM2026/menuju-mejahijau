@@ -2691,7 +2691,17 @@
             btn.className = 'nav-btn';
             btn.id = `nav-${idx}`;
             btn.innerText = idx + 1;
-            btn.onclick = () => loadQuestion(idx);
+           // REVISI: Pas klik nomor, load soal TERUS tutup sidebar kalo di HP
+            btn.onclick = () => {
+                loadQuestion(idx);
+                // Cek: Kalau ini HP dan Sidebar lagi kebuka, kita tutup paksa
+                if (window.innerWidth <= 768) {
+                     const sb = document.querySelector('.sidebar-right');
+                     if (sb && sb.classList.contains('show-mobile')) {
+                         window.toggleMobileSidebar(); 
+                     }
+                }
+            };
             grid.appendChild(btn);
         });
         updateSidebarStatus();
@@ -2877,6 +2887,13 @@
     }
 
     window.closeResult = function() {
+		// TAMBAHAN: Tutup sidebar otomatis pas masuk pembahasan
+        if (window.innerWidth <= 768) {
+            const sb = document.querySelector('.sidebar-right');
+            if (sb && sb.classList.contains('show-mobile')) {
+                window.toggleMobileSidebar();
+            }
+        }
         document.getElementById('resultOverlay').style.display = 'none';
         isReviewMode = false; 
         const ind = document.getElementById('modeIndicator');
@@ -2895,6 +2912,13 @@
 
     window.startReviewWrong = function() {
         if (wrongIndices.length === 0) return;
+		// TAMBAHAN: Tutup sidebar otomatis pas review salah
+        if (window.innerWidth <= 768) {
+            const sb = document.querySelector('.sidebar-right');
+            if (sb && sb.classList.contains('show-mobile')) {
+                window.toggleMobileSidebar();
+            }
+        }
         isReviewMode = true;
         document.getElementById('resultOverlay').style.display = 'none';
         const ind = document.getElementById('modeIndicator');
@@ -3115,6 +3139,7 @@
 </script>
 </body>
 </html>
+
 
 
 
