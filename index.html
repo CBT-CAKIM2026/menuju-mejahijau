@@ -638,17 +638,22 @@
         }
     };
 
-    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
+// --- FUNGSI LOGOUT ---
+    window.handleLogout = function() {
+        if(auth) signOut(auth).then(() => location.reload()); 
+    };
 
     // --- CEK STATUS USER (ANTI LUPA) ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // PENTING: Set variabel global biar bisa dibaca semua fungsi
+            // PENTING: Set variabel global
             window.currentUser = user;
-            window.isLoggedIn = true; // Penanda tambahan
+            window.isLoggedIn = true;
             
             console.log("Status: User Terdeteksi ->", user.displayName);
-            updateUIForLogin(user); // Update tampilan nama
+            
+            // Panggil fungsi update tampilan (Fungsinya ada di bawah)
+            updateUIForLogin(user); 
         } else {
             window.currentUser = null;
             window.isLoggedIn = false;
@@ -656,20 +661,17 @@
         }
     });
 
-	// --- UPDATE TAMPILAN SETELAH LOGIN ---
+    // --- FUNGSI UPDATE TAMPILAN (DEFINISI FUNGSI) ---
+    // Pastikan fungsi ini BERADA DI LUAR 'onAuthStateChanged', tapi SEBELUM 'saveScoreToCloud'
     function updateUIForLogin(user) {
         // 1. Umpetin kotak login
         const loginBox = document.getElementById('loginPage');
         if(loginBox) loginBox.style.display = 'none';
         
-        // 2. Tampilkan pesan selamat datang di Header (Cari elemen welcomeMsg atau modulTitle)
-        // Kita tumpangin aja di 'modulTitle' kalau welcomeMsg gak ada
+        // 2. Tampilkan Nama di Header
         const welcomeText = document.getElementById('welcomeMsg'); 
         if(welcomeText) {
             welcomeText.innerText = "Halo, " + user.displayName;
-        } else {
-            // Opsional: Kalau gak punya elemen welcomeMsg, bisa pakai alert kecil atau biarin aja
-            console.log("Login sukses: " + user.displayName);
         }
     }
 
@@ -3295,6 +3297,7 @@
 </script>
 </body>
 </html>
+
 
 
 
