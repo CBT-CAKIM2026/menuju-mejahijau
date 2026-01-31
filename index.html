@@ -62,25 +62,28 @@
         /* --- APP CONTAINER --- */
         #appSection { display: none; width: 100%; height: 100%; display: flex; }
 
-        /* --- SIDEBAR KIRI (MODUL) --- */
+        /* --- SIDEBAR KIRI (DESKTOP DEFAULT) --- */
         .sidebar-left {
             width: 280px; background-color: white; border-right: 1px solid #ddd;
             display: flex; flex-direction: column; height: 100vh; flex-shrink: 0;
             z-index: 10; transition: margin-left 0.3s ease;
         }
 
-        /* MODE FOKUS DESKTOP (Sidebar Kiri Ngumpet) */
+        /* MODE FOKUS DESKTOP (Hanya Sidebar Kiri yg ilang) */
         body.mode-focus .sidebar-left { margin-left: -280px; }
+        /* Timer Melayang Desktop */
         body.mode-focus #floatingTimer { display: block !important; }
 
         .sidebar-header { padding: 20px; background-color: var(--primary); color: white; text-align: center; }
         .user-profile { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; font-size: 0.9rem; }
         .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
 
+        /* Timer Sidebar (Muncul di Desktop Normal) */
         .timer-container {
             background: rgba(0,0,0,0.2); padding: 10px; margin-top: 15px; border-radius: 5px;
             font-size: 1.5rem; font-weight: bold; color: #ffeb3b; 
-            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; display: block; 
+            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
+            display: block; 
         }
         
         .timer-green { background-color: #27ae60 !important; color: white !important; border-color: #2ecc71 !important; }
@@ -102,7 +105,7 @@
         .main-content {
             flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
             overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease;
-            position: relative; z-index: 5; /* Nutupin background body pas ujian */
+            position: relative; z-index: 5;
         }
 
         .card {
@@ -111,7 +114,7 @@
             margin: 0 auto; width: 100%; margin-bottom: 50px;
         }
 
-        /* --- SIDEBAR KANAN --- */
+        /* --- SIDEBAR KANAN (DESKTOP) --- */
         .sidebar-right {
             width: 300px; background-color: white; border-left: 1px solid #ddd;
             display: flex; flex-direction: column; height: 100vh; flex-shrink: 0; z-index: 10;
@@ -181,7 +184,7 @@
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
         }
 
-        /* --- POPUPS (Z-INDEX 20000) --- */
+        /* --- POPUPS --- */
         .result-overlay { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: rgba(0,0,0,0.85); display: none; 
@@ -206,7 +209,7 @@
         .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        /* Timer Melayang (Default Desktop) */
+        /* Timer Melayang (Default Desktop - Hidden unless focused) */
         #floatingTimer {
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
@@ -215,7 +218,7 @@
         }
 
         /* =========================================
-           RESPONSIVE MOBILE (TAMPILAN HP) - V4 FINAL
+           RESPONSIVE MOBILE (TAMPILAN HP) - FINAL FIX
            ========================================= */
         @media (max-width: 768px) {
             body { 
@@ -224,80 +227,72 @@
                 overflow-y: auto; 
             }
 
-            /* 1. LOGIN ESTETIK (KECIL & CENTERING) */
+            /* 1. LOGIN ESTETIK (TENGAH, KARTU, TIDAK FULL) */
             .login-box {
-                width: 85%; max-width: 320px; padding: 30px; border-radius: 15px; margin: auto;
+                width: 90%; max-width: 320px; padding: 30px; border-radius: 15px; margin: auto;
             }
 
-            /* 2. SIDEBAR KIRI (MODUL) */
+            /* 2. SIDEBAR KIRI (MODUL) - FULL SCREEN OVERLAY */
             .sidebar-left {
                 display: none; /* Default Hide pas Ujian */
                 width: 100% !important; height: 100vh !important;
-                border-right: none; z-index: 16000; /* Di atas segalanya kecuali login/popup */
-                position: fixed; top: 0; left: 0;
+                border-right: none; z-index: 16000;
+                position: fixed; top: 0; left: 0; background: white;
             }
-            /* Class buat munculin sidebar kiri di HP (Menu Modul) */
             .sidebar-left.show-mobile-left { display: flex !important; }
-            
-            .sidebar-left .timer-container { display: none !important; }
+            .sidebar-left .timer-container { display: none !important; } /* Hide timer di menu modul */
             .modul-selector { max-height: none !important; height: calc(100% - 80px); overflow-y: auto; }
 
+            /* 3. KONTEN SOAL */
             .main-content {
                 width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1;
-                /* Background Solid biar gak tembus pandang ke body image */
-                background: #f4f7f6; 
+                background: #f4f7f6; z-index: 5;
             }
 
-            /* 3. SIDEBAR KANAN (DAFTAR SOAL) */
+            /* 4. SIDEBAR KANAN (NAVIGASI) */
             .sidebar-right { display: none; }
             .sidebar-right.show-mobile {
                 display: flex !important; flex-direction: column;
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important;
             }
-            /* Tombol Nomor Kecil & Rapet */
-            .nav-grid { gap: 4px !important; padding: 10px; }
-            .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; width: 100%; }
-            
-            /* Hapus Tombol Selesai di Sidebar Kanan (Mobile Only) */
+            /* Tombol Navigasi Kecil */
+            .nav-grid { gap: 6px !important; padding: 10px; }
+            .nav-btn { font-size: 0.8rem !important; aspect-ratio: 1; border-radius: 4px; width: 100%; }
+            /* Hapus Tombol Selesai di Sidebar Kanan Mobile */
             .finish-container { display: none !important; }
 
-            /* 4. TIMER HP (POJOK KIRI ATAS) */
+            /* 5. TIMER HP (POJOK KIRI ATAS) */
             #floatingTimer {
                 display: none; 
                 position: fixed; top: 10px; left: 10px; right: auto; 
                 font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px;
             }
 
-            /* 5. UI TOMBOL BAWAH */
-            .footer-nav .btn {
-                padding: 10px 10px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px;
+            /* 6. TOMBOL DAFTAR SOAL (NAIK DIKIT BIAR GA KENA WATERMARK) */
+            #btnMobileNav { 
+                display: none; bottom: 70px !important; /* Naikin dikit */
             }
-            
-            /* Tombol Daftar Soal (Default Hide, Show via JS) */
-            #btnMobileNav { display: none; bottom: 50px; } 
-            
+
+            /* 7. HAMBURGER MENU MUNCUL DI HP */
+            .question-header .focus-btn { 
+                display: block !important; 
+                position: fixed; top: 10px; right: 10px; /* Pindah Kanan Atas biar imbang sama Timer */
+                z-index: 9999; background: white; border-radius: 5px; padding: 2px 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+
             .close-sidebar-btn {
                 display: block !important; width: 100%; padding: 12px; background: #e74c3c;
                 color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
                 font-weight: bold; font-size: 14px; z-index: 10000;
             }
             
-            .question-box { font-size: 15px; line-height: 1.5; }
-            
-            /* MUNCULIN TOMBOL MENU (HAMBURGER) DI HP */
-            .question-header .focus-btn { 
-                display: block !important; 
-                position: fixed; top: 10px; left: 10px; /* Timpa posisi timer kalau perlu, atau geser */
-                z-index: 9999; background: white; border-radius: 5px; padding: 0 5px;
-                /* Kita geser Timer dikit ke kanan biar gak numpuk */
-            }
-            /* Geser timer HP biar ga ketutupan tombol menu */
-            #floatingTimer { left: 50px !important; }
+            body.ujian-berjalan .sidebar-left { display: none; }
         }
 
         #btnMobileNav {
-            display: none; /* JS will toggle */
+            display: none; /* Logic via JS */
             position: fixed; bottom: 50px; right: 20px;
             background: #2c3e50; color: white; padding: 10px 20px;
             border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -540,7 +535,6 @@
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
                 document.getElementById('floatingTimer').style.display = 'none';
-                // HIDE BTN NAV SAAT LOBBY
                 document.getElementById('btnMobileNav').style.display = 'none';
             } else {
                 document.getElementById('loginPage').style.display = 'flex';
@@ -2474,7 +2468,7 @@
         else tmr.style.display = 'block';
     }
     
-    // FUNGSI BARU: TOGGLE MENU MODUL DI HP
+    // FUNGSI TOGGLE MENU MODUL DI HP
     window.toggleMobileModules = function() {
         const leftSidebar = document.querySelector('.sidebar-left');
         leftSidebar.classList.toggle('show-mobile-left');
@@ -2559,7 +2553,7 @@
         renderSidebarGrid();
         loadQuestion(0);
         
-        // LOGIKA MOBILE: Saat ujian mulai, modul hilang, timer muncul, tombol daftar soal muncul
+        // LOGIKA MOBILE: Saat ujian mulai, timer muncul, tombol daftar soal muncul
         if(window.innerWidth <= 768) {
             document.body.classList.add('ujian-berjalan'); 
             const sidebarRight = document.querySelector('.sidebar-right');
@@ -2651,7 +2645,7 @@
         // --- LOGIKA TOMBOL NEXT vs SELESAI ---
         const btnNext = document.getElementById('nextBtn');
         if (!isReviewMode && idx === currentQuestions.length - 1) {
-            btnNext.innerHTML = "Selesai";
+            btnNext.innerHTML = "Selesai ✅";
             btnNext.className = "btn btn-finish"; // Hijau
             btnNext.onclick = confirmFinish; 
         } else {
@@ -3022,6 +3016,7 @@
 </script>
 </body>
 </html>
+
 
 
 
