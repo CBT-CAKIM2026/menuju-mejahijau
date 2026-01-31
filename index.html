@@ -269,13 +269,30 @@
         /* =========================================
            RESPONSIVE MOBILE (TAMPILAN HP) - FINAL V3
            ========================================= */
-        @media (max-width: 768px) {
-            body { 
-                padding-bottom: 60px; 
-                flex-direction: column; 
-                overflow-y: auto; 
+@media (max-width: 768px) {
+            /* ... (kode sebelumnya tetap) ... */
+
+            /* Penyesuaian Tombol Daftar Soal agar tidak menabrak watermark */
+            #btnMobileNav {
+                display: none; /* Hidden by default, muncul via script */
+                bottom: 50px; /* Dinaikkan sedikit agar watermark aman */
+                right: 20px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
             }
 
+            /* Kecilkan Grid Nomor di Sidebar Kanan HP */
+            .nav-grid { 
+                grid-template-columns: repeat(6, 1fr) !important; /* Lebih rapat */
+                gap: 5px !important; 
+            }
+		}
+            .nav-btn { font-size: 0.75rem !important; }
+
+            /* Hilangkan container finish di sidebar kanan mobile */
+            .sidebar-right.show-mobile .finish-container {
+                display: none !important;
+            }
             /* 1. LOGIN ESTETIK (KECIL) */
             .login-box {
                 width: 85%; max-width: 320px; padding: 25px; border-radius: 15px;
@@ -2496,8 +2513,23 @@
 
     window.currentDatabaseId = 'modul1';
 
+  // Update Fungsi Toggle Sidebar Mobile
     window.toggleMobileSidebar = function() {
         const sidebar = document.querySelector('.sidebar-right');
+        const floatingTimer = document.getElementById('floatingTimer');
+        
+        sidebar.classList.toggle('show-mobile');
+
+        // Sembunyikan timer kalau sidebar lagi dibuka (biar ga numpuk)
+        if (sidebar.classList.contains('show-mobile')) {
+            floatingTimer.style.setProperty('display', 'none', 'important');
+        } else {
+            // Munculkan lagi kalau sidebar ditutup (hanya jika ujian berjalan)
+            if (document.body.classList.contains('ujian-berjalan')) {
+                floatingTimer.style.display = 'block';
+            }
+        }
+
         if (!document.getElementById('btnCloseMobile')) {
             const btnClose = document.createElement('button');
             btnClose.id = 'btnCloseMobile';
@@ -2506,9 +2538,32 @@
             btnClose.onclick = window.toggleMobileSidebar;
             sidebar.insertBefore(btnClose, sidebar.firstChild);
         }
-        sidebar.classList.toggle('show-mobile');
     }
 
+    // Update Fungsi switchDatabase (Saat mulai ujian)
+    const originalSwitchDatabase = window.switchDatabase;
+    window.switchDatabase = function(key) {
+        // Panggil fungsi asli
+        originalSwitchDatabase(key);
+
+        // Tambahan logika khusus Mobile
+        if(window.innerWidth <= 768) {
+            // Munculkan tombol "Daftar Soal" hanya saat soal sudah dimuat
+            document.getElementById('btnMobileNav').style.display = 'flex';
+        }
+    }
+
+    // Update Fungsi backToMenu (Saat kembali ke lobby)
+    const originalBackToMenu = window.backToMenu;
+    window.backToMenu = function() {
+        if(confirm("Yakin mau kembali ke menu utama?")) {
+            // Jalankan fungsi asli
+            originalBackToMenu();
+            
+            // Sembunyikan tombol Daftar Soal di Lobby
+            document.getElementById('btnMobileNav').style.display = 'none';
+        }
+    }
     document.addEventListener('keydown', function(event) {
         if(document.getElementById('appSection').style.display === 'none') return;
         switch(event.key) {
@@ -3039,6 +3094,7 @@
 </script>
 </body>
 </html>
+
 
 
 
