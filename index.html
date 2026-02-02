@@ -411,19 +411,20 @@
                 gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
             }
 			
-					/* --- NEW LANDING PAGE STYLE (Referencing meeting.ai) --- */
-		/* Reset style overlay lama */
-		#loginOverlay {
-		    background-color: #ffffff; /* Background Putih Bersih */
-		    /* Tidak pakai gambar background lagi */
-		    position: fixed;
-		    top: 0; left: 0;
-		    width: 100%; height: 100%;
-		    z-index: 9999;
-		    overflow-y: auto; /* Biar bisa discroll kalau konten panjang di HP kecil */
-		    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* Font modern */
-		    color: #333;
-		}
+			#loginOverlay {
+			    background-color: #ffffff;
+			    position: fixed;
+			    top: 0; left: 0;
+			    width: 100%; height: 100%;
+			    z-index: 9999;
+			    overflow-y: auto;
+			    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+			    color: #333;
+			    
+			    /* INI KUNCI PERBAIKANNYA: */
+			    display: block !important; /* Paksa jadi blok (atas-bawah), bukan flex (tengah) */
+			    text-align: left; /* Reset rata kiri */
+			}
 		
 		/* -- NAVBAR ATAS -- */
 		.landing-nav {
@@ -617,7 +618,10 @@
         </div>
 
         <div class="hero-image-container">
-            <img src="https://cdni.iconscout.com/illustration/premium/thumb/online-study-4439183-3687210.png" alt="Ilustrasi CBT Cakim" class="hero-illustration">
+            <img src="https://img.freepik.com/free-vector/law-firm-concept-illustration_114360-4417.jpg?t=st=1709470000~exp=1709473600~hmac=xyz" 
+    		 alt="Ilustrasi Hukum" 
+    		 class="hero-illustration"
+     		style="width: 100%; max-width: 500px; height: auto;">
         </div>
     </section>
 </div>
@@ -1721,6 +1725,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
