@@ -411,8 +411,15 @@
                 gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
             }
 			
+			/* --- FINAL LANDING PAGE STYLE (Gedung MA + Glass Navbar) --- */
 			#loginOverlay {
-			    background-color: #ffffff;
+			    /* Background Gedung MA + Lapisan Putih Transparan 60% */
+			    background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)), 
+			                url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
+			    background-size: cover;
+			    background-position: center;
+			    background-attachment: fixed;
+			    
 			    position: fixed;
 			    top: 0; left: 0;
 			    width: 100%; height: 100%;
@@ -420,138 +427,125 @@
 			    overflow-y: auto;
 			    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 			    color: #333;
-			    
-			    /* INI KUNCI PERBAIKANNYA: */
-			    display: block !important; /* Paksa jadi blok (atas-bawah), bukan flex (tengah) */
-			    text-align: left; /* Reset rata kiri */
+			    display: block !important;
 			}
-		
-		/* -- NAVBAR ATAS -- */
-		.landing-nav {
-		    display: flex;
-		    justify-content: space-between;
-		    align-items: center;
-		    padding: 20px 40px;
-		    max-width: 1200px;
-		    margin: 0 auto;
-		    background: white;
+			
+			/* -- NAVBAR ATAS (Floating Glass Style) -- */
+			.landing-nav {
+			    display: flex;
+			    justify-content: space-between;
+			    align-items: center;
+			    padding: 15px 30px;
+			    max-width: 1100px;
+			    /* Ini trik biar navbar-nya keren & gak polos: */
+			    margin: 20px auto 0 auto; /* Posisi agak turun dikit biar melayang */
+			    background: rgba(255, 255, 255, 0.95); /* Putih susu transparan */
+			    backdrop-filter: blur(10px); /* Efek blur kaca di belakangnya */
+			    border-radius: 50px; /* Sudut membulat (Pill Shape) */
+			    box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Bayangan halus */
+			    border: 1px solid rgba(255,255,255,0.5);
+			}
+			
+			.nav-brand {
+			    font-size: 1.3rem;
+			    font-weight: 800;
+			    color: #006400; /* Hijau Pengadilan */
+			    display: flex;
+			    align-items: center;
+			    gap: 10px;
+			}
+			
+			/* Tombol Login Biru */
+			.nav-login-btn {
+			    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+			    color: white;
+			    border: none;
+			    padding: 10px 24px;
+			    border-radius: 30px;
+			    font-weight: 600;
+			    font-size: 0.9rem;
+			    cursor: pointer;
+			    display: flex;
+			    align-items: center;
+			    gap: 8px;
+			    transition: transform 0.2s, box-shadow 0.2s;
+			    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+			}
+			
+			.nav-login-btn:hover {
+			    transform: translateY(-2px);
+			    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+			}
+			
+			/* -- HERO SECTION -- */
+			.hero-section {
+			    display: grid;
+			    grid-template-columns: 1.2fr 1fr; /* Kolom Teks lebih lebar dikit */
+			    gap: 50px;
+			    padding: 60px 40px;
+			    max-width: 1200px;
+			    margin: 0 auto;
+			    align-items: center;
+			    min-height: 80vh;
+			}
+			
+			.hero-content { padding-right: 20px; }
+			
+			.hero-quote {
+			    font-size: 2.8rem;
+			    font-weight: 800;
+			    line-height: 1.2;
+			    margin-bottom: 25px;
+			    /* Judul Hijau Tua Solid (Biar kontras sama background) */
+			    color: #004d00; 
+			}
+			
+			/* Credit Footer */
+			.dev-footer {
+			    margin-top: 40px;
+			    padding-top: 20px;
+			    border-top: 1px dashed #ccc;
+			    font-size: 0.85rem;
+			    color: #666;
+			    font-weight: 500;
+			}
+			.dev-footer span { color: #006400; font-weight: bold; }
+			
+			/* Bagian Gambar Kanan */
+			.hero-image-container {
+			    display: flex;
+			    justify-content: center;
+			    align-items: center;
+			    position: relative;
+			}
+			/* Frame Putih di belakang gambar biar makin pop-up */
+			.hero-image-frame {
+			    background: white;
+			    padding: 15px;
+			    border-radius: 20px;
+			    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+			    transform: rotate(2deg); /* Miring dikit biar estetik */
+			    transition: transform 0.3s;
+			}
+			.hero-image-frame:hover { transform: rotate(0deg) scale(1.02); }
+			
+			.hero-illustration {
+			    width: 100%;
+			    max-width: 500px; /* Ukuran gambar dibatasi biar gak kegedean */
+			    height: auto;
+			    border-radius: 10px;
+			}
+			
+			/* RESPONSIF HP */
+			@media (max-width: 992px) {
+			    .landing-nav { margin: 0; border-radius: 0; padding: 15px 20px; }
+			    .hero-section { grid-template-columns: 1fr; text-align: center; padding-top: 30px; }
+			    .hero-content { order: 1; padding: 0; }
+			    .hero-image-container { order: 2; margin-top: 20px; }
+			    .hero-image-frame { transform: rotate(0deg); max-width: 90%; }
+			    .hero-features li { justify-content: center; text-align: left; }
+			}
 		}
-		
-		.nav-brand {
-		    font-size: 1.5rem;
-		    font-weight: 800;
-		    color: #006400; /* Hijau Tua Pengadilan */
-		    display: flex;
-		    align-items: center;
-		    gap: 10px;
-		}
-		
-		/* Tombol Login Biru di Kanan Atas */
-		.nav-login-btn {
-		    background-color: #2563eb; /* Warna Biru meeting.ai */
-		    color: white;
-		    border: none;
-		    padding: 12px 24px;
-		    border-radius: 8px;
-		    font-weight: 600;
-		    font-size: 0.95rem;
-		    cursor: pointer;
-		    display: flex;
-		    align-items: center;
-		    gap: 10px;
-		    transition: background-color 0.3s, transform 0.2s;
-		    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-		}
-		
-		.nav-login-btn:hover {
-		    background-color: #1d4ed8; /* Biru lebih gelap pas hover */
-		    transform: translateY(-2px);
-		}
-		
-		/* -- HERO SECTION (Konten Utama) -- */
-		.hero-section {
-		    display: grid;
-		    grid-template-columns: 1fr 1fr; /* Desktop: 2 Kolom (Kiri Teks, Kanan Gambar) */
-		    gap: 40px;
-		    padding: 60px 40px;
-		    max-width: 1200px;
-		    margin: 0 auto;
-		    align-items: center;
-		    min-height: 80vh; /* Biar menuhin layar */
-		}
-		
-		/* Bagian Teks Kiri */
-		.hero-content { padding-right: 20px; }
-		
-		.hero-quote {
-		    font-size: 2.8rem;
-		    font-weight: 800;
-		    line-height: 1.2;
-		    margin-bottom: 25px;
-		    color: #111;
-		    background: linear-gradient(to right, #006400, #2563eb); /* Gradasi Hijau ke Biru */
-		    -webkit-background-clip: text;
-		    -webkit-text-fill-color: transparent;
-		}
-		
-		.hero-features {
-		    list-style: none;
-		    padding: 0;
-		    margin: 0;
-		}
-		
-		.hero-features li {
-		    font-size: 1.1rem;
-		    color: #555;
-		    margin-bottom: 15px;
-		    display: flex;
-		    align-items: flex-start;
-		    gap: 12px;
-		}
-		.feature-icon { color: #2563eb; font-size: 1.2rem; flex-shrink: 0; }
-		.feature-title { font-weight: 700; color: #333; display: block; margin-bottom: 4px; }
-		
-		/* Bagian Gambar Kanan */
-		.hero-image-container {
-		    display: flex;
-		    justify-content: center;
-		    align-items: center;
-		}
-		.hero-illustration {
-		    width: 100%;
-		    max-width: 550px;
-		    height: auto;
-		    /* Efek bayangan halus di bawah gambar */
-		    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
-		    animation: floatImage 3s ease-in-out infinite alternate;
-		}
-		
-		@keyframes floatImage {
-		    from { transform: translateY(0); }
-		    to { transform: translateY(-15px); }
-		}
-		
-		/* -- RESPONSIF HP (PENTING!) -- */
-		@media (max-width: 992px) {
-		    .landing-nav { padding: 20px; }
-		    .nav-brand { font-size: 1.2rem; }
-		    .nav-login-btn { padding: 10px 16px; font-size: 0.9rem; }
-		    .nav-login-btn span { display: none; } /* Sembunyikan teks 'Google' di HP kecil biar muat */
-		
-		    .hero-section {
-		        grid-template-columns: 1fr; /* Ubah jadi 1 Kolom tumpuk ke bawah */
-		        padding: 40px 20px;
-		        text-align: center; /* Teks jadi rata tengah di HP */
-		        gap: 30px;
-		    }
-		    .hero-content { padding-right: 0; order: 1; } /* Teks di atas */
-		    .hero-image-container { order: 2; margin-top: 20px; } /* Gambar di bawah */
-		    
-		    .hero-quote { font-size: 2rem; }
-		    .hero-features li { justify-content: center; text-align: left; } /* List tetap rata kiri tapi di tengah container */
-		    .hero-illustration { max-width: 80%; }
-		}
-	}
     </style>
 </head>
 <body>
@@ -572,7 +566,7 @@
             ⚖️ CBT CAKIM PA 2026
         </div>
         <button class="nav-login-btn" onclick="handleLogin()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G" style="background:white; border-radius:50%; padding:2px;">
+            <img src="https://drive.google.com/file/d/1uIP0z3T9c7Cyk21GiOO1J5-Ir2cvzcE2/view?usp=sharing">
             <span>Login Google</span>
         </button>
     </nav>
@@ -581,49 +575,33 @@
         
         <div class="hero-content">
             <h1 class="hero-quote">
-                "Belajar Hari Ini, Dipercaya Esok Hari. Ilmu Mengangkat Derajat, Integritas Menjaga Kehormatan."
+                "Belajar Hari Ini, Dipercaya Esok Hari.<br>Ilmu Mengangkat Derajat, Integritas Menjaga Kehormatan."
             </h1>
             
             <ul class="hero-features">
-                <li>
-                    <i class="fas fa-database feature-icon"></i> <div>
-                        <span class="feature-title">Database Soal Terlengkap</span>
-                        Ribuan soal latihan terupdate standar Mahkamah Agung.
-                    </div>
-                </li>
-                <li>
-                    <i class="fas fa-chart-line feature-icon"></i>
-                    <div>
-                        <span class="feature-title">Analisis & Peringkat Real-time</span>
-                        Pantau progres belajarmu dan bandingkan dengan pesaing lain.
-                    </div>
-                </li>
-                <li>
-                    <i class="fas fa-book-open feature-icon"></i>
-                    <div>
-                        <span class="feature-title">Pembahasan Mendalam</span>
-                        Pahami kunci jawaban dengan penjelasan dasar hukum yang jelas.
-                    </div>
-                </li>
-                 <li>
-                    <i class="fas fa-mobile-alt feature-icon"></i>
-                    <div>
-                        <span class="feature-title">Akses Fleksibel (Mobile Friendly)</span>
-                        Belajar kapan saja dan di mana saja, dioptimalkan untuk HP.
-                    </div>
-                </li>
+                <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap Standar MA</span></li>
+                <li><i class="fas fa-chart-line feature-icon"></i> <span>Analisis & Peringkat Real-time</span></li>
+                <li><i class="fas fa-gavel feature-icon"></i> <span>Pembahasan Hukum Mendalam</span></li>
+                <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
             </ul>
 
-             <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-top: 20px; font-weight: 500;"></div>
+            <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-top: 20px;"></div>
+
+            <div class="dev-footer">
+                Developed by <span>Ilham Nur Pratama</span> - APP 2023 - PA SERANG
+            </div>
         </div>
 
         <div class="hero-image-container">
-            <img src="https://img.freepik.com/free-vector/law-firm-concept-illustration_114360-4417.jpg?t=st=1709470000~exp=1709473600~hmac=xyz" 
-    		 alt="Ilustrasi Hukum" 
-    		 class="hero-illustration"
-     		style="width: 100%; max-width: 500px; height: auto;">
+            <div class="hero-image-frame">
+                <img src="https://img.freepik.com/free-vector/judge-concept-illustration_114360-12869.jpg" 
+                     alt="Ilustrasi Hakim" 
+                     class="hero-illustration">
+            </div>
         </div>
+
     </section>
+
 </div>
 
     <div id="appSection" style="display:none;">
@@ -1725,6 +1703,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
