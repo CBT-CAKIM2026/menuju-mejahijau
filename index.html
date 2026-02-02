@@ -512,83 +512,92 @@
 			    height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
 			}
 			
-			/* --- 📱 CSS KHUSUS HP (MODAL LAPTOP STYLE) --- */
-			@media (max-width: 992px) {
-			    
-			    /* 1. PAKSA BACKGROUND PUTIH BERSIH (Kaya Laptop) */
-			    #loginOverlay {
-			        background: #ffffff !important; /* Wajib Putih Solid */
-			        /* Kalau mau ada bayangan gedung dikit banget (opsional): */
-			        /* background: linear-gradient(rgba(255,255,255,0.95), rgba(255,255,255,0.95)), url('link_gambar_gedung') !important; */
-			    }
-			
-			    /* 2. NAVBAR RAPI (Hijau Solid) */
-			    .landing-nav {
-			        flex-direction: column; /* Logo atas, Tombol bawah */
-			        gap: 15px;
-			        padding: 20px;
-			        background-color: #004d00; /* Tetap Hijau Tua */
-			    }
-			    
-			    .nav-brand { 
-			        font-size: 1.2rem; 
-			        justify-content: center; /* Logo di tengah */
-			    }
-			
-			    .nav-login-btn {
-			        width: 100%; /* Tombol Full Lebar */
-			        justify-content: center;
-			        background: white; 
-			        color: #004d00;
-			        /* Paksa Teks Tombol Muncul */
-			    }
-			    .nav-login-btn span { display: inline-block !important; }
-			
-			    /* 3. KONTEN UTAMA (URUTANNYA BENERIN) */
-			    .hero-section {
-			        display: flex;
-			        flex-direction: column; /* Susun ke bawah */
-			        padding: 30px 20px;
-			        height: auto; /* Tinggi bebas */
-			        text-align: left; /* Rata Kiri (Kaya Laptop) */
-			    }
-			
-			    /* 4. TEKS MOTIVASI (Diatur biar ga kegedean tapi tetep gaya laptop) */
-			    .hero-content {
-			        padding: 0;
-			        text-align: left; /* Tetap Rata Kiri biar rapi */
-			        padding-left: 10px; /* Geser dikit biar gak nempel pinggir */
-			    }
-			
-			    .hero-quote {
-			        font-size: 1.8rem; /* Ukuran disesuaikan HP */
-			        margin-bottom: 25px;
-			        color: #111; /* Hitam Pekat (Pasti Terbaca) */
-			    }
-			
-			    /* 5. FITUR LIST (Rata Kiri) */
-			    .hero-features {
-			        margin-top: 20px;
-			        padding-left: 0;
-			    }
-			    .hero-features li {
-			        justify-content: flex-start; /* Ikon & Teks Rata Kiri */
-			    }
-			
-			    /* 6. FOOTER (Jarak Aman) */
-			    .dev-footer {
-			        margin-top: 40px;
-			        text-align: center; /* Footer boleh tengah */
-			        font-size: 0.75rem;
-			    }
-			
-			    /* 7. GAMBAR KARTUN (Sembunyiin dulu atau kecilin biar ga menuhin layar) */
-			    /* Opsional: Kalau mau fokus teks kaya laptop, gambar bisa ditaruh bawah atau dihilangkan di HP */
-			    .hero-image-container {
-			        display: none; /* Saran gue: Hide aja di HP biar bersih full teks */
-			        /* Kalau mau tetep ada, hapus baris display:none ini */
-			    }
-			}
+			/* --- 📱 CSS KHUSUS TAMPILAN HP NATIVE (ANDROID/IOS) --- */
+/* Kode ini otomatis jalan di HP biasa (Bukan Mode Desktop) */
+@media (max-width: 992px) {
+    
+    /* 1. BACKGROUND PUTIH SOLID (Wajib! Biar gak nabrak gambar gedung) */
+    #loginOverlay {
+        background: #ffffff !important; /* Paksa Putih Polos */
+        background-image: none !important; /* Buang Gambar Gedung di HP */
+    }
+
+    /* 2. NAVBAR SUSUN BAWAH (Logo Atas, Tombol Bawah) */
+    .landing-nav {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        background-color: #004d00; /* Hijau Tua tetap */
+        width: 100%;
+        height: auto;
+    }
+
+    .nav-brand { 
+        font-size: 1.3rem; 
+        width: 100%; 
+        justify-content: center; /* Logo Rata Tengah */
+    }
+
+    /* Tombol Login Lebar & Jelas */
+    .nav-login-btn {
+        width: 100%; /* Full Lebar Layar */
+        justify-content: center;
+        background: #ffffff;
+        color: #004d00;
+        padding: 12px;
+        margin-top: 5px;
+    }
+    
+    /* Paksa teks tombol muncul */
+    .nav-login-btn span { display: inline-block !important; } 
+
+    /* 3. KONTEN UTAMA (Tumpuk ke Bawah dengan Rapi) */
+    .hero-section {
+        display: flex;
+        flex-direction: column; /* Susun Vertikal */
+        padding: 30px 25px; /* Jarak pinggir pas */
+        width: 100%;
+        height: auto;
+        gap: 30px; /* Jarak antar elemen */
+    }
+
+    /* 4. TULISAN (Dibuat Rata Kiri tapi Rapi) */
+    .hero-content {
+        padding: 0;
+        text-align: left; /* Rata Kiri sesuai request */
+        width: 100%;
+    }
+
+    .hero-quote {
+        font-size: 1.8rem; /* Ukuran font pas di HP */
+        line-height: 1.3;
+        margin-bottom: 20px;
+        color: #000000; /* Hitam pekat di atas putih */
+    }
+
+    /* Fitur List */
+    .hero-features {
+        padding-left: 0;
+    }
+    .hero-features li {
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        justify-content: flex-start; /* Ikon di kiri */
+    }
+
+    /* 5. GAMBAR KARTUN (Opsional: Disembunyikan atau Dikecilkan) */
+    /* Di HP mending fokus teks biar rapi. Kalau mau ada gambar, hapus 'display: none' */
+    .hero-image-container {
+        display: none; 
+    }
+
+    /* 6. FOOTER */
+    .dev-footer {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 0.75rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -1742,6 +1751,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
