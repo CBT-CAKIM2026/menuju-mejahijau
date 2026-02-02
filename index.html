@@ -416,6 +416,9 @@
 			/* 1. IMPORT FONT KEREN (Poppins) */
 			@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 			
+			/* --- FINAL FIX: DARK GREEN THEME & FIT LAYOUT --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
 			#loginOverlay {
 			    /* Background Gedung MA + Kabut Putih Tebal */
 			    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
@@ -429,156 +432,139 @@
 			    width: 100%; height: 100%;
 			    z-index: 9999;
 			    overflow-y: auto;
-			    /* PAKE FONT BARU: Poppins */
+			    overflow-x: hidden; /* Mencegah scroll samping */
 			    font-family: 'Poppins', sans-serif; 
 			    color: #333;
 			    display: block !important;
 			}
 			
-			/* -- NAVBAR ATAS (Lebar & Pojok ke Pojok) -- */
+			/* -- NAVBAR HIJAU (SOLID & FIT) -- */
 			.landing-nav {
 			    display: flex;
-			    justify-content: space-between; /* Kiri & Kanan mentok pojok */
+			    justify-content: space-between;
 			    align-items: center;
-			    padding: 20px 50px; /* Padding gede biar lega */
-			    width: 100%; /* Lebar penuh */
-			    max-width: 100%;
-			    margin: 0;
-			    /* Efek Kaca Tipis tapi Putih */
-			    background: rgba(255, 255, 255, 0.8); 
-			    backdrop-filter: blur(8px);
-			    border-bottom: 1px solid rgba(0,0,0,0.05);
+			    /* PENTING: box-sizing biar padding gak bikin lebar jebol */
+			    box-sizing: border-box; 
+			    padding: 15px 40px; 
+			    width: 100%; 
+			    
+			    /* GANTI JADI HIJAU TUA (Solid) */
+			    background-color: #004d00; 
+			    color: white; /* Teks jadi putih */
+			    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 			}
 			
 			.nav-brand {
-			    font-size: 1.5rem; /* Ukuran pas */
-			    font-weight: 800; /* Tebal banget */
-			    color: #006400; /* Hijau Tua */
-			    letter-spacing: -0.5px; /* Rapat dikit biar modern */
+			    font-size: 1.3rem;
+			    font-weight: 700;
+			    color: #ffffff; /* Putih */
 			    display: flex;
 			    align-items: center;
 			    gap: 10px;
+			    letter-spacing: 0.5px;
 			}
 			
-			/* Tombol Login (Mirip meeting.ai) */
+			/* Tombol Login */
 			.nav-login-btn {
-			    background-color: #2563eb; /* Biru Startup */
-			    color: white;
+			    background-color: #ffffff; /* Tombol Putih */
+			    color: #004d00; /* Teks Hijau */
 			    border: none;
-			    padding: 12px 28px; /* Tombol lebih gendut */
-			    border-radius: 50px; /* Bulet kapsul */
+			    padding: 10px 20px;
+			    border-radius: 6px; /* Kotak rounded dikit (lebih formal) */
 			    font-weight: 600;
-			    font-size: 1rem;
+			    font-size: 0.9rem;
 			    cursor: pointer;
 			    display: flex;
 			    align-items: center;
-			    gap: 12px;
+			    gap: 10px;
 			    transition: all 0.2s;
-			    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 			}
 			
 			.nav-login-btn:hover {
-			    background-color: #1d4ed8;
-			    transform: translateY(-2px);
-			    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+			    background-color: #f0f0f0;
+			    transform: translateY(-1px);
 			}
 			
-			/* -- HERO SECTION (Konten Utama) -- */
+			/* -- HERO SECTION -- */
 			.hero-section {
 			    display: grid;
-			    grid-template-columns: 1.1fr 0.9fr; /* Kiri lebih lebar dikit */
-			    gap: 20px;
-			    padding: 40px 60px; /* Padding kiri-kanan */
-			    max-width: 1400px; /* Batas lebar konten */
+			    grid-template-columns: 1.2fr 0.8fr; /* Kiri Teks, Kanan Gambar */
+			    gap: 40px;
+			    padding: 40px 60px;
+			    max-width: 1300px;
 			    margin: 0 auto;
 			    align-items: center;
-			    min-height: 85vh; /* Tinggi pas layar laptop */
+			    min-height: 80vh;
+			    box-sizing: border-box; /* Biar padding aman */
 			}
 			
-			/* Bagian Teks (Geser Kiri) */
-			.hero-content { 
-			    padding-right: 20px; 
-			    padding-left: 0; /* Pastikan mepet kiri grid */
-			    text-align: left; /* Paksa rata kiri */
-			}
+			/* Teks Kiri */
+			.hero-content { text-align: left; }
 			
 			.hero-quote {
-			    font-size: 3.2rem; /* Font Judul GEDE */
-			    font-weight: 800; /* Extra Bold */
-			    line-height: 1.15;
-			    margin-bottom: 30px;
+			    font-size: 3rem;
+			    font-weight: 800;
+			    line-height: 1.2;
+			    margin-bottom: 25px;
 			    color: #111;
-			    letter-spacing: -1px;
 			}
-			/* Warna Hijau untuk kata kunci */
-			.highlight-text { color: #006400; } 
+			.highlight-text { color: #006400; } /* Hijau buat teks penting */
 			
+			/* Fitur Unggulan (List) */
 			.hero-features {
 			    list-style: none;
 			    padding: 0;
 			    margin: 0 0 40px 0;
 			}
 			.hero-features li {
-			    font-size: 1.1rem;
-			    color: #555;
-			    margin-bottom: 18px;
+			    font-size: 1rem;
+			    color: #444;
+			    margin-bottom: 12px;
 			    display: flex;
-			    align-items: flex-start;
-			    gap: 15px;
+			    align-items: center; /* Ikon & Teks sejajar tengah */
+			    gap: 12px;
 			    font-weight: 500;
 			}
-			.feature-icon { 
-			    color: #2563eb; 
-			    font-size: 1.3rem; 
-			    margin-top: 2px;
-			}
+			.feature-icon { color: #006400; font-size: 1.1rem; width: 20px; text-align: center; }
 			
-			/* Footer Developer */
+			/* Footer Developer (Format Lama) */
 			.dev-footer {
-			    font-size: 0.9rem;
-			    color: #888;
-			    font-weight: 500;
-			    display: flex;
-			    align-items: center;
-			    gap: 10px;
-			}
-			.dev-badge {
-			    background: #e6f4ea; /* Hijau muda */
-			    color: #006400;
-			    padding: 5px 10px;
-			    border-radius: 8px;
-			    font-size: 0.8rem;
-			    font-weight: 700;
+			    font-size: 0.85rem;
+			    color: #666;
+			    margin-top: 30px;
+			    padding-top: 20px;
+			    border-top: 1px solid #ddd;
+			    font-weight: 600;
 			}
 			
-			/* Bagian Gambar Kanan */
+			/* Gambar Kanan */
 			.hero-image-container {
 			    display: flex;
-			    justify-content: flex-end; /* Gambar mepet kanan */
+			    justify-content: center;
 			    align-items: center;
 			}
-			
 			.hero-illustration {
 			    width: 100%;
-			    max-width: 600px; /* Gambar agak gede */
+			    max-width: 450px; /* Dibatasi biar gak kegedean */
 			    height: auto;
-			    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15)); /* Bayangan biar pop-up */
+			    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
 			}
 			
-			/* -- RESPONSIF HP -- */
+			/* RESPONSIF HP */
 			@media (max-width: 992px) {
-			    .landing-nav { padding: 15px 20px; }
-			    .nav-brand { font-size: 1.2rem; }
-			    .nav-login-btn { padding: 8px 16px; font-size: 0.9rem; }
+			    .landing-nav { padding: 15px 20px; flex-direction: row; }
+			    .nav-brand { font-size: 1rem; }
+			    .nav-login-btn span { display: none; } /* Sembunyiin teks 'Login' di HP kecil */
 			    
 			    .hero-section { 
 			        grid-template-columns: 1fr; /* Tumpuk 1 kolom */
-			        padding: 30px 25px;
-			        text-align: center; /* Di HP rata tengah aja biar rapi */
+			        padding: 30px 20px;
+			        text-align: center; 
 			    }
-			    .hero-content { padding: 0; order: 1; text-align: left; }
-			    .hero-quote { font-size: 2.2rem; }
-			    .hero-image-container { order: 2; margin-top: 20px; justify-content: center; }
+			    .hero-content { text-align: center; order: 2; }
+			    .hero-features li { justify-content: center; text-align: left; }
+			    .hero-image-container { order: 1; margin-bottom: 20px; }
+			    .hero-quote { font-size: 2rem; }
 			}
 		}
     </style>
@@ -603,7 +589,7 @@
         </div>
         
         <button class="nav-login-btn" onclick="handleLogin()">
-            <img src="https://img.icons8.com/color/48/000000/google-logo.png" width="22" height="22" alt="G">
+            <img src="https://img.icons8.com/color/48/google-logo.png" width="20" height="20" alt="G">
             <span>Masuk dengan Google</span>
         </button>
     </nav>
@@ -620,28 +606,31 @@
             <ul class="hero-features">
                 <li>
                     <i class="fas fa-database feature-icon"></i>
-                    <div>Database Soal Terlengkap Standar MA</div>
+                    <span>Database Soal Terlengkap Standar MA</span>
                 </li>
                 <li>
                     <i class="fas fa-chart-line feature-icon"></i>
-                    <div>Analisis & Peringkat Real-time</div>
+                    <span>Analisis & Peringkat Real-time</span>
                 </li>
                 <li>
                     <i class="fas fa-gavel feature-icon"></i>
-                    <div>Pembahasan Hukum Mendalam</div>
+                    <span>Pembahasan Hukum Mendalam</span>
+                </li>
+                <li>
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <span>Akses Fleksibel (HP & Laptop)</span>
                 </li>
             </ul>
 
-            <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-bottom: 30px;"></div>
+            <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-bottom: 20px;"></div>
 
             <div class="dev-footer">
-                <span class="dev-badge">APP 2023</span>
-                <span>Developed by <b>Ilham Nur Pratama</b> - PA SERANG</span>
+                Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
             </div>
         </div>
 
         <div class="hero-image-container">
-            <img src="https://cdni.iconscout.com/illustration/premium/thumb/lawyer-giving-legal-advice-2975988-2478335.png" 
+            <img src="https://cdn-icons-png.flaticon.com/512/3125/3125856.png" 
                  alt="Ilustrasi Hakim" 
                  class="hero-illustration">
         </div>
@@ -1747,6 +1736,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
