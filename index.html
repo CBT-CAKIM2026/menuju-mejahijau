@@ -411,7 +411,7 @@
                 gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
             }
 			
-			/* --- RESTORED LOOK (MATCHING SCREENSHOT) --- */
+			/* --- RESTORED LOOK (WITH USER CUSTOMIZATION + HP FIX) --- */
 			@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 			
 			#loginOverlay {
@@ -445,6 +445,8 @@
 			    background-color: #004d00; /* Hijau Tua Solid */
 			    color: white;
 			    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+			    /* Biar navbar nempel diatas pas scroll di HP */
+			    position: sticky; top: 0; z-index: 100; 
 			}
 			
 			.nav-brand {
@@ -484,7 +486,7 @@
 			/* Teks Kiri */
 			.hero-content { text-align: left; }
 			.hero-quote {
-			    font-size: 2.5rem; font-weight: 750; line-height: 1.2; margin-bottom: 25px; color: #111;
+			    font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 25px; color: #111;
 			}
 			.highlight-text { color: #006400; }
 			
@@ -510,21 +512,53 @@
 			    height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
 			}
 			
-			/* RESPONSIF HP (Basic agar tidak hancur di HP) */
+			/* --- 🔥 BAGIAN INI YANG GUE UBAH BIAR HP RAPI 🔥 --- */
 			@media (max-width: 992px) {
-			    .landing-nav { padding: 15px 20px; }
-			    .nav-brand { font-size: 1.1rem; }
-			    /* Di HP teks login disembunyikan biar muat */
-			    .nav-login-btn span { display: none; } 
-			    
-			    .hero-section { 
-			        grid-template-columns: 1fr; /* Tumpuk 1 kolom */
-			        padding: 30px 20px; text-align: center; 
+			    /* 1. Paksa Background Putih di HP (Biar teks kebaca jelas) */
+			    #loginOverlay {
+			        background: #ffffff !important;
 			    }
-			    .hero-content { order: 2; } /* Teks di bawah */
-			    .hero-image-container { order: 1; margin-bottom: 20px; } /* Gambar di atas */
+			
+			    /* 2. Navbar Susun ke Bawah */
+			    .landing-nav {
+			        padding: 15px 20px;
+			        flex-direction: column; /* Atas Bawah */
+			        gap: 15px;
+			        text-align: center;
+			    }
+			    
+			    .nav-brand { font-size: 1.3rem; } /* Font nama agak kecilin dikit biar muat */
+			
+			    /* 3. Tombol Login Full Width & Teks Muncul */
+			    .nav-login-btn {
+			        width: 100%; /* Lebar Penuh */
+			        justify-content: center;
+			        background: #e0f2f1; /* Hijau muda dikit biar beda sama background putih */
+			        padding: 12px;
+			    }
+			    .nav-login-btn span { display: inline !important; } /* PAKSA MUNCULIN TEKS */
+			    
+			    /* 4. Layout Konten Tumpuk */
+			    .hero-section {
+			        display: flex; /* Ganti Grid jadi Flex biar gampang diatur */
+			        flex-direction: column-reverse; /* Gambar di Atas, Teks di Bawah */
+			        padding: 30px 20px;
+			        text-align: center;
+			        gap: 30px;
+			    }
+			    
+			    .hero-content { padding: 0; }
 			    .hero-quote { font-size: 2rem; }
-			    .hero-features li { justify-content: center; }
+			    .hero-features li { justify-content: center; text-align: left; }
+			    
+			    /* 5. Gambar Rapih di Tengah */
+			    .hero-image-container { 
+			        margin-bottom: 20px; 
+			        width: 80%;
+			        margin: 0 auto;
+			    }
+			    
+			    .dev-footer { text-align: center; }
 			}
 		}
     </style>
@@ -1680,6 +1714,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
