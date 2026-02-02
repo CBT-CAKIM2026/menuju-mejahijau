@@ -6,6 +6,7 @@
     <title>SIMULASI CBT CAKIM PA</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
         :root {
@@ -410,117 +411,146 @@
                 gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
             }
 			
-			/* --- LOGIN PAGE FINAL (Gedung MA + White Mist Effect) --- */
-			#loginOverlay {
-			    /* RUMUSNYA: Lapisan Putih 85% ditumpuk di atas Gambar Gedung */
-			    background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
-			                url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
-			    background-size: cover;
-			    background-position: center;
-			    background-attachment: fixed; /* Biar gambar anteng pas discroll (di HP) */
-			    
-			    display: flex;
-			    position: fixed;
-			    top: 0; left: 0;
-			    width: 100%; height: 100%;
-			    justify-content: center; align-items: center;
-			    z-index: 9999;
-			    backdrop-filter: blur(2px); /* Blur halus tambahan */
-			}
-			
-			.login-card {
-			    background: #ffffff;
-			    padding: 40px 30px;
-			    border-radius: 16px;
-			    /* Shadow dipertebal biar kartu 'ngangkat' dari background */
-			    box-shadow: 0 20px 60px rgba(0, 50, 0, 0.15); 
-			    text-align: center;
-			    width: 90%;
-			    max-width: 420px;
-			    border-top: 5px solid #D4AF37; /* Emas */
-			    position: relative;
-			    animation: slideUp 0.8s ease-out;
-			    border-bottom: 5px solid #006400; /* Hijau di bawah biar imbang */
-			}
-			
-			.logos-container {
-			    display: flex;
-			    justify-content: center;
-			    align-items: center;
-			    gap: 20px;
-			    margin-bottom: 25px;
-			}
-			
-			.login-logo {
-			    height: 75px; 
-			    width: auto;
-			    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* Bayangan logo */
-			    transition: transform 0.3s;
-			}
-			.login-logo:hover { transform: scale(1.1); }
-			
-			.login-title {
-			    font-family: 'Georgia', serif; 
-			    font-weight: 700;
-			    color: #004d00; /* Hijau Gelap Wibawa */
-			    margin: 0;
-			    font-size: 1.6rem;
-			    letter-spacing: 0.5px;
-			}
-			
-			.login-subtitle {
-			    color: #b8860b; /* Dark Goldenrod (Emas Tua) */
-			    font-weight: 600;
-			    font-size: 0.95rem;
-			    margin-top: 5px;
-			    margin-bottom: 30px;
-			    text-transform: uppercase;
-			    letter-spacing: 1px;
-			}
-			
-			.google-btn-custom {
-			    background: white;
-			    color: #333;
-			    border: 2px solid #e0e0e0;
-			    padding: 12px 20px;
-			    border-radius: 50px;
-			    font-weight: 600;
-			    font-size: 0.95rem;
-			    cursor: pointer;
-			    display: flex;
-			    align-items: center;
-			    justify-content: center;
-			    gap: 12px;
-			    transition: all 0.3s;
-			    width: 100%;
-			    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-			}
-			
-			.google-btn-custom:hover {
-			    background: #f4fff4; 
-			    border-color: #006400; 
-			    color: #006400;
-			    transform: translateY(-2px);
-			    box-shadow: 0 5px 15px rgba(0, 100, 0, 0.15);
-			}
-			
-			.login-footer {
-			    margin-top: 25px;
-			    font-size: 0.75rem;
-			    color: #888;
-			    border-top: 1px dashed #ccc;
-			    padding-top: 15px;
-			}
-			.login-footer span { color: #006400; font-weight: bold; }
-			
-			/* RESPONSIF HP */
-			@media (max-width: 768px) {
-			    .login-card { padding: 30px 20px; width: 85%; }
-			    .login-logo { height: 60px; } /* Logo ngecil dikit di HP */
-			    .login-title { font-size: 1.3rem; }
-			}
-			
-			@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+					/* --- NEW LANDING PAGE STYLE (Referencing meeting.ai) --- */
+		/* Reset style overlay lama */
+		#loginOverlay {
+		    background-color: #ffffff; /* Background Putih Bersih */
+		    /* Tidak pakai gambar background lagi */
+		    position: fixed;
+		    top: 0; left: 0;
+		    width: 100%; height: 100%;
+		    z-index: 9999;
+		    overflow-y: auto; /* Biar bisa discroll kalau konten panjang di HP kecil */
+		    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* Font modern */
+		    color: #333;
+		}
+		
+		/* -- NAVBAR ATAS -- */
+		.landing-nav {
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    padding: 20px 40px;
+		    max-width: 1200px;
+		    margin: 0 auto;
+		    background: white;
+		}
+		
+		.nav-brand {
+		    font-size: 1.5rem;
+		    font-weight: 800;
+		    color: #006400; /* Hijau Tua Pengadilan */
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		}
+		
+		/* Tombol Login Biru di Kanan Atas */
+		.nav-login-btn {
+		    background-color: #2563eb; /* Warna Biru meeting.ai */
+		    color: white;
+		    border: none;
+		    padding: 12px 24px;
+		    border-radius: 8px;
+		    font-weight: 600;
+		    font-size: 0.95rem;
+		    cursor: pointer;
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		    transition: background-color 0.3s, transform 0.2s;
+		    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+		}
+		
+		.nav-login-btn:hover {
+		    background-color: #1d4ed8; /* Biru lebih gelap pas hover */
+		    transform: translateY(-2px);
+		}
+		
+		/* -- HERO SECTION (Konten Utama) -- */
+		.hero-section {
+		    display: grid;
+		    grid-template-columns: 1fr 1fr; /* Desktop: 2 Kolom (Kiri Teks, Kanan Gambar) */
+		    gap: 40px;
+		    padding: 60px 40px;
+		    max-width: 1200px;
+		    margin: 0 auto;
+		    align-items: center;
+		    min-height: 80vh; /* Biar menuhin layar */
+		}
+		
+		/* Bagian Teks Kiri */
+		.hero-content { padding-right: 20px; }
+		
+		.hero-quote {
+		    font-size: 2.8rem;
+		    font-weight: 800;
+		    line-height: 1.2;
+		    margin-bottom: 25px;
+		    color: #111;
+		    background: linear-gradient(to right, #006400, #2563eb); /* Gradasi Hijau ke Biru */
+		    -webkit-background-clip: text;
+		    -webkit-text-fill-color: transparent;
+		}
+		
+		.hero-features {
+		    list-style: none;
+		    padding: 0;
+		    margin: 0;
+		}
+		
+		.hero-features li {
+		    font-size: 1.1rem;
+		    color: #555;
+		    margin-bottom: 15px;
+		    display: flex;
+		    align-items: flex-start;
+		    gap: 12px;
+		}
+		.feature-icon { color: #2563eb; font-size: 1.2rem; flex-shrink: 0; }
+		.feature-title { font-weight: 700; color: #333; display: block; margin-bottom: 4px; }
+		
+		/* Bagian Gambar Kanan */
+		.hero-image-container {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		}
+		.hero-illustration {
+		    width: 100%;
+		    max-width: 550px;
+		    height: auto;
+		    /* Efek bayangan halus di bawah gambar */
+		    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+		    animation: floatImage 3s ease-in-out infinite alternate;
+		}
+		
+		@keyframes floatImage {
+		    from { transform: translateY(0); }
+		    to { transform: translateY(-15px); }
+		}
+		
+		/* -- RESPONSIF HP (PENTING!) -- */
+		@media (max-width: 992px) {
+		    .landing-nav { padding: 20px; }
+		    .nav-brand { font-size: 1.2rem; }
+		    .nav-login-btn { padding: 10px 16px; font-size: 0.9rem; }
+		    .nav-login-btn span { display: none; } /* Sembunyikan teks 'Google' di HP kecil biar muat */
+		
+		    .hero-section {
+		        grid-template-columns: 1fr; /* Ubah jadi 1 Kolom tumpuk ke bawah */
+		        padding: 40px 20px;
+		        text-align: center; /* Teks jadi rata tengah di HP */
+		        gap: 30px;
+		    }
+		    .hero-content { padding-right: 0; order: 1; } /* Teks di atas */
+		    .hero-image-container { order: 2; margin-top: 20px; } /* Gambar di bawah */
+		    
+		    .hero-quote { font-size: 2rem; }
+		    .hero-features li { justify-content: center; text-align: left; } /* List tetap rata kiri tapi di tengah container */
+		    .hero-illustration { max-width: 80%; }
+		}
+	}
     </style>
 </head>
 <body>
@@ -536,28 +566,60 @@
     </button>
 
 <div id="loginOverlay">
-    <div class="login-card">
-        
-		<div class="logos-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Logo_Mahkamah_Agung_RI.png" alt="Logo MA" class="login-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Lambang_Pengadilan_Agama.png" alt="Logo PA" class="login-logo">
+    <nav class="landing-nav">
+        <div class="nav-brand">
+            ⚖️ CBT CAKIM PA 2026
         </div>
-        
-        <h2 class="login-title">CBT CALON HAKIM</h2>
-        <p class="login-subtitle">Pengadilan Agama Serang 2026</p>
-        
-        <button class="google-btn-custom" onclick="handleLogin()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="24" alt="G">
-            Masuk dengan Akun Google
+        <button class="nav-login-btn" onclick="handleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="G" style="background:white; border-radius:50%; padding:2px;">
+            <span>Login Google</span>
         </button>
+    </nav>
 
-        <div id="loginError" style="color: #c0392b; font-size: 0.8rem; margin-top: 10px;"></div>
+    <section class="hero-section">
+        
+        <div class="hero-content">
+            <h1 class="hero-quote">
+                "Belajar Hari Ini, Dipercaya Esok Hari. Ilmu Mengangkat Derajat, Integritas Menjaga Kehormatan."
+            </h1>
+            
+            <ul class="hero-features">
+                <li>
+                    <i class="fas fa-database feature-icon"></i> <div>
+                        <span class="feature-title">Database Soal Terlengkap</span>
+                        Ribuan soal latihan terupdate standar Mahkamah Agung.
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <div>
+                        <span class="feature-title">Analisis & Peringkat Real-time</span>
+                        Pantau progres belajarmu dan bandingkan dengan pesaing lain.
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-book-open feature-icon"></i>
+                    <div>
+                        <span class="feature-title">Pembahasan Mendalam</span>
+                        Pahami kunci jawaban dengan penjelasan dasar hukum yang jelas.
+                    </div>
+                </li>
+                 <li>
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <div>
+                        <span class="feature-title">Akses Fleksibel (Mobile Friendly)</span>
+                        Belajar kapan saja dan di mana saja, dioptimalkan untuk HP.
+                    </div>
+                </li>
+            </ul>
 
-        <div class="login-footer">
-            Developed by <span>Ilham Nur Pratama - APP 2023 - PA SERANG</span><br>
-            Menuju Peradilan Agama yang Agung
+             <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-top: 20px; font-weight: 500;"></div>
         </div>
-    </div>
+
+        <div class="hero-image-container">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/online-study-4439183-3687210.png" alt="Ilustrasi CBT Cakim" class="hero-illustration">
+        </div>
+    </section>
 </div>
 
     <div id="appSection" style="display:none;">
@@ -1659,6 +1721,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
