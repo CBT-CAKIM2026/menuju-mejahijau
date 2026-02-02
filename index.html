@@ -913,6 +913,77 @@ window.switchDatabase = async function(key) {
             alert("Gagal memuat soal: " + e.message);
         }
     };
+
+	// ==========================================
+    // 🛠️ ALAT BANTU REVISI MASSAL (ADMIN ONLY)
+    // ==========================================
+
+    // 1. FITUR DOWNLOAD SOAL (Buat diambil teks-nya)
+    window.downloadSoal = async function(modulKey) {
+        console.log(`Sedang mendownload soal ${modulKey}...`);
+        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
+        const snapshot = await getDocs(qRef);
+        
+        let dataSoal = [];
+        snapshot.forEach(doc => {
+            // Kita cuma ambil data penting, ID gak usah karena nanti digenerate ulang
+            const d = doc.data();
+            dataSoal.push({
+                q: d.q,
+                options: d.options,
+                answer: d.answer,
+                explanation: d.explanation,
+                cite: d.cite
+            });
+        });
+
+        // Tampilkan di Console biar bisa dicopy
+        console.log("✅ COPY TEKS DI BAWAH INI KE NOTEPAD:");
+        console.log(JSON.stringify(dataSoal, null, 2)); 
+        return dataSoal;
+    };
+
+    // 2. FITUR TIMPA/UPDATE SATU MODUL (Hapus Lama -> Masukin Baru)
+    window.timpaModul = async function(modulKey, dataBaruJson) {
+        if(!confirm(`⚠️ BAHAYA: Ini akan MENGHAPUS semua soal lama di ${modulKey} dan menggantinya dengan data baru. Yakin?`)) return;
+
+        console.log("🔥 Mulai proses penghapusan data lama...");
+        
+        // A. Hapus Soal Lama Dulu
+        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
+        const snapshot = await getDocs(qRef);
+        const batchDelete = writeBatch(db);
+        
+        snapshot.forEach(doc => {
+            batchDelete.delete(doc.ref);
+        });
+        await batchDelete.commit();
+        console.log("🗑️ Data lama terhapus.");
+
+        // B. Upload Data Baru
+        console.log("🚀 Mengupload data revisi...");
+        // Pecah batch kayak dulu biar aman
+        const chunks = [];
+        let currentBatch = writeBatch(db);
+        let count = 0;
+
+        for (const soal of dataBaruJson) {
+            const newDocRef = doc(collection(db, "bank_soal", modulKey, "daftar_soal"));
+            currentBatch.set(newDocRef, soal);
+            count++;
+            if (count >= 490) {
+                chunks.push(currentBatch);
+                currentBatch = writeBatch(db);
+                count = 0;
+            }
+        }
+        if (count > 0) chunks.push(currentBatch);
+
+        for (let batch of chunks) await batch.commit();
+        
+        alert("✅ SUKSES! Modul berhasil direvisi total.");
+        location.reload(); // Refresh biar kelihatan hasilnya
+    };
 	
     function startTimer() {
         timerInterval = setInterval(() => {
@@ -1471,6 +1542,7 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
+
 
 
 
