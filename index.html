@@ -471,46 +471,80 @@
 			.nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 			
 			/* -- HERO SECTION (GRID LAYOUT LAPTOP) -- */
-			.hero-section {
-			    display: grid;
-			    grid-template-columns: 0.9fr 0.9fr; /* Kiri Teks, Kanan Gambar */
-			    gap: 40px;
-			    padding: 60px 60px;
-			    max-width: 1300px;
-			    margin: 0 auto;
-			    align-items: center;
-			    min-height: 80vh;
-			    box-sizing: border-box;
-			}
+			        .hero-section {
+			            display: grid;
+			            grid-template-columns: 1.1fr 0.9fr; /* Kolom Kiri lebih lebar dikit */
+			            gap: 20px;
+			            padding: 40px 60px 10px 60px; /* Padding bawah dikecilin biar mepet garis */
+			            max-width: 1300px;
+			            margin: 0 auto;
+			            min-height: 80vh; /* Tinggi minimum biar lega */
+			            box-sizing: border-box;
+			            position: relative;
+			        }
 			
-			/* Teks Kiri */
-			.hero-content { text-align: left; }
-			.hero-quote {
-			    font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111;
-			}
-			.highlight-text { color: #006400; }
+			        /* Teks Kiri - Posisi Sentral Tengah */
+			        .hero-left {
+			            display: flex;
+			            flex-direction: column;
+			            justify-content: center; /* Vertikal Tengah */
+			            padding-right: 20px;
+			            margin-left: -20px; /* REQUEST: Sedikit ke kiri */
+			        }
 			
-			/* Fitur List */
-			.hero-features { list-style: none; padding: 0; margin: 0 0 40px 0; }
-			.hero-features li {
-			    font-size: 1rem; color: #444; margin-bottom: 15px;
-			    display: flex; align-items: center; gap: 50px; font-weight: 500;
-			}
-			.feature-icon { color: #006400; font-size: 1.1rem; width: 20px; text-align: center; }
+			        .hero-quote {
+			            font-size: 2.8rem; /* Gedein dikit biar gagah */
+			            font-weight: 800;
+			            line-height: 1.2;
+			            margin-bottom: 10px;
+			            color: #111;
+			        }
+			        .highlight-text { color: #006400; }
 			
-			.dev-footer {
-			    font-size: 0.85rem; color: #666; margin-top: 30px; 
-			    padding-top: 20px; border-top: 1px solid #ddd; font-weight: 600;
-			}
+			        /* Area Kanan - Buat List Fitur */
+			        .hero-right {
+			            display: flex;
+			            flex-direction: column;
+			            justify-content: flex-end; /* REQUEST: Taro dibawah (Dempet garis) */
+			            align-items: flex-start;   /* Rata kiri di dalam kolom kanan */
+			            padding-bottom: 20px;      /* Jarak dikit dari garis footer */
+			            padding-left: 40px;        /* Biar gak nempel sama teks kiri */
+			        }
 			
-			/* Gambar Kanan */
-			.hero-image-container {
-			    display: flex; justify-content: center; align-items: center;
-			}
-			.hero-illustration {
-			    width: 100%; max-width: 500px; /* Ukuran pas di laptop */
-			    height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
-			}
+			        /* Fitur List */
+			        .hero-features { 
+			            list-style: none; 
+			            padding: 0; 
+			            margin: 0; 
+			        }
+			
+			        .hero-features li {
+			            font-size: 1rem; 
+			            color: #444; 
+			            margin-bottom: 10px; /* Jarak antar baris dirapetin */
+			            display: flex; 
+			            align-items: center; 
+			            gap: 15px; /* REQUEST: Jangan ada spasi lebar (sebelumnya 50px) */
+			            font-weight: 500;
+			        }
+			        
+			        .feature-icon { 
+			            color: #006400; 
+			            font-size: 1.1rem; 
+			            width: 20px; 
+			            text-align: center; 
+			        }
+			
+			        /* Footer Garis Bawah */
+			        .dev-footer {
+			            grid-column: 1 / -1; /* Footer memanjang full dari kiri ke kanan */
+			            font-size: 0.85rem; 
+			            color: #666; 
+			            margin-top: 10px; 
+			            padding-top: 20px; 
+			            border-top: 1px solid #ddd; /* Ini Garisnya */
+			            font-weight: 600;
+			        }
 			
 				/* --- 📱 CSS KHUSUS HP: MODE KARTU SIMPEL --- */
 				@media (max-width: 992px) {
@@ -607,32 +641,33 @@
         </button>
     </nav>
 
-    <section class="hero-section">
+   <section class="hero-section">
         
-       <h1 class="hero-quote">
+        <div class="hero-left">
+            <h1 class="hero-quote">
                 Belajar Hari Ini,<br>
                 <span class="highlight-text">Dipercaya Esok Hari.</span><br>
                 Ilmu Mengangkat Derajat,<br>
                 <span class="highlight-text">Integritas Menjaga Kehormatan.</span>
             </h1>
-            
+        </div>
+
+        <div class="hero-right">
             <ul class="hero-features">
                 <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap</span></li>
                 <li><i class="fas fa-chart-line feature-icon"></i> <span>Analisis & Peringkat Real-time</span></li>
                 <li><i class="fas fa-gavel feature-icon"></i> <span>Pembahasan Hukum Mendalam</span></li>
                 <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
             </ul>
-
-            <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-bottom: 20px;"></div>
-
-            <div class="dev-footer">
-                Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
-            </div>
         </div>
-		
+
+        <div id="loginError" style="color: #c0392b; font-size: 0.9rem; position:absolute; top:80px; right:60px;"></div>
+
+        <div class="dev-footer">
+            Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
         </div>
+
     </section>
-</div>
 	
     <div id="appSection" style="display:none;">
         <div class="watermark" id="watermark">By: Ilham Nur Pratama - APP 23 - PA Serang</div>
