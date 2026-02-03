@@ -39,37 +39,32 @@
         }
 
         /* =========================================
-           LOGIN SCREEN (NEW DESIGN - PROFESSIONAL)
+           LOGIN SCREEN
            ========================================= */
-        
-        /* 1. SETUP BACKGROUND LOGIN (FULL SCREEN) */
         #loginOverlay {
-            /* Background Gedung MA + Overlay Putih Transparan */
             background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
                         url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 9999;
             overflow-y: auto;
             overflow-x: hidden;
-            font-family: 'Poppins', sans-serif; /* Font baru biar fresh */
+            font-family: 'Poppins', sans-serif;
             color: #333;
             display: block !important; 
         }
 
-        /* 2. NAVBAR (HEADER HIJAU) */
         .landing-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px; 
             width: 100%; 
-            background-color: #004d00; /* Hijau Mahkamah Agung */
+            background-color: #004d00;
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: sticky; top: 0; z-index: 100; 
@@ -96,10 +91,9 @@
         }
         .nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 
-        /* 3. HERO SECTION (LAYOUT UTAMA DESKTOP) */
         .hero-section {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Kiri lebih lebar */
+            grid-template-columns: 1.2fr 0.8fr;
             padding: 40px 60px 10px 60px;
             max-width: 1300px;
             margin: 0 auto;
@@ -108,13 +102,12 @@
             position: relative;
         }
 
-        /* Area Kiri: Teks Motivasi */
         .hero-left {
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding-right: 20px;
-            margin-left: -40px; /* Geser kiri dikit biar estetik */
+            margin-left: -40px;
         }
 
         .hero-quote {
@@ -126,11 +119,10 @@
         }
         .highlight-text { color: #006400; }
 
-        /* Area Kanan: Fitur (Mepet Bawah) */
         .hero-right {
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Taruh di bawah */
+            justify-content: flex-end;
             align-items: flex-start;
             padding-bottom: 25px;
             padding-left: 20px;
@@ -142,12 +134,11 @@
             color: #444; 
             margin-bottom: 8px;
             display: flex; align-items: center; 
-            gap: 15px; /* Jarak Icon ke Teks Rapat */
+            gap: 15px;
             font-weight: 600;
         }
         .feature-icon { color: #006400; font-size: 1.1rem; width: 25px; text-align: center; }
 
-        /* Footer Copyright */
         .dev-footer {
             grid-column: 1 / -1;
             font-size: 0.85rem; 
@@ -158,18 +149,12 @@
             font-weight: 600;
         }
 
-        /* --- CSS KHUSUS LOGIN HP (TAMPILAN PROFESIONAL) --- */
         @media (max-width: 992px) {
-            /* Navbar HP: Tetap di Atas, Hijau */
-            .landing-nav {
-                padding: 15px 20px;
-                gap: 10px;
-            }
+            .landing-nav { padding: 15px 20px; gap: 10px; }
             .nav-brand { font-size: 1rem; }
             .nav-login-btn { padding: 8px 12px; font-size: 0.85rem; }
             .nav-login-btn span { display: inline-block; } 
 
-            /* Hero Section HP: Tumpuk Atas-Bawah */
             .hero-section {
                 display: flex;
                 flex-direction: column;
@@ -197,22 +182,14 @@
                 width: 100%;
                 justify-content: flex-start;
             }
-            
             .dev-footer { text-align: center; margin-top: 20px; }
         }
 
         /* =========================================
-           APP CONTAINER & LOGIC STYLES (ORIGINAL)
+           APP STYLES
            ========================================= */
+        #appSection { display: none; width: 100%; height: 100%; display: flex; }
 
-        #appSection {
-            display: none;
-            width: 100%;
-            height: 100%;
-            display: flex;
-        }
-
-        /* --- SIDEBAR KIRI (MODUL) --- */
         .sidebar-left {
             width: 280px;
             background-color: white;
@@ -224,8 +201,6 @@
             z-index: 10;
             transition: margin-left 0.3s ease;
         }
-
-        /* MODE FOKUS DESKTOP (Sidebar Kiri Ngumpet) */
         body.mode-focus .sidebar-left { margin-left: -280px; }
         body.mode-focus #floatingTimer { display: block !important; }
 
@@ -242,7 +217,6 @@
         }
         .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
 
-        /* TIMER DI SIDEBAR (MUNCUL DI DESKTOP) */
         .timer-container {
             background: rgba(0,0,0,0.2);
             padding: 10px; margin-top: 15px; border-radius: 5px;
@@ -250,15 +224,12 @@
             border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
             display: block; 
         }
-        
         .timer-green { background-color: #27ae60 !important; color: white !important; border-color: #2ecc71 !important; }
         .timer-yellow { background-color: #f39c12 !important; color: black !important; border-color: #f1c40f !important; }
         .timer-panic { background-color: #c0392b !important; color: white !important; border-color: #e74c3c !important; animation: panicPulse 0.5s infinite alternate; }
         @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
 
-        .modul-selector {
-            flex: 1; padding: 10px; background: #f8f9fa; overflow-y: auto;
-        }
+        .modul-selector { flex: 1; padding: 10px; background: #f8f9fa; overflow-y: auto; }
 
         .modul-btn {
             display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
@@ -269,7 +240,6 @@
         .modul-btn:hover { background: var(--light); transform: translateX(2px); }
         .modul-btn.active-modul { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
             overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease;
@@ -281,7 +251,6 @@
             margin: 0 auto; width: 100%; margin-bottom: 50px;
         }
 
-        /* --- SIDEBAR KANAN --- */
         .sidebar-right {
             width: 300px; background-color: white; border-left: 1px solid #ddd;
             display: flex; flex-direction: column; height: 100vh;
@@ -308,13 +277,8 @@
             background: #f9f9f9; border-bottom: 1px solid #eee;
         }
 
-        .nav-container {
-            flex: 1; overflow-y: auto; padding: 15px; background: white;
-        }
-
-        .nav-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
-        }
+        .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
         .nav-btn {
             aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
@@ -328,11 +292,8 @@
         .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
         .nav-btn.ragu { background-color: #f1c40f !important; color: black !important; border-color: #f39c12 !important; }
 
-        .finish-container {
-            padding: 20px; border-top: 1px solid #eee; background: #f9f9f9;
-        }
+        .finish-container { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
 
-        /* --- QUESTION STYLES --- */
         .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light); padding-bottom: 15px; }
         .question-text { font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6; font-weight: 500; color: #2c3e50; }
         
@@ -363,7 +324,6 @@
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
         }
 
-        /* --- POPUPS (Z-INDEX SUPER TINGGI 20000) --- */
         .result-overlay { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: rgba(0,0,0,0.85); display: none; 
@@ -390,7 +350,6 @@
         .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        /* Timer Melayang (Default Desktop) */
         #floatingTimer {
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
@@ -398,83 +357,40 @@
             color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
         }
         
-        /* =========================================
-           RESPONSIVE MOBILE (TAMPILAN HP) - FIX LENGKAP
-           ========================================= */
         @media (max-width: 768px) {
-            body { 
-                padding-bottom: 60px; 
-                flex-direction: column; 
-                overflow-y: auto; 
-            }
+            body { padding-bottom: 60px; flex-direction: column; overflow-y: auto; }
 
-            /* --- 1. LOGIC APLIKASI (SIDEBAR & NAVIGASI) --- */
-            /* Sidebar Kiri Full Layar */
             .sidebar-left {
-                width: 100% !important;
-                height: 100vh !important;
-                border-right: none;
-                z-index: 100;
-                position: fixed;
-                top: 0; left: 0;
+                width: 100% !important; height: 100vh !important; border-right: none;
+                z-index: 100; position: fixed; top: 0; left: 0;
             }
             .sidebar-left .timer-container { display: none !important; }
-            
-            /* Pilihan Modul Full Layar */
-            .modul-selector { 
-                max-height: none !important; 
-                height: calc(100% - 80px);
-                overflow-y: auto;
-            }
-
-            .main-content {
-                width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1;
-            }
-
-            /* Sidebar Kanan (Soal) */
+            .modul-selector { max-height: none !important; height: calc(100% - 80px); overflow-y: auto; }
+            .main-content { width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1; }
             .sidebar-right { display: none; }
             .sidebar-right.show-mobile {
                 display: flex !important; flex-direction: column;
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 15000;
-                background: white; padding-top: 50px; margin-right: 0 !important;
+                z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important;
             }
-            
-            /* Grid Soal 6 Kolom */
-            .nav-grid { 
-                grid-template-columns: repeat(6, 1fr) !important; 
-                gap: 5px !important; 
-            }
+            .nav-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 5px !important; }
             .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
-            
-            /* Sembunyikan Tombol Selesai Sidebar */
             .finish-container { display: none !important; }
 
-            /* Timer HP (Pojok Kiri Atas) */
             #floatingTimer {
-                display: none; 
-                position: fixed; top: 10px; left: 10px; right: auto;
-                font-size: 13px; padding: 6px 12px;
-                z-index: 99999; border-radius: 20px;
+                display: none; position: fixed; top: 10px; left: 10px; right: auto;
+                font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px;
             }
 
-            /* UI Tombol Footer */
-            .footer-nav .btn {
-                padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px;
-            }
+            .footer-nav .btn { padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px; }
             
-            #btnMobileNav { 
-                display: none; /* Default Hidden, muncul via JS */
-                bottom: 55px !important; 
-                right: 20px;
-            }
+            #btnMobileNav { display: none; bottom: 55px !important; right: 20px; }
             
             .close-sidebar-btn { display: block !important; }
             .question-box { font-size: 15px; line-height: 1.5; }
             .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
             .question-header .focus-btn { display: none; } 
             
-            /* Pas Ujian, Sidebar Kiri Hilang */
             body.ujian-berjalan .sidebar-left { display: none; }
         }
 
@@ -487,19 +403,10 @@
         }
 
         #btnMobileModul {
-            display: none; /* Default ngumpet */
-            position: fixed; 
-            bottom: 55px; /* Sejajar sama Daftar Soal */
-            left: 20px;   /* DI SEBELAH KIRI */
-            background: #2c3e50; 
-            color: white; 
-            padding: 12px 20px;
-            border-radius: 50px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000; 
-            border: none; 
-            font-weight: bold; 
-            cursor: pointer;
+            display: none; position: fixed; bottom: 55px; left: 20px;
+            background: #2c3e50; color: white; padding: 12px 20px;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000; border: none; font-weight: bold; cursor: pointer;
             align-items: center; gap: 8px;
         }
 
@@ -509,65 +416,32 @@
             font-weight: bold; font-size: 16px; z-index: 10000;
         }
 
-        /* =========================================
-           KHUSUS LAPTOP / PC (Revisi Tombol Kanan & Ragu Luas)
-           ========================================= */
         @media (min-width: 769px) {
-            
-            /* 1. Bikin area Ragu-ragu jadi panjang ngisi ruang kosong kiri */
             .ragu-wrapper {
-                flex: 1;                 /* Ambil sisa ruang kosong */
-                background-color: #fdfdfd; 
-                padding: 12px 20px;      /* Gue gedein dikit paddingnya biar enak kliknya */
-                border-radius: 8px;
-                margin-right: 20px;      /* Jarak ke tombol */
-                cursor: pointer;
+                flex: 1; background-color: #fdfdfd; padding: 12px 20px;
+                border-radius: 8px; margin-right: 20px; cursor: pointer;
             }
-            .ragu-wrapper:hover {
-                background-color: #fff3e0; 
-                border-color: var(--warning);
-            }
-
-            /* 2. RESET Tombol 'Sebelumnya' biar GAK mojok kiri lagi */
-            #prevBtn {
-                margin-right: 0 !important; /* Timpa style lama */
-            }
-
-            /* 3. Container tombol dibikin auto, biar gak menuhin layar */
-            .footer-nav > div:last-child {
-                width: auto !important;  
-                gap: 15px !important;    /* Jarak antar tombol Sebelumnya & Selanjutnya */
-            }
+            .ragu-wrapper:hover { background-color: #fff3e0; border-color: var(--warning); }
+            #prevBtn { margin-right: 0 !important; }
+            .footer-nav > div:last-child { width: auto !important; gap: 15px !important; }
         }
     </style>
 </head>
 <body>
 
     <div id="floatingTimer">00:00:00</div>
-
-    <button id="btnMobileModul" onclick="toggleMobileModul()">
-        📚 Daftar Modul
-    </button>
-    
-    <button id="btnMobileNav" onclick="toggleMobileSidebar()">
-        📱 Daftar Soal
-    </button>
+    <button id="btnMobileModul" onclick="toggleMobileModul()">📚 Daftar Modul</button>
+    <button id="btnMobileNav" onclick="toggleMobileSidebar()">📱 Daftar Soal</button>
 
 <div id="loginOverlay">
-    
     <nav class="landing-nav">
-        <div class="nav-brand">
-            ⚖️ CBT CAKIM PA 2026
-        </div>
-        
+        <div class="nav-brand">⚖️ CBT CAKIM PA 2026</div>
         <button class="nav-login-btn" onclick="handleLogin()">
             <img src="https://img.icons8.com/color/48/google-logo.png" width="25" height="25" alt="G">
             <span>Masuk dengan Google</span>
         </button>
     </nav>
-
     <section class="hero-section">
-        
         <div class="hero-left">
             <h1 class="hero-quote">
                 Belajar Hari Ini,<br>
@@ -576,7 +450,6 @@
                 <span class="highlight-text">Integritas Menjaga Kehormatan.</span>
             </h1>
         </div>
-
         <div class="hero-right">
             <ul class="hero-features">
                 <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap</span></li>
@@ -585,19 +458,13 @@
                 <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
             </ul>
         </div>
-
         <div id="loginError" style="color: #c0392b; font-size: 0.9rem; position:absolute; top:80px; right:60px;"></div>
-
-        <div class="dev-footer">
-            Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
-        </div>
-
+        <div class="dev-footer">Developed by Ilham Nur Pratama - APP 2023 - PA SERANG</div>
     </section>
 </div>
     
     <div id="appSection" style="display:none;">
         <div class="watermark" id="watermark">By: Ilham Nur Pratama - APP 23 - PA Serang</div>
-        
         <div class="sidebar-left">
             <div class="sidebar-header">
                 <h3>CBT CAKIM 2026</h3>
@@ -609,7 +476,6 @@
             </div>
             <div class="modul-selector">
                 <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
-                
                 <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
                 <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
                 <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
@@ -758,12 +624,10 @@
     </div>
 
 <script type="module">
-    // 1. IMPORT (Sudah ditambahkan: writeBatch, doc)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 2. CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyAC4Tskg8XC1N0a13xcsV3A1Mq_8mDnY-A",
         authDomain: "simulasi-cbt-cakim-2026.firebaseapp.com",
@@ -774,7 +638,6 @@
         measurementId: "G-NDNKMSMWV2"
     };
 
-    // 3. INIT
     let db, auth, provider, currentUser;
     if (firebaseConfig.apiKey) {
         const app = initializeApp(firebaseConfig);
@@ -860,7 +723,6 @@
         return array;
     }
         
-    // 3. LOGIKA APLIKASI
     let currentModulKey = 'modul1';
     let currentQuestions = [];
     let currentIdx = 0;
@@ -878,22 +740,14 @@
     window.toggleMobileSidebar = function() {
         const sidebar = document.querySelector('.sidebar-right');
         const floatingTimer = document.getElementById('floatingTimer');
-        
-        // 1. Buka/Tutup Sidebar
         sidebar.classList.toggle('show-mobile');
-
-        // 2. LOGIKA BARU: Cek sidebar lagi kebuka apa ngga?
         if (sidebar.classList.contains('show-mobile')) {
-            // Kalau Sidebar Kebuka -> Timer Umpetin (Biar bersih)
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
         } else {
-            // Kalau Sidebar Tutup & Ujian Jalan -> Timer Munculin Lagi
             if (document.body.classList.contains('ujian-berjalan') && floatingTimer) {
                 floatingTimer.style.display = 'block';
             }
         }
-
-        // 3. Logic bikin tombol Tutup (Close) di sidebar
         if (!document.getElementById('btnCloseMobile')) {
             const btnClose = document.createElement('button');
             btnClose.id = 'btnCloseMobile';
@@ -904,24 +758,16 @@
         }
     }
 
-    // REVISI: Buka Sidebar Modul dengan Mode BERSIH (Tanpa Timer/Tombol Lain)
     window.toggleMobileModul = function() {
         const sidebar = document.querySelector('.sidebar-left');
         const timer = document.getElementById('floatingTimer');
         const btnSoal = document.getElementById('btnMobileNav');
         const btnModul = document.getElementById('btnMobileModul');
-
         if (sidebar.style.display === 'flex') {
-            // Kalau mau TUTUP (Manual/Otomatis)
             sidebar.style.display = ''; 
         } else {
-            // Kalau mau BUKA
             sidebar.style.display = 'flex'; 
-            
-            // 1. Umpetin Timer biar bersih
             if(timer) timer.style.display = 'none';
-
-            // 2. Umpetin Tombol Navigasi Bawah
             if(btnSoal) btnSoal.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none';
         }
@@ -952,13 +798,11 @@
         }
     }
 
-window.switchDatabase = async function(key) {
-        // 1. Reset Timer & State
+    window.switchDatabase = async function(key) {
         if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         currentModulKey = key;
         window.currentDatabaseId = key;
         
-        // 2. Tampilan Loading
         const qText = document.getElementById('questionText');
         const optCont = document.getElementById('optionsContainer');
         const footer = document.querySelector('.footer-nav');
@@ -968,7 +812,6 @@ window.switchDatabase = async function(key) {
         if(footer) footer.style.visibility = 'hidden';
 
         try {
-            // 3. AMBIL DATA DARI FIREBASE
             const docRef = doc(db, "bank_soal", key);
             const docSnap = await getDoc(docRef);
             let judulModul = "Modul Latihan";
@@ -990,7 +833,6 @@ window.switchDatabase = async function(key) {
                 rawQuestions.push(doc.data());
             });
 
-            // --- LOGIC SHUFFLE ---
             shuffleArray(rawQuestions); 
             rawQuestions.forEach(q => {
                 if(q.options && q.answer < q.options.length) {
@@ -1007,7 +849,6 @@ window.switchDatabase = async function(key) {
             isReviewMode = false;
             currentIdx = 0;
 
-            // Update UI
             document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
             const activeBtn = document.getElementById('btn-'+key);
             if(activeBtn) activeBtn.classList.add('active-modul');
@@ -1036,7 +877,6 @@ window.switchDatabase = async function(key) {
             }
             if(qText) qText.style.display = 'block';
             
-            // Setup Timer
             totalExamTime = currentQuestions.length * 25; 
             timeRemaining = totalExamTime;
             
@@ -1045,9 +885,6 @@ window.switchDatabase = async function(key) {
             renderSidebarGrid();
             loadQuestion(0);
             
-            // ==========================================
-            // ✅ LOGIC KHUSUS HP (Sesuai Request Lo) ✅
-            // ==========================================
             if(window.innerWidth <= 768) {
                 document.body.classList.add('ujian-berjalan'); 
                 const btnMobile = document.getElementById('btnMobileNav');
@@ -1066,59 +903,32 @@ window.switchDatabase = async function(key) {
         }
     };
 
-    // ==========================================
-    // 🛠️ ALAT BANTU REVISI MASSAL (ADMIN ONLY)
-    // ==========================================
-
-    // 1. FITUR DOWNLOAD SOAL (Buat diambil teks-nya)
     window.downloadSoal = async function(modulKey) {
         console.log(`Sedang mendownload soal ${modulKey}...`);
         const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
         const snapshot = await getDocs(qRef);
-        
         let dataSoal = [];
         snapshot.forEach(doc => {
-            // Kita cuma ambil data penting, ID gak usah karena nanti digenerate ulang
             const d = doc.data();
             dataSoal.push({
-                q: d.q,
-                options: d.options,
-                answer: d.answer,
-                explanation: d.explanation,
-                cite: d.cite
+                q: d.q, options: d.options, answer: d.answer, explanation: d.explanation, cite: d.cite
             });
         });
-
-        // Tampilkan di Console biar bisa dicopy
         console.log("✅ COPY TEKS DI BAWAH INI KE NOTEPAD:");
         console.log(JSON.stringify(dataSoal, null, 2)); 
         return dataSoal;
     };
 
-    // 2. FITUR TIMPA/UPDATE SATU MODUL (Hapus Lama -> Masukin Baru)
     window.timpaModul = async function(modulKey, dataBaruJson) {
         if(!confirm(`⚠️ BAHAYA: Ini akan MENGHAPUS semua soal lama di ${modulKey} dan menggantinya dengan data baru. Yakin?`)) return;
-
-        console.log("🔥 Mulai proses penghapusan data lama...");
-        
-        // A. Hapus Soal Lama Dulu
         const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
         const snapshot = await getDocs(qRef);
         const batchDelete = writeBatch(db);
-        
-        snapshot.forEach(doc => {
-            batchDelete.delete(doc.ref);
-        });
+        snapshot.forEach(doc => { batchDelete.delete(doc.ref); });
         await batchDelete.commit();
-        console.log("🗑️ Data lama terhapus.");
-
-        // B. Upload Data Baru
-        console.log("🚀 Mengupload data revisi...");
-        // Pecah batch kayak dulu biar aman
         const chunks = [];
         let currentBatch = writeBatch(db);
         let count = 0;
-
         for (const soal of dataBaruJson) {
             const newDocRef = doc(collection(db, "bank_soal", modulKey, "daftar_soal"));
             currentBatch.set(newDocRef, soal);
@@ -1130,11 +940,9 @@ window.switchDatabase = async function(key) {
             }
         }
         if (count > 0) chunks.push(currentBatch);
-
         for (let batch of chunks) await batch.commit();
-        
         alert("✅ SUKSES! Modul berhasil direvisi total.");
-        location.reload(); // Refresh biar kelihatan hasilnya
+        location.reload(); 
     };
     
     function startTimer() {
@@ -1152,12 +960,10 @@ window.switchDatabase = async function(key) {
         const t2 = document.getElementById('floatingTimer');
         if(t1) t1.innerText = textWaktu;
         if(t2) t2.innerText = textWaktu;
-        
         let persentase = (timeRemaining / totalExamTime) * 100;
         let colorClass = 'timer-green';
         if (persentase <= 10) colorClass = 'timer-panic';
         else if (persentase <= 30) colorClass = 'timer-yellow';
-
         if(t1) t1.className = 'timer-container ' + colorClass;
         if(t2) t2.className = colorClass;
     }
@@ -1172,10 +978,8 @@ window.switchDatabase = async function(key) {
             btn.className = 'nav-btn';
             btn.id = `nav-${idx}`;
             btn.innerText = idx + 1;
-           // REVISI: Pas klik nomor, load soal TERUS tutup sidebar kalo di HP
             btn.onclick = () => {
                 loadQuestion(idx);
-                // Cek: Kalau ini HP dan Sidebar lagi kebuka, kita tutup paksa
                 if (window.innerWidth <= 768) {
                       const sb = document.querySelector('.sidebar-right');
                       if (sb && sb.classList.contains('show-mobile')) {
@@ -1219,32 +1023,28 @@ window.switchDatabase = async function(key) {
         
         document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
         
-        // --- LOGIKA TOMBOL NEXT vs SELESAI (REVISI FINAL) ---
         const btnNext = document.getElementById('nextBtn');
-        btnNext.style.display = 'block'; // Reset dulu biar muncul default
+        btnNext.style.display = 'block'; 
 
         if (!isReviewMode && idx === currentQuestions.length - 1) {
-            // KONDISI: INI SOAL TERAKHIR
-            
             if (window.innerWidth > 768) {
-                // MODUS LAPTOP: Tombol Next diumpetin (Biar pake tombol Sidebar aja)
                 btnNext.style.display = 'none';
             } else {
-                // MODUS HP: Tombol Next berubah jadi SELESAI (Wajib ada)
                 btnNext.innerHTML = "Selesai ✅";
                 btnNext.className = "btn btn-finish"; 
                 btnNext.onclick = confirmFinish; 
             }
-
         } else {
-            // KONDISI: BUKAN SOAL TERAKHIR (Normal)
             btnNext.innerHTML = "Selanjutnya ❯";
             btnNext.className = "btn btn-next"; 
             btnNext.onclick = () => changeQuestion(1);
         }
         
+        // FIX: Prioritaskan logika Review Mode
         if (isReviewMode) {
              btnNext.style.display = 'block';
+             btnNext.innerHTML = "Lanjut (Salah) ❯";
+             btnNext.className = "btn btn-next";
              btnNext.onclick = () => changeQuestion(1);
         }
 
@@ -1303,7 +1103,7 @@ window.switchDatabase = async function(key) {
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
-        let wrongIndices = [];
+        wrongIndices = []; // Reset ulang
 
         userAnswers.forEach((a, i) => {
             if(a === currentQuestions[i].answer) {
@@ -1368,7 +1168,6 @@ window.switchDatabase = async function(key) {
     }
 
     window.closeResult = function() {
-        // TAMBAHAN: Tutup sidebar otomatis pas masuk pembahasan
         if (window.innerWidth <= 768) {
             const sb = document.querySelector('.sidebar-right');
             if (sb && sb.classList.contains('show-mobile')) {
@@ -1392,21 +1191,29 @@ window.switchDatabase = async function(key) {
     };
 
     window.startReviewWrong = function() {
-        if (wrongIndices.length === 0) return;
-        // TAMBAHAN: Tutup sidebar otomatis pas review salah
+        if (!wrongIndices || wrongIndices.length === 0) {
+            alert("Tidak ada jawaban salah untuk direview.");
+            return;
+        }
         if (window.innerWidth <= 768) {
             const sb = document.querySelector('.sidebar-right');
             if (sb && sb.classList.contains('show-mobile')) {
                 window.toggleMobileSidebar();
             }
         }
+        
         isReviewMode = true;
-        document.getElementById('resultOverlay').style.display = 'none';
+        // Pastikan overlay tertutup
+        const overlay = document.getElementById('resultOverlay');
+        if(overlay) overlay.style.setProperty('display', 'none', 'important');
+        
         const ind = document.getElementById('modeIndicator');
         ind.innerText = "MODE: REVIEW SALAH";
         ind.style.background = "#ffebee";
         ind.style.color = "#c62828";
         ind.style.border = "1px solid #ffcdd2";
+        
+        // Load soal salah pertama
         loadQuestion(wrongIndices[0]);
     };
 
@@ -1435,45 +1242,27 @@ window.switchDatabase = async function(key) {
 
    window.backToMenu = function() {
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
-            // Matikan timer interval
             if(window.timerInterval) clearInterval(window.timerInterval);
-            
-            // 1. Umpetin Tombol-Tombol Mobile (Soal & Modul)
             const btnMobile = document.getElementById('btnMobileNav');
             const btnModul = document.getElementById('btnMobileModul');
             if(btnMobile) btnMobile.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none'; 
-
-            // 2. Tutup semua Overlay (Hasil, Stats, Peringkat)
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('statsOverlay').style.display = 'none';
             document.getElementById('leaderboardOverlay').style.display = 'none';
-
-            // 3. RESET SIDEBAR KIRI (Modul)
             const sbLeft = document.querySelector('.sidebar-left');
-            if(sbLeft) {
-                sbLeft.style.display = ''; // Reset CSS biar muncul normal di Lobby
-            }
-
-            // 4. RESET SIDEBAR KANAN (Soal) - FIX KHUSUS HP
+            if(sbLeft) sbLeft.style.display = ''; 
             const sbRight = document.querySelector('.sidebar-right');
             if(sbRight) {
-                sbRight.classList.remove('show-mobile'); // Hapus mode mobile yang nyangkut
-                sbRight.style.display = ''; // Reset display aman buat laptop
+                sbRight.classList.remove('show-mobile'); 
+                sbRight.style.display = ''; 
             }
-
-            // 5. Reset Class Mode Ujian di Body
             document.body.classList.remove('ujian-berjalan');
-            
-            // 6. Umpetin Timer & Reset Judul Header
             const timer = document.getElementById('floatingTimer');
             if(timer) timer.style.display = 'none';
-            
             const modulTitle = document.getElementById('modulTitle');
             if(modulTitle) modulTitle.innerText = "Menu Utama";
             document.getElementById('qNum').innerText = "-";
-
-            // 7. Balik ke Tampilan Awal (Lobby)
             tampilkanLobby();
         }
     };
@@ -1505,54 +1294,29 @@ window.switchDatabase = async function(key) {
     }
 
     window.saveAndShowChart = async function(finalScore, correct, wrong) {
-        // 1. Siapkan Data
-        const usedSeconds = totalExamTime - timeRemaining; // Hitung durasi
+        const usedSeconds = totalExamTime - timeRemaining; 
         const resultData = {
-            uid: currentUser.uid,              // ID User
-            nama: currentUser.displayName,     // Nama User
-            modul: currentModulKey,            // ID Modul
-            score: finalScore,
-            correct: correct,
-            wrong: wrong,
-            date: new Date().toLocaleString('id-ID'), 
-            timestamp: new Date(),             // Waktu server
-            duration: usedSeconds
+            uid: currentUser.uid, nama: currentUser.displayName, modul: currentModulKey,            
+            score: finalScore, correct: correct, wrong: wrong, date: new Date().toLocaleString('id-ID'), 
+            timestamp: new Date(), duration: usedSeconds
         };
-
-        try {
-            // 2. Kirim ke Firebase (Collection: riwayat_belajar)
-            await addDoc(collection(db, "riwayat_belajar"), resultData);
-            console.log("Data nilai berhasil disimpan ke Cloud!");
-        } catch (e) {
-            console.error("Gagal simpan history:", e);
-        }
+        try { await addDoc(collection(db, "riwayat_belajar"), resultData); } 
+        catch (e) { console.error("Gagal simpan history:", e); }
     };
 
-// 1. FUNGSI RESET DATA (HAPUS RIWAYAT)
     window.resetStats = async function() {
         if(!confirm("⚠️ Yakin mau menghapus SEMUA riwayat nilai untuk modul ini? Data di Cloud akan hilang permanen.")) return;
-        
         try {
-            // Cari data yg mau dihapus (sesuai User & Modul)
             const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), where("modul", "==", window.currentDatabaseId));
             const querySnapshot = await getDocs(q);
-            
-            // Hapus rame-rame pake Batch
             const batch = writeBatch(db);
-            querySnapshot.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
-            
+            querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
             await batch.commit();
             alert("Data berhasil direset!");
-            window.openStats(); // Refresh tampilan biar kosong
-        } catch (e) {
-            console.error("Gagal reset:", e);
-            alert("Gagal menghapus data.");
-        }
+            window.openStats(); 
+        } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
-    // 2. FUNGSI BUKA STATISTIK (TARIK DATA DARI CLOUD)
     window.openStats = async function() {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
@@ -1565,25 +1329,17 @@ window.switchDatabase = async function(key) {
         document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Sedang mengambil data dari server...</td></tr>';
 
         try {
-            // A. AMBIL DATA DARI FIREBASE
             const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
             const querySnapshot = await getDocs(q);
-            
             let allHistory = [];
             querySnapshot.forEach((doc) => {
-                let data = doc.data();
-                data.id = doc.id; 
-                allHistory.push(data);
+                let data = doc.data(); data.id = doc.id; allHistory.push(data);
             });
 
-            // B. OLAH DATA KHUSUS MODUL SAAT INI (Grafik Garis)
             const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
-            
-            // Update Judul
             const judulModul = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : window.currentDatabaseId;
             document.getElementById('statsTitle').innerText = "Data Modul: " + judulModul;
 
-            // Update Tabel
             const tbody = document.getElementById('statsTableBody');
             tbody.innerHTML = '';
             if (currentModulHistory.length === 0) {
@@ -1596,36 +1352,24 @@ window.switchDatabase = async function(key) {
                 });
             }
 
-            // Render Grafik Garis
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
-            
             window.statsChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
                     datasets: [{
-                        label: 'Nilai Kamu',
-                        data: currentModulHistory.map(d => d.score),
-                        borderColor: '#2980b9',
-                        backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
+                        label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
+                        borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                        borderWidth: 2, tension: 0.3, fill: true
                     }, {
-                        label: 'Batas Lulus (70)',
-                        data: currentModulHistory.map(() => 70),
-                        borderColor: '#c0392b',
-                        borderWidth: 1,
-                        borderDash: [5, 5],
-                        pointRadius: 0,
-                        fill: false
+                        label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
+                        borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
                     }]
                 },
                 options: { animation: { duration: 1000 }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
             });
 
-            // C. OLAH DATA SEMUA MODUL (Grafik Batang)
             let modulStats = {};
             allHistory.forEach(h => {
                 if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
@@ -1633,16 +1377,23 @@ window.switchDatabase = async function(key) {
                 modulStats[h.modul].count++;
             });
 
+            // --- FIX SORTING MODUL (1, 2, 3 ... 10, 11) ---
+            const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                // Ambil angka dari string "modul1", "modul13.1"
+                const numA = parseFloat(a.replace(/[^\d.]/g, ''));
+                const numB = parseFloat(b.replace(/[^\d.]/g, ''));
+                return numA - numB;
+            });
+
             const labels = [];
             const dataScores = [];
             const backgroundColors = [];
             const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
 
-            Object.keys(modulStats).forEach((key, index) => {
+            sortedKeys.forEach((key, index) => {
                 let niceName = key;
                 let btn = document.getElementById('btn-'+key);
                 if(btn) niceName = btn.innerText.split(':')[0]; 
-
                 labels.push(niceName);
                 dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
                 backgroundColors.push(colors[index % colors.length]);
@@ -1650,7 +1401,6 @@ window.switchDatabase = async function(key) {
 
             const ctxAll = document.getElementById('allModulesChart').getContext('2d');
             if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
-            
             window.allModulesChartInstance = new Chart(ctxAll, {
                 type: 'bar',
                 data: {
@@ -1660,13 +1410,9 @@ window.switchDatabase = async function(key) {
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
             });
 
-        } catch (e) {
-            console.error("Gagal ambil data:", e);
-            document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>';
-        }
+        } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
     };
 
-    // 3. FUNGSI TUTUP STATISTIK
     window.closeStats = function() {
         document.getElementById('statsOverlay').style.display = 'none';
         const wm = document.getElementById('watermark');
