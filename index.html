@@ -267,112 +267,74 @@
             color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
         }
 		
-/* --- 📱 CSS KHUSUS HP: MODE RESPONSIF (MIRIP DESKTOP) --- */
-        @media (max-width: 992px) {
+		/* =========================================
+           RESPONSIVE MOBILE (TAMPILAN HP) - REVISI FINAL
+           ========================================= */
+        @media (max-width: 768px) {
+            body { 
+                padding-bottom: 60px; 
+                flex-direction: column; 
+                overflow-y: auto; 
+            }
+
+            /* 1. LOGIN ESTETIK (KECIL) */
+            .login-box {
+                width: 85%; max-width: 320px; padding: 25px; border-radius: 15px;
+            }
+
+            /* 2. SIDEBAR KIRI (FULL LAYAR) */
+            .sidebar-left {
+                width: 100% !important; /* Full width */
+                height: 100vh !important; /* Full Height */
+                border-right: none;
+                z-index: 100;
+                position: fixed; /* Kunci biar full */
+                top: 0; left: 0;
+            }
+            .sidebar-left .timer-container { display: none !important; }
             
-            /* 1. BACKGROUND: Tetap muncul gambar gedung */
-            #loginOverlay {
-                background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
-                            url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg') !important;
-                background-size: cover !important;
-                background-position: center !important;
-                background-attachment: fixed !important;
+            /* Pilihan Modul Full Layar */
+            .modul-selector { 
+                max-height: none !important; 
+                height: calc(100% - 80px); /* Sisa tinggi dikurangi header */
+                overflow-y: auto;
             }
 
-            /* 2. NAVBAR: Balikin jadi Header Hijau di Atas */
-            .landing-nav {
-                position: sticky !important;
-                top: 0 !important;
-                left: 0 !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                height: auto !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
-                
-                /* Style Hijau Desktop */
-                background-color: #004d00 !important; 
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
-                padding: 15px 20px !important;
-                
-                /* Layout Flex: Logo Kiri, Tombol Kanan */
-                display: flex !important;
-                flex-direction: row !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-                gap: 10px !important;
+            .main-content {
+                width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1;
             }
 
-            /* Logo di HP */
-            .nav-brand {
-                font-size: 1rem !important; /* Kecilin dikit biar muat */
-                width: auto !important;
-                justify-content: flex-start !important;
-                color: white !important;
-                text-align: left !important;
-            }
-
-            /* Tombol Login di HP */
-            .nav-login-btn {
-                width: auto !important;
-                margin: 0 !important;
-                padding: 8px 12px !important; /* Lebih compact */
-                font-size: 0.85rem !important;
-                background-color: white !important;
-                color: #004d00 !important;
-                border: none !important;
-            }
-            /* Pastikan teks tombol muncul */
-            .nav-login-btn span { display: inline-block !important; }
-
-            /* 3. HERO SECTION: Tampilkan tapi ditumpuk (Stack) */
-            .hero-section {
-                display: flex !important; /* Ubah Grid jadi Flex Column */
-                flex-direction: column;
-                padding: 30px 20px !important; /* Padding HP */
-                min-height: auto !important;
-                gap: 40px !important; /* Jarak antara Teks dan Fitur */
-            }
-
-            /* Bagian Teks (Atas) */
-            .hero-left {
-                margin-left: 0 !important; /* Reset margin desktop */
-                padding-right: 0 !important;
-                text-align: center; /* Rata tengah biar rapi di HP */
-                align-items: center;
-                margin-top: 20px;
-            }
-            .hero-quote {
-                font-size: 1.8rem !important; /* Font judul disesuaikan layar HP */
-                line-height: 1.3;
-            }
-
-            /* Bagian Fitur (Bawah) */
-            .hero-right {
-                padding-left: 0 !important;
-                align-items: center !important; /* Tengahin container */
-                justify-content: center !important;
-                padding-bottom: 20px !important;
+            /* 3. SIDEBAR KANAN ESTETIK */
+            .sidebar-right { display: none; }
+            .sidebar-right.show-mobile {
+                display: flex !important; flex-direction: column;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                z-index: 15000; /* Di bawah Popup */
+                background: white; padding-top: 50px; margin-right: 0 !important;
             }
             
-            /* List Fitur */
-            .hero-features li {
-                font-size: 0.9rem !important;
-                justify-content: flex-start; /* Teks list tetap rata kiri */
-                background: rgba(255,255,255,0.5); /* Kasih background tipis biar kebaca */
-                padding: 10px;
-                border-radius: 8px;
-                width: 100%;
+            /* REVISI: Grid 6 Kolom di HP biar muat banyak & kecil */
+            .nav-grid { 
+                grid-template-columns: repeat(6, 1fr) !important; 
+                gap: 5px !important; 
+            }
+            .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
+            
+            /* REVISI PENTING LANGKAH 2: Hilangkan tombol Selesai di sidebar HP */
+            .finish-container { display: none !important; }
+
+            /* 4. TIMER HP (POJOK KIRI ATAS) */
+            #floatingTimer {
+                display: none; 
+                position: fixed; top: 10px; left: 10px; right: auto; /* KIRI */
+                font-size: 13px; padding: 6px 12px;
+                z-index: 99999; border-radius: 20px;
             }
 
-            /* Footer HP */
-            .dev-footer {
-                text-align: center;
-                font-size: 0.7rem !important;
-                margin-top: 20px;
+            /* 5. UI TOMBOL ESTETIK */
+            .footer-nav .btn {
+                padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px;
             }
-        }
             
             #btnMobileNav { 
                 display: none; /* Default Hidden, muncul via JS */
@@ -508,81 +470,48 @@
 			}
 			.nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 			
-				/* -- HERO SECTION (GRID LAYOUT LAPTOP) -- */
-	        .hero-section {
-	            display: grid;
-	            grid-template-columns: 1.2fr 0.8fr; /* Kiri lebih lebar buat teks */
-	            gap: 0; /* Gak usah ada gap biar bisa dempet */
-	            padding: 40px 60px 10px 60px;
-	            max-width: 1300px;
-	            margin: 0 auto;
-	            min-height: 80vh;
-	            box-sizing: border-box;
-	            position: relative;
-	        }
-	
-	        /* Teks Kiri - Posisi Sentral Tengah & Geser Kiri */
-	        .hero-left {
-	            display: flex;
-	            flex-direction: column;
-	            justify-content: center; /* Vertikal Tengah */
-	            padding-right: 20px;
-	            margin-left: -40px; /* REQUEST: Geser ke kiri */
-	        }
-	
-	        .hero-quote {
-	            font-size: 2.8rem;
-	            font-weight: 800;
-	            line-height: 1.2;
-	            margin-bottom: 10px;
-	            color: #111;
-	        }
-	        .highlight-text { color: #006400; }
-	
-	        /* Area Kanan - Fitur Dempet Bawah & Kanan */
-	        .hero-right {
-	            display: flex;
-	            flex-direction: column;
-	            justify-content: flex-end; /* REQUEST: Mepet Bawah */
-	            align-items: flex-start;
-	            padding-bottom: 25px;      /* Jarak tipis dari garis footer */
-	            padding-left: 20px;
-	        }
-	
-	        /* Fitur List */
-	        .hero-features { 
-	            list-style: none; 
-	            padding: 0; 
-	            margin: 0; 
-	        }
-	
-	        .hero-features li {
-	            font-size: 1rem; 
-	            color: #444; 
-	            margin-bottom: 8px; /* Lebih rapet */
-	            display: flex; 
-	            align-items: center; 
-	            gap: 15px; /* REQUEST: Jangan ada spasi lebar (ikon ke teks deket) */
-	            font-weight: 600;
-	        }
-	        
-	        .feature-icon { 
-	            color: #006400; 
-	            font-size: 1.1rem; 
-	            width: 25px; 
-	            text-align: center; 
-	        }
-	
-	        /* Footer Garis Bawah */
-	        .dev-footer {
-	            grid-column: 1 / -1; /* Panjang full kiri-kanan */
-	            font-size: 0.85rem; 
-	            color: #666; 
-	            margin-top: 5px; 
-	            padding-top: 15px; 
-	            border-top: 1px solid #ddd;
-	            font-weight: 600;
-	        }
+			/* -- HERO SECTION (GRID LAYOUT LAPTOP) -- */
+			.hero-section {
+			    display: grid;
+			    grid-template-columns: 0.9fr 0.9fr; /* Kiri Teks, Kanan Gambar */
+			    gap: 40px;
+			    padding: 60px 60px;
+			    max-width: 1300px;
+			    margin: 0 auto;
+			    align-items: center;
+			    min-height: 80vh;
+			    box-sizing: border-box;
+			}
+			
+			/* Teks Kiri */
+			.hero-content { text-align: left; }
+			.hero-quote {
+			    font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111;
+			}
+			.highlight-text { color: #006400; }
+			
+			/* Fitur List */
+			.hero-features { list-style: none; padding: 0; margin: 0 0 40px 0; }
+			.hero-features li {
+			    font-size: 1rem; color: #444; margin-bottom: 15px;
+			    display: flex; align-items: center; gap: 50px; font-weight: 500;
+			}
+			.feature-icon { color: #006400; font-size: 1.1rem; width: 20px; text-align: center; }
+			
+			.dev-footer {
+			    font-size: 0.85rem; color: #666; margin-top: 30px; 
+			    padding-top: 20px; border-top: 1px solid #ddd; font-weight: 600;
+			}
+			
+			/* Gambar Kanan */
+			.hero-image-container {
+			    display: flex; justify-content: center; align-items: center;
+			}
+			.hero-illustration {
+			    width: 100%; max-width: 500px; /* Ukuran pas di laptop */
+			    height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+			}
+			
 				/* --- 📱 CSS KHUSUS HP: MODE KARTU SIMPEL --- */
 				@media (max-width: 992px) {
 				    
@@ -680,30 +609,28 @@
 
     <section class="hero-section">
         
-        <div class="hero-left">
-            <h1 class="hero-quote">
+       <h1 class="hero-quote">
                 Belajar Hari Ini,<br>
                 <span class="highlight-text">Dipercaya Esok Hari.</span><br>
                 Ilmu Mengangkat Derajat,<br>
                 <span class="highlight-text">Integritas Menjaga Kehormatan.</span>
             </h1>
-        </div>
-
-        <div class="hero-right">
+            
             <ul class="hero-features">
                 <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap</span></li>
                 <li><i class="fas fa-chart-line feature-icon"></i> <span>Analisis & Peringkat Real-time</span></li>
                 <li><i class="fas fa-gavel feature-icon"></i> <span>Pembahasan Hukum Mendalam</span></li>
                 <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
             </ul>
+
+            <div id="loginError" style="color: #c0392b; font-size: 0.9rem; margin-bottom: 20px;"></div>
+
+            <div class="dev-footer">
+                Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
+            </div>
         </div>
-
-        <div id="loginError" style="color: #c0392b; font-size: 0.9rem; position:absolute; top:80px; right:60px;"></div>
-
-        <div class="dev-footer">
-            Developed by Ilham Nur Pratama - APP 2023 - PA SERANG
+		
         </div>
-
     </section>
 </div>
 	
@@ -1806,8 +1733,6 @@ window.switchDatabase = async function(key) {
 </script>
 </body>
 </html>
-
-
 
 
 
