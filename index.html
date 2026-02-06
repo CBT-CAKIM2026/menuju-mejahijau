@@ -10,18 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* --- PALET WARNA MAHKAMAH AGUNG (HIJAU - EMAS - HITAM) --- */
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #2980b9;
-            --light: #ecf0f1;
-            --filled: #95a5a6;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --warning: #f39c12;
+            --primary: #004d00;   /* Hijau Botol Tua (Header & Brand) */
+            --secondary: #1a1a1a; /* Hitam Elegan (Tombol Back/Secondary) */
+            --accent: #2e7d32;    /* Hijau Daun (Tombol Next/Active) */
+            --gold: #d4af37;      /* Emas (Highlight Active & Border) */
+            --light: #f1f8e9;     /* Krem Kehijauan (Background Hover) */
+            --filled: #7f8c8d;    /* Abu (Soal Terisi) */
+            --success: #2e7d32;   /* Hijau Sukses */
+            --danger: #c0392b;    /* Merah Error */
+            --warning: #f39c12;   /* Kuning Ragu */
             --pass: #2ecc71;
             --fail: #e74c3c;
-            --google: #DB4437;
         }
 
         body {
@@ -64,11 +65,12 @@
             align-items: center;
             padding: 15px 40px; 
             width: 100%; 
-            background-color: #004d00;
+            background-color: var(--primary); /* Hijau MA */
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: sticky; top: 0; z-index: 100; 
             box-sizing: border-box;
+            border-bottom: 3px solid var(--gold); /* Garis Emas di bawah Navbar */
         }
         
         .nav-brand {
@@ -80,7 +82,7 @@
         
         .nav-login-btn {
             background-color: #ffffff;
-            color: #004d00;
+            color: var(--primary);
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
@@ -117,7 +119,7 @@
             margin-bottom: 10px;
             color: #111;
         }
-        .highlight-text { color: #006400; }
+        .highlight-text { color: var(--primary); }
 
         .hero-right {
             display: flex;
@@ -137,7 +139,7 @@
             gap: 15px;
             font-weight: 600;
         }
-        .feature-icon { color: #006400; font-size: 1.1rem; width: 25px; text-align: center; }
+        .feature-icon { color: var(--primary); font-size: 1.1rem; width: 25px; text-align: center; }
 
         .dev-footer {
             grid-column: 1 / -1;
@@ -149,28 +151,11 @@
             font-weight: 600;
         }
 
-        /* --- TAMPILAN KHUSUS HP (REVISI FINAL: PROPORSIONAL) --- */
         @media (max-width: 992px) {
-            /* Navbar Lebih Ramping */
-            .landing-nav { 
-                padding: 10px 15px; /* Padding dikecilin */
-                gap: 5px; 
-            }
-            /* Judul Header Dikecilin */
-            .nav-brand { 
-                font-size: 0.9rem; /* Ukuran font pas di HP */
-                white-space: nowrap; /* Biar sejajar */
-            }
-            /* Tombol Login Lebih Compact */
-            .nav-login-btn { 
-                padding: 6px 12px; 
-                font-size: 0.75rem; /* Font tombol kecilin dikit */
-                border-radius: 4px;
-            }
-            .nav-login-btn img {
-                width: 18px; /* Icon Google disesuaikan */
-                height: 18px;
-            }
+            .landing-nav { padding: 10px 15px; gap: 5px; }
+            .nav-brand { font-size: 0.9rem; }
+            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; }
+            .nav-login-btn img { width: 18px; height: 18px; }
             .nav-login-btn span { display: inline-block; } 
 
             .hero-section {
@@ -182,48 +167,29 @@
                 min-height: 80vh;
             }
 
-            .hero-left {
-                margin-left: 0; padding-right: 0;
-                text-align: center; margin-top: 10px;
-            }
-            .hero-quote { font-size: 1.6rem; } /* Font judul konten dikecilin dikit */
+            .hero-left { margin-left: 0; padding-right: 0; text-align: center; margin-top: 10px; }
+            .hero-quote { font-size: 1.6rem; } 
 
             .hero-right {
-                padding-left: 0;
-                align-items: center; 
-                justify-content: center;
-                width: 100%;
-                padding-bottom: 40px; /* Kasih ruang buat footer */
+                padding-left: 0; align-items: center; justify-content: center; width: 100%;
+                padding-bottom: 40px; 
             }
 
             .hero-features li {
                 background: rgba(255,255,255,0.6); 
-                padding: 8px 12px;
-                border-radius: 6px;
-                width: 100%;
-                justify-content: flex-start;
-                font-size: 0.85rem;
-                margin-bottom: 5px;
+                padding: 8px 12px; border-radius: 6px; width: 100%;
+                justify-content: flex-start; font-size: 0.85rem; margin-bottom: 5px;
             }
             
-            /* Footer Jadi Watermark di Bawah */
             .dev-footer { 
-                position: fixed; /* Nempel di bawah layar */
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                text-align: center; 
-                font-size: 0.65rem; /* Font kecil estetik */
-                padding: 8px 0;
-                margin: 0;
-                background: rgba(255,255,255,0.8); /* Background transparan */
-                border-top: none;
-                z-index: 101;
+                position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; 
+                font-size: 0.65rem; padding: 8px 0; margin: 0;
+                background: rgba(255,255,255,0.8); border-top: none; z-index: 101;
             }
         }
 
         /* =========================================
-           APP STYLES
+           APP STYLES (HIJAU TEMA)
            ========================================= */
         #appSection { display: none; width: 100%; height: 100%; display: flex; }
 
@@ -241,18 +207,20 @@
         body.mode-focus .sidebar-left { margin-left: -280px; }
         body.mode-focus #floatingTimer { display: block !important; }
 
+        /* HEADER SIDEBAR: HIJAU MA + GARIS EMAS */
         .sidebar-header {
             padding: 20px;
             background-color: var(--primary);
             color: white;
             text-align: center;
+            border-bottom: 3px solid var(--gold);
         }
 
         .user-profile {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             margin-bottom: 10px; font-size: 0.9rem;
         }
-        .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
+        .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--gold); }
 
         .timer-container {
             background: rgba(0,0,0,0.2);
@@ -261,21 +229,27 @@
             border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
             display: block; 
         }
-        .timer-green { background-color: #27ae60 !important; color: white !important; border-color: #2ecc71 !important; }
-        .timer-yellow { background-color: #f39c12 !important; color: black !important; border-color: #f1c40f !important; }
-        .timer-panic { background-color: #c0392b !important; color: white !important; border-color: #e74c3c !important; animation: panicPulse 0.5s infinite alternate; }
+        .timer-green { background-color: var(--success) !important; color: white !important; border-color: var(--pass) !important; }
+        .timer-yellow { background-color: var(--warning) !important; color: black !important; border-color: #f1c40f !important; }
+        .timer-panic { background-color: var(--danger) !important; color: white !important; border-color: var(--fail) !important; animation: panicPulse 0.5s infinite alternate; }
         @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
 
-        .modul-selector { flex: 1; padding: 10px; background: #f8f9fa; overflow-y: auto; }
+        .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
 
+        /* LIST MODUL: Hover Hijau Muda, Aktif Hijau Tua + Emas */
         .modul-btn {
             display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
             background: white; border: 1px solid #ddd; border-radius: 6px;
             cursor: pointer; text-align: left; font-size: 0.9rem; font-weight: 600;
             color: var(--secondary); transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .modul-btn:hover { background: var(--light); transform: translateX(2px); }
-        .modul-btn.active-modul { background: var(--accent); color: white; border-color: var(--accent); }
+        .modul-btn:hover { background: var(--light); transform: translateX(2px); border-color: var(--primary); }
+        .modul-btn.active-modul { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary); 
+            border-left: 5px solid var(--gold); /* Aksen Emas di kiri */
+        }
 
         .main-content {
             flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
@@ -285,7 +259,7 @@
         .card {
             background: white; padding: 40px; border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 900px;
-            margin: 0 auto; width: 100%; margin-bottom: 50px;
+            margin: 0 auto; width: 100%; margin-bottom: 50px; border-top: 4px solid var(--primary);
         }
 
         .sidebar-right {
@@ -306,7 +280,7 @@
         }
         .btn-logout { background: var(--danger); }
         .btn-stats { background: var(--accent); }
-        .btn-rank { background: #f39c12; }
+        .btn-rank { background: var(--warning); color: black; }
         .btn-small:hover { opacity: 0.9; }
 
         .sidebar-info {
@@ -317,17 +291,24 @@
         .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
         .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
+        /* NAVIGASI NOMOR SOAL: Aktif jadi Emas/Hijau */
         .nav-btn {
             aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
             border-radius: 6px; font-weight: bold; display: flex; align-items: center;
             justify-content: center; font-size: 0.9rem; color: #555; transition: all 0.2s;
         }
         .nav-btn:hover { background-color: var(--light); }
-        .nav-btn.active { border: 2px solid var(--accent); box-shadow: 0 0 8px rgba(41, 128, 185, 0.4); transform: scale(1.1); z-index: 2; color: var(--accent); }
+        .nav-btn.active { 
+            border: 2px solid var(--primary); 
+            background-color: var(--light);
+            color: var(--primary);
+            box-shadow: 0 0 5px rgba(0, 77, 0, 0.3); 
+            transform: scale(1.1); z-index: 2; 
+        }
         .nav-btn.filled { background-color: var(--secondary); color: white; border-color: var(--secondary); }
         .nav-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
         .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
-        .nav-btn.ragu { background-color: #f1c40f !important; color: black !important; border-color: #f39c12 !important; }
+        .nav-btn.ragu { background-color: var(--warning) !important; color: black !important; border-color: var(--warning) !important; }
 
         .finish-container { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
 
@@ -339,25 +320,26 @@
             border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem;
             background: white; margin-bottom: 10px;
         }
-        .option-label:hover { background-color: #f8f9fa; border-color: var(--accent); }
-        .option-label.selected { background-color: #eaf6ff; border-color: var(--accent); }
+        .option-label:hover { background-color: var(--light); border-color: var(--primary); }
+        .option-label.selected { background-color: #e8f5e9; border-color: var(--primary); font-weight: 500; }
         .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
         .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
 
+        /* TOMBOL NEXT/PREV: Hijau dan Hitam */
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-prev { background-color: var(--secondary); }
-        .btn-next { background-color: var(--accent); }
+        .btn-prev { background-color: var(--secondary); } /* Hitam */
+        .btn-next { background-color: var(--primary); }   /* Hijau */
         .btn-finish { background-color: var(--success); width: 100%; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid #f39c12; display: none; }
+        .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
         .feedback-box.show { display: block; }
 
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
             border-top: 1px solid rgba(255,255,255,0.5); text-align: center; padding: 12px 0;
-            color: #2c3e50; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
+            color: var(--primary); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
         }
 
@@ -373,9 +355,10 @@
             background: white; padding: 20px; border-radius: 15px; text-align: center; 
             width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
             max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; 
+            border-top: 5px solid var(--primary);
         }
         
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--accent); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .stats-table th, .stats-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         .stats-table th { background-color: var(--primary); color: white; }
@@ -383,7 +366,7 @@
         .stats-section-title { text-align: left; margin: 15px 0 5px 0; font-weight: bold; color: #555; border-bottom: 2px solid #eee; padding-bottom: 5px; }
 
         .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #f39c12; cursor: pointer; user-select: none; }
+        .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--warning); cursor: pointer; user-select: none; }
         .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
@@ -391,7 +374,7 @@
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
-            color: #ffeb3b; background: rgba(44, 62, 80, 0.9);
+            color: #ffeb3b; background: rgba(0, 77, 0, 0.9); /* Hijau Transparan */
         }
         
         @media (max-width: 768px) {
@@ -433,22 +416,22 @@
 
         #btnMobileNav {
             display: none; position: fixed; bottom: 55px; right: 20px;
-            background: #2c3e50; color: white; padding: 12px 20px;
+            background: var(--primary); color: white; padding: 12px 20px;
             border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             z-index: 1000; border: none; font-weight: bold; cursor: pointer;
-            align-items: center; gap: 8px;
+            align-items: center; gap: 8px; border: 2px solid var(--gold);
         }
 
         #btnMobileModul {
             display: none; position: fixed; bottom: 55px; left: 20px;
-            background: #2c3e50; color: white; padding: 12px 20px;
+            background: var(--primary); color: white; padding: 12px 20px;
             border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             z-index: 1000; border: none; font-weight: bold; cursor: pointer;
-            align-items: center; gap: 8px;
+            align-items: center; gap: 8px; border: 2px solid var(--gold);
         }
 
         .close-sidebar-btn {
-            display: none; width: 100%; padding: 15px; background: #e74c3c;
+            display: none; width: 100%; padding: 15px; background: var(--danger);
             color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
             font-weight: bold; font-size: 16px; z-index: 10000;
         }
@@ -549,7 +532,7 @@
                         <button class="focus-btn" onclick="toggleFocusMode()" title="Mode Fokus">☰</button>
                         <div>
                             <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary); display:block;" id="modulTitle">Modul 1</span>
-                            <span style="font-size: 1rem; color: #7f8c8d;">Soal No. <span id="qNum" style="font-weight:bold; color:var(--accent);">1</span></span>
+                            <span style="font-size: 1rem; color: #7f8c8d;">Soal No. <span id="qNum" style="font-weight:bold; color:var(--primary);">1</span></span>
                         </div>
                     </div>
                     <span id="modeIndicator" style="color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2;">Mode: Ujian</span>
@@ -587,10 +570,10 @@
             </div>
             
             <div class="sidebar-info">
-                <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--accent);">Menjawab: 0/0</div>
+                <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
                 <div style="display:flex; justify-content:center; gap:15px;">
                     <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:#f1c40f; border-radius:2px;"></span> Ragu</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
                     <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
                 </div>
             </div>
@@ -617,7 +600,7 @@
                 <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
                 <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
                 <button class="btn" onclick="closeResult(); openStats();" style="width:100%; background:var(--primary);">Lihat Grafik Lengkap</button>
-                <button class="btn" onclick="backToMenu()" style="width:100%; background:#7f8c8d; margin-top:5px;">🏠 Kembali ke Menu Utama</button>
+                <button class="btn" onclick="backToMenu()" style="width:100%; background:var(--filled); margin-top:5px;">🏠 Kembali ke Menu Utama</button>
             </div>
         </div>
     </div>
