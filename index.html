@@ -17,11 +17,11 @@
             --accent: #2e7d32;    /* Hijau Daun */
             --gold: #d4af37;      /* Emas Mewah */
             --purple: #8e44ad;    /* Ungu (Grafik) */
-            --light: #f1f8e9;     
-            --filled: #7f8c8d;    
-            --success: #2e7d32;   
-            --danger: #c0392b;    
-            --warning: #f39c12;   
+            --light: #f1f8e9;      
+            --filled: #7f8c8d;     
+            --success: #2e7d32;    
+            --danger: #c0392b;     
+            --warning: #f39c12;    
             --pass: #2ecc71;
             --fail: #e74c3c;
         }
@@ -355,7 +355,7 @@
 
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
         .btn-prev { background-color: var(--secondary); } 
-        .btn-next { background-color: var(--primary); }   
+        .btn-next { background-color: var(--primary); }    
         .btn-finish { background-color: var(--success); width: 100%; }
         .btn-purple { background-color: #8e44ad !important; color: white !important; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -524,7 +524,7 @@
 </div>
     
     <div id="appSection" style="display:none;">
-        <div class="watermark" id="watermark">By: Ilham Nur Pratama - APP 23 - PA Serang</div>
+        <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
         <div class="sidebar-left">
             <div class="sidebar-header">
                 <h3>CBT CAKIM 2026</h3>
@@ -604,6 +604,7 @@
         <div class="sidebar-right">
             <div class="right-header">
                 <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
+                <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
                 <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
                 <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
                 <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
@@ -683,10 +684,74 @@
         </div>
     </div>
 
+    <div id="adminOverlay" class="result-overlay">
+        <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+                <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
+                <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button onclick="switchAdminTab('tambah')" class="btn-small" style="background:var(--primary); font-size:1rem;">➕ Tambah Baru (JSON)</button>
+                <button onclick="switchAdminTab('edit')" class="btn-small" style="background:var(--warning); color:black; font-size:1rem;">✏️ Edit / Revisi</button>
+            </div>
+
+            <div id="tabTambah">
+                <label style="font-weight:bold;">Target Modul (ID):</label>
+                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:8px; margin-bottom:10px;">
+                
+                <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
+                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc;" placeholder='[{"q": "Pertanyaan...", "options": ["A","B"], "answer": 0, "explanation": "..."}]'></textarea>
+                
+                <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
+            </div>
+
+            <div id="tabEdit" style="display:none;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
+                    <button onclick="loadSoalAdmin()" class="btn-small" style="background:var(--primary);">🔍 Load Soal</button>
+                </div>
+                
+                <div style="display:flex; gap:20px; height: 400px;">
+                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9;">
+                        <p style="padding:10px; color:gray;">Klik Load Soal dulu...</p>
+                    </div>
+                    
+                    <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
+                        <input type="hidden" id="editDocId">
+                        <label>Pertanyaan:</label>
+                        <textarea id="editQ" rows="3" style="width:95%;"></textarea>
+                        
+                        <label>Opsi (Pisahkan dengan koma):</label>
+                        <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <div style="flex:1">
+                                <label>Indeks Jawaban (0=A, 1=B):</label>
+                                <input type="number" id="editAns" style="width:100%;">
+                            </div>
+                        </div>
+
+                        <label>Pembahasan:</label>
+                        <textarea id="editExp" rows="3" style="width:95%;"></textarea>
+                        
+                        <label>Sumber (Cite):</label>
+                        <input type="text" id="editCite" style="width:95%;">
+
+                        <div style="display:flex; gap:5px; margin-top:10px;">
+                            <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
+                            <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // --- CONFIG FIREBASE ---
     const firebaseConfig = {
@@ -699,7 +764,7 @@
         measurementId: "G-NDNKMSMWV2"
     };
 
-    // --- GANTI EMAIL ADMIN DISINI ---
+    // --- EMAIL ADMIN (GANTI DENGAN EMAIL LO) ---
     const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
 
     let db, auth, provider, currentUser;
@@ -725,10 +790,12 @@
                 
                 // --- LOGIKA ADMIN SAKTI ---
                 if (user.email === ADMIN_EMAIL) {
-                    document.body.classList.add('is-admin'); // Aktifkan Mode Sakti
+                    document.body.classList.add('is-admin'); 
                     console.log("Welcome Admin! Anti-Cheat Disabled.");
+                    const btnAdmin = document.getElementById('btnAdminPanel');
+                    if(btnAdmin) btnAdmin.style.display = 'flex'; // Tampilkan tombol admin
                 } else {
-                    document.body.classList.remove('is-admin'); // Mode Normal (Terkunci)
+                    document.body.classList.remove('is-admin');
                 }
 
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
@@ -738,7 +805,7 @@
                 document.getElementById('userAvatar').src = user.photoURL;
                 document.getElementById('floatingTimer').style.display = 'none';
             } else {
-                document.body.classList.remove('is-admin'); // Reset
+                document.body.classList.remove('is-admin');
                 document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
                 document.getElementById('appSection').style.display = 'none';
                 document.getElementById('floatingTimer').style.display = 'none';
@@ -820,12 +887,10 @@
         sidebar.classList.toggle('show-mobile');
 
         if (sidebar.classList.contains('show-mobile')) {
-            // Kalau Sidebar KEBUEKA -> Umpetin Tombol Navigasi & Timer
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
             if(btnSoal) btnSoal.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none';
         } else {
-            // Kalau Sidebar DITUTUP -> Munculin lagi
             if (document.body.classList.contains('ujian-berjalan')) {
                 if(floatingTimer) floatingTimer.style.display = 'block';
                 if(btnSoal) btnSoal.style.display = 'flex';
@@ -850,16 +915,12 @@
         const timer = document.getElementById('floatingTimer');
 
         if (sidebar.style.display === 'flex') {
-            // TUTUP SIDEBAR
             sidebar.style.display = ''; 
-            // Munculin tombol lagi
              if(timer) timer.style.display = 'block';
             if(btnSoal) btnSoal.style.display = 'flex';
             if(btnModul) btnModul.style.display = 'flex';
         } else {
-            // BUKA SIDEBAR
             sidebar.style.display = 'flex'; 
-            // Umpetin tombol
             if(timer) timer.style.display = 'none';
             if(btnSoal) btnSoal.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none';
@@ -1002,48 +1063,6 @@
         }
     };
 
-    window.downloadSoal = async function(modulKey) {
-        console.log(`Sedang mendownload soal ${modulKey}...`);
-        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
-        const snapshot = await getDocs(qRef);
-        let dataSoal = [];
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            dataSoal.push({
-                q: d.q, options: d.options, answer: d.answer, explanation: d.explanation, cite: d.cite
-            });
-        });
-        console.log("✅ COPY TEKS DI BAWAH INI KE NOTEPAD:");
-        console.log(JSON.stringify(dataSoal, null, 2)); 
-        return dataSoal;
-    };
-
-    window.timpaModul = async function(modulKey, dataBaruJson) {
-        if(!confirm(`⚠️ BAHAYA: Ini akan MENGHAPUS semua soal lama di ${modulKey} dan menggantinya dengan data baru. Yakin?`)) return;
-        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
-        const snapshot = await getDocs(qRef);
-        const batchDelete = writeBatch(db);
-        snapshot.forEach(doc => { batchDelete.delete(doc.ref); });
-        await batchDelete.commit();
-        const chunks = [];
-        let currentBatch = writeBatch(db);
-        let count = 0;
-        for (const soal of dataBaruJson) {
-            const newDocRef = doc(collection(db, "bank_soal", modulKey, "daftar_soal"));
-            currentBatch.set(newDocRef, soal);
-            count++;
-            if (count >= 490) {
-                chunks.push(currentBatch);
-                currentBatch = writeBatch(db);
-                count = 0;
-            }
-        }
-        if (count > 0) chunks.push(currentBatch);
-        for (let batch of chunks) await batch.commit();
-        alert("✅ SUKSES! Modul berhasil direvisi total.");
-        location.reload(); 
-    };
-    
     function startTimer() {
         timerInterval = setInterval(() => {
             if(timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
@@ -1199,16 +1218,13 @@
         if(timerInterval) clearInterval(timerInterval);
         isSubmitted = true;
         
-        // FIX 1: Matikan Timer
         document.getElementById('floatingTimer').style.display = 'none';
-        
-        // FIX 1.5: Matikan Mode Fokus
         document.body.classList.remove('mode-focus');
 
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
-        wrongIndices = []; // Reset ulang
+        wrongIndices = [];
 
         userAnswers.forEach((a, i) => {
             if(a === currentQuestions[i].answer) {
@@ -1347,7 +1363,6 @@
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
             if(window.timerInterval) clearInterval(window.timerInterval);
             
-            // FIX 2: Pastikan Mode Fokus Hilang
             document.body.classList.remove('mode-focus');
 
             const btnMobile = document.getElementById('btnMobileNav');
@@ -1424,7 +1439,6 @@
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
-    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
     window.openStats = async function() {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
@@ -1460,7 +1474,6 @@
                 });
             }
 
-            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
             setTimeout(() => {
                 const ctx = document.getElementById('statsChart').getContext('2d');
                 if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
@@ -1520,18 +1533,17 @@
                         datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
                     },
                     options: { 
-                        // ANIMASI FIX: DARI BAWAH KE ATAS
                         animation: { 
                             duration: 1500, 
                             easing: 'easeOutBounce',
-                            y: { from: 0 } // Paksa mulai tumbuh dari 0
+                            y: { from: 0 } 
                         },
                         responsive: true, maintainAspectRatio: false, 
                         scales: { y: { beginAtZero: true, max: 100 } }, 
                         plugins: { legend: { display: false } } 
                     }
                 });
-            }, 300); // INI JEDA WAKTUNYA (300ms)
+            }, 300); 
 
         } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
     };
@@ -1559,6 +1571,148 @@
         document.getElementById('feedbackBox').style.display = 'none';
         document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
     }
+
+    // ==========================================
+    // LOGIKA ADMIN PANEL (INJECTED)
+    // ==========================================
+
+    window.openAdminPanel = () => {
+        document.getElementById('adminOverlay').style.display = 'flex';
+    };
+
+    window.switchAdminTab = (tab) => {
+        if(tab === 'tambah') {
+            document.getElementById('tabTambah').style.display = 'block';
+            document.getElementById('tabEdit').style.display = 'none';
+        } else {
+            document.getElementById('tabTambah').style.display = 'none';
+            document.getElementById('tabEdit').style.display = 'block';
+        }
+    };
+
+    // --- FITUR 1: UPLOAD JSON ---
+    window.eksekusiUpload = async () => {
+        const modulId = document.getElementById('adminModulTarget').value.trim();
+        const jsonRaw = document.getElementById('jsonUploadArea').value;
+        
+        if(!modulId || !jsonRaw) return alert("Modul ID dan JSON harus diisi!");
+        
+        try {
+            const dataSoal = JSON.parse(jsonRaw);
+            if(!Array.isArray(dataSoal)) return alert("Format JSON harus Array [ ... ]");
+
+            if(!confirm(`Siap upload ${dataSoal.length} soal ke ${modulId}?`)) return;
+
+            const batch = writeBatch(db);
+            let count = 0;
+            
+            // Chunking batch (max 500 per batch) - Sederhananya loop manual
+            for (const item of dataSoal) {
+                // Standarisasi field sesuai aplikasi lo
+                const docData = {
+                    q: item.q || item.pertanyaan,
+                    options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
+                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
+                    explanation: item.explanation || item.pembahasan || "-",
+                    cite: item.cite || "Modul Hakim",
+                    createdAt: new Date()
+                };
+
+                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
+                count++;
+            }
+            
+            alert(`✅ Sukses Upload ${count} Soal!`);
+            document.getElementById('jsonUploadArea').value = ""; // Reset
+        } catch (e) {
+            alert("Error: " + e.message);
+            console.error(e);
+        }
+    };
+
+    // --- FITUR 2: LOAD & EDIT ---
+    let currentAdminModul = "";
+
+    window.loadSoalAdmin = async () => {
+        const modulId = document.getElementById('editModulTarget').value.trim();
+        if(!modulId) return alert("Isi nama modul!");
+        currentAdminModul = modulId;
+
+        const listDiv = document.getElementById('listSoalAdmin');
+        listDiv.innerHTML = "Loading...";
+
+        try {
+            const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
+            // Urutkan biar gampang nyarinya
+            const q = query(qRef, orderBy("createdAt", "desc")); 
+            const snapshot = await getDocs(q); 
+
+            listDiv.innerHTML = "";
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const div = document.createElement('div');
+                div.style.borderBottom = "1px solid #ddd";
+                div.style.padding = "8px";
+                div.style.cursor = "pointer";
+                div.style.fontSize = "0.85rem";
+                div.innerText = (data.q || "").substring(0, 60) + "...";
+                div.onclick = () => populateEditForm(docSnap.id, data);
+                listDiv.appendChild(div);
+            });
+        } catch (e) {
+            alert("Gagal load (mungkin salah nama modul): " + e.message);
+        }
+    };
+
+    function populateEditForm(id, data) {
+        document.getElementById('editDocId').value = id;
+        document.getElementById('editQ').value = data.q;
+        document.getElementById('editOpt').value = data.options.join(","); // Array jadi string koma
+        document.getElementById('editAns').value = data.answer;
+        document.getElementById('editExp').value = data.explanation;
+        document.getElementById('editCite').value = data.cite || "";
+    }
+
+    window.simpanPerubahan = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("Pilih soal dulu!");
+
+        const optionsArray = document.getElementById('editOpt').value.split(",").map(s => s.trim()); 
+
+        const newData = {
+            q: document.getElementById('editQ').value,
+            options: optionsArray,
+            answer: parseInt(document.getElementById('editAns').value),
+            explanation: document.getElementById('editExp').value,
+            cite: document.getElementById('editCite').value
+        };
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await updateDoc(docRef, newData);
+            alert("✅ Data terupdate!");
+            loadSoalAdmin(); 
+        } catch (e) {
+            alert("Gagal update: " + e.message);
+        }
+    };
+
+    window.hapusSoal = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("Pilih soal dulu!");
+        if(!confirm("Yakin mau hapus soal ini permanen?")) return;
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await deleteDoc(docRef);
+            alert("🗑️ Soal dihapus.");
+            loadSoalAdmin(); 
+            document.getElementById('editDocId').value = "";
+            document.getElementById('editQ').value = "";
+        } catch (e) {
+            alert("Gagal hapus: " + e.message);
+        }
+    };
 
 </script>
 
