@@ -197,8 +197,7 @@
             width: 100%; 
             height: 100%; 
             display: flex;
-            /* FIX BACKGROUND BOCOR HP */
-            background-color: #f4f7f6; /* Warna solid nutupin gambar gedung */
+            background-color: #f4f7f6; /* Warna solid penutup background gedung */
             position: fixed;
             top: 0; left: 0;
             z-index: 10;
@@ -333,19 +332,16 @@
         .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
         .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
 
-        /* TOMBOL UTAMA */
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
         .btn-prev { background-color: var(--secondary); } 
         .btn-next { background-color: var(--primary); }   
         .btn-finish { background-color: var(--success); width: 100%; }
-        /* TOMBOL UNGU (REQUEST) - FIX WARNA */
         .btn-purple { background-color: #8e44ad !important; color: white !important; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
         .feedback-box.show { display: block; }
 
-        /* WATERMARK (FIX WARNA ABU-ABU) */
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
@@ -386,7 +382,7 @@
             display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
             padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
-            color: #ffeb3b; background: rgba(0, 77, 0, 0.9); /* Hijau Transparan */
+            color: #ffeb3b; background: rgba(0, 77, 0, 0.9);
         }
         
         @media (max-width: 768px) {
@@ -397,7 +393,15 @@
                 z-index: 100; position: fixed; top: 0; left: 0;
             }
             .sidebar-left .timer-container { display: none !important; }
-            .modul-selector { max-height: none !important; height: calc(100% - 80px); overflow-y: auto; }
+            
+            /* FIX 2: BANTALAN SCROLL MODUL DI HP */
+            .modul-selector { 
+                max-height: none !important; 
+                height: calc(100% - 80px); 
+                overflow-y: auto; 
+                padding-bottom: 150px !important; /* Biar modul terakhir naik ke atas */
+            }
+
             .main-content { width: 100% !important; margin: 0 !important; padding: 15px !important; flex: 1; }
             .sidebar-right { display: none; }
             .sidebar-right.show-mobile {
@@ -425,7 +429,7 @@
             
             body.ujian-berjalan .sidebar-left { display: none; }
 
-            /* FIX SCROLL HP: Tambah padding bawah biar 96-100 kelihatan */
+            /* FIX SCROLL SOAL HP */
             .nav-container { padding-bottom: 150px !important; }
         }
 
@@ -774,15 +778,26 @@
 
     window.toggleMobileSidebar = function() {
         const sidebar = document.querySelector('.sidebar-right');
+        const btnSoal = document.getElementById('btnMobileNav');
+        const btnModul = document.getElementById('btnMobileModul');
         const floatingTimer = document.getElementById('floatingTimer');
+        
         sidebar.classList.toggle('show-mobile');
+
         if (sidebar.classList.contains('show-mobile')) {
+            // Kalau Sidebar KEBUEKA -> Umpetin Tombol Navigasi & Timer
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
+            if(btnSoal) btnSoal.style.display = 'none';
+            if(btnModul) btnModul.style.display = 'none';
         } else {
-            if (document.body.classList.contains('ujian-berjalan') && floatingTimer) {
-                floatingTimer.style.display = 'block';
+            // Kalau Sidebar DITUTUP -> Munculin lagi
+            if (document.body.classList.contains('ujian-berjalan')) {
+                if(floatingTimer) floatingTimer.style.display = 'block';
+                if(btnSoal) btnSoal.style.display = 'flex';
+                if(btnModul) btnModul.style.display = 'flex';
             }
         }
+
         if (!document.getElementById('btnCloseMobile')) {
             const btnClose = document.createElement('button');
             btnClose.id = 'btnCloseMobile';
@@ -795,13 +810,21 @@
 
     window.toggleMobileModul = function() {
         const sidebar = document.querySelector('.sidebar-left');
-        const timer = document.getElementById('floatingTimer');
         const btnSoal = document.getElementById('btnMobileNav');
         const btnModul = document.getElementById('btnMobileModul');
+        const timer = document.getElementById('floatingTimer');
+
         if (sidebar.style.display === 'flex') {
+            // TUTUP SIDEBAR
             sidebar.style.display = ''; 
+            // Munculin tombol lagi
+             if(timer) timer.style.display = 'block';
+            if(btnSoal) btnSoal.style.display = 'flex';
+            if(btnModul) btnModul.style.display = 'flex';
         } else {
+            // BUKA SIDEBAR
             sidebar.style.display = 'flex'; 
+            // Umpetin tombol
             if(timer) timer.style.display = 'none';
             if(btnSoal) btnSoal.style.display = 'none';
             if(btnModul) btnModul.style.display = 'none';
