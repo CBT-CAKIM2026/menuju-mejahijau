@@ -12,15 +12,16 @@
     <style>
         /* --- PALET WARNA MAHKAMAH AGUNG (HIJAU - EMAS - HITAM) --- */
         :root {
-            --primary: #004d00;   /* Hijau Botol Tua (Header & Brand) */
-            --secondary: #1a1a1a; /* Hitam Elegan (Tombol Back/Secondary) */
-            --accent: #2e7d32;    /* Hijau Daun (Tombol Next/Active) */
-            --gold: #d4af37;      /* Emas (Highlight Active & Border) */
-            --light: #f1f8e9;     /* Krem Kehijauan (Background Hover) */
-            --filled: #7f8c8d;    /* Abu (Soal Terisi) */
-            --success: #2e7d32;   /* Hijau Sukses */
-            --danger: #c0392b;    /* Merah Error */
-            --warning: #f39c12;   /* Kuning Ragu */
+            --primary: #004d00;   /* Hijau Botol Tua */
+            --secondary: #1a1a1a; /* Hitam Elegan */
+            --accent: #2e7d32;    /* Hijau Daun */
+            --gold: #d4af37;      /* Emas Mewah */
+            --purple: #8e44ad;    /* Ungu (Request Khusus Grafik) */
+            --light: #f1f8e9;     
+            --filled: #7f8c8d;    
+            --success: #2e7d32;   
+            --danger: #c0392b;    
+            --warning: #f39c12;   
             --pass: #2ecc71;
             --fail: #e74c3c;
         }
@@ -65,12 +66,12 @@
             align-items: center;
             padding: 15px 40px; 
             width: 100%; 
-            background-color: var(--primary); /* Hijau MA */
+            background-color: var(--primary);
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: sticky; top: 0; z-index: 100; 
             box-sizing: border-box;
-            border-bottom: 3px solid var(--gold); /* Garis Emas di bawah Navbar */
+            border-bottom: 3px solid var(--gold);
         }
         
         .nav-brand {
@@ -189,7 +190,7 @@
         }
 
         /* =========================================
-           APP STYLES (HIJAU TEMA)
+           APP STYLES
            ========================================= */
         #appSection { display: none; width: 100%; height: 100%; display: flex; }
 
@@ -207,7 +208,6 @@
         body.mode-focus .sidebar-left { margin-left: -280px; }
         body.mode-focus #floatingTimer { display: block !important; }
 
-        /* HEADER SIDEBAR: HIJAU MA + GARIS EMAS */
         .sidebar-header {
             padding: 20px;
             background-color: var(--primary);
@@ -236,7 +236,6 @@
 
         .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
 
-        /* LIST MODUL: Hover Hijau Muda, Aktif Hijau Tua + Emas */
         .modul-btn {
             display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
             background: white; border: 1px solid #ddd; border-radius: 6px;
@@ -248,7 +247,7 @@
             background: var(--primary); 
             color: white; 
             border-color: var(--primary); 
-            border-left: 5px solid var(--gold); /* Aksen Emas di kiri */
+            border-left: 5px solid var(--gold);
         }
 
         .main-content {
@@ -291,7 +290,6 @@
         .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
         .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
-        /* NAVIGASI NOMOR SOAL: Aktif jadi Emas/Hijau */
         .nav-btn {
             aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
             border-radius: 6px; font-weight: bold; display: flex; align-items: center;
@@ -325,22 +323,27 @@
         .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
         .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
 
-        /* TOMBOL NEXT/PREV: Hijau dan Hitam */
+        /* TOMBOL UTAMA */
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-prev { background-color: var(--secondary); } /* Hitam */
-        .btn-next { background-color: var(--primary); }   /* Hijau */
+        .btn-prev { background-color: var(--secondary); } 
+        .btn-next { background-color: var(--primary); }   
         .btn-finish { background-color: var(--success); width: 100%; }
+        /* TOMBOL UNGU (REQUEST) */
+        .btn-purple { background-color: var(--purple) !important; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
         .feedback-box.show { display: block; }
 
+        /* WATERMARK EMAS (REQUEST) */
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
             border-top: 1px solid rgba(255,255,255,0.5); text-align: center; padding: 12px 0;
-            color: var(--primary); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
+            color: var(--gold); /* EMAS */
+            font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
+            text-shadow: 0px 1px 1px rgba(0,0,0,0.1);
         }
 
         .result-overlay { 
@@ -599,7 +602,7 @@
                 <button onclick="startReviewWrong()" id="btnReviewWrong" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
                 <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
                 <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
-                <button class="btn" onclick="closeResult(); openStats();" style="width:100%; background:var(--primary);">Lihat Grafik Lengkap</button>
+                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%; color: white;">Lihat Grafik Lengkap</button>
                 <button class="btn" onclick="backToMenu()" style="width:100%; background:var(--filled); margin-top:5px;">🏠 Kembali ke Menu Utama</button>
             </div>
         </div>
@@ -1395,7 +1398,7 @@
                         borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
                     }]
                 },
-                options: { animation: { duration: 1000 }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+                options: { animation: { duration: 1500, easing: 'easeOutQuart' }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
             });
 
             let modulStats = {};
@@ -1435,7 +1438,10 @@
                     labels: labels,
                     datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+                options: { 
+                    animation: { duration: 1500, easing: 'easeOutBounce' }, // ANIMASI BARU (Bawah ke Atas)
+                    responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } 
+                }
             });
 
         } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
