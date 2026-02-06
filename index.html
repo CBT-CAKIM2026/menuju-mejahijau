@@ -865,7 +865,14 @@
         const optCont = document.getElementById('optionsContainer');
         const footer = document.querySelector('.footer-nav');
         
-        if(qText) qText.innerHTML = '<div style="text-align:center; padding:30px;">⏳ <b>Sedang mengambil soal dari server...</b><br><small>Tunggu sebentar ya!</small></div>';
+        // GANTI BAGIAN LOADING LAMA DENGAN INI:
+        if(qText) qText.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <p style="font-weight: 600; color: #555; animation: blink 1s infinite;">Sedang menyiapkan soal...</p>
+            </div>
+            <style>@keyframes blink { 50% { opacity: 0.5; } }</style>
+        `;
         if(optCont) optCont.innerHTML = '';
         if(footer) footer.style.visibility = 'hidden';
 
@@ -1519,6 +1526,28 @@
         document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
     }
 
+</script>
+    // 1. Matikan Klik Kanan
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. Matikan Blok/Select Teks
+    document.addEventListener('selectstart', event => event.preventDefault());
+
+    // 3. Matikan Shortcut Keyboard (Copy, Paste, Inspect Element)
+    document.addEventListener('keydown', function(e) {
+        // Cegah F12, Ctrl+Shift+I, Ctrl+Shift+J (Inspect Element)
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Cegah Ctrl+C, Ctrl+V, Ctrl+U (View Source)
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'a')) {
+            e.preventDefault();
+            alert("⚠️ Eits! Dilarang menyalin atau mengintip kode soal.");
+            return false;
+        }
+    });
 </script>
 </body>
 </html>
