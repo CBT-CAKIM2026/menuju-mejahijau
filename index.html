@@ -149,40 +149,77 @@
             font-weight: 600;
         }
 
+        /* --- TAMPILAN KHUSUS HP (REVISI FINAL: PROPORSIONAL) --- */
         @media (max-width: 992px) {
-            .landing-nav { padding: 15px 20px; gap: 10px; }
-            .nav-brand { font-size: 1rem; }
-            .nav-login-btn { padding: 8px 12px; font-size: 0.85rem; }
+            /* Navbar Lebih Ramping */
+            .landing-nav { 
+                padding: 10px 15px; /* Padding dikecilin */
+                gap: 5px; 
+            }
+            /* Judul Header Dikecilin */
+            .nav-brand { 
+                font-size: 0.9rem; /* Ukuran font pas di HP */
+                white-space: nowrap; /* Biar sejajar */
+            }
+            /* Tombol Login Lebih Compact */
+            .nav-login-btn { 
+                padding: 6px 12px; 
+                font-size: 0.75rem; /* Font tombol kecilin dikit */
+                border-radius: 4px;
+            }
+            .nav-login-btn img {
+                width: 18px; /* Icon Google disesuaikan */
+                height: 18px;
+            }
             .nav-login-btn span { display: inline-block; } 
 
             .hero-section {
                 display: flex;
                 flex-direction: column;
-                padding: 30px 20px;
-                gap: 30px;
+                padding: 20px 20px;
+                gap: 20px;
+                justify-content: center;
+                min-height: 80vh;
             }
 
             .hero-left {
                 margin-left: 0; padding-right: 0;
-                text-align: center; margin-top: 20px;
+                text-align: center; margin-top: 10px;
             }
-            .hero-quote { font-size: 1.8rem; }
+            .hero-quote { font-size: 1.6rem; } /* Font judul konten dikecilin dikit */
 
             .hero-right {
                 padding-left: 0;
                 align-items: center; 
                 justify-content: center;
                 width: 100%;
+                padding-bottom: 40px; /* Kasih ruang buat footer */
             }
 
             .hero-features li {
                 background: rgba(255,255,255,0.6); 
-                padding: 10px 15px;
-                border-radius: 8px;
+                padding: 8px 12px;
+                border-radius: 6px;
                 width: 100%;
                 justify-content: flex-start;
+                font-size: 0.85rem;
+                margin-bottom: 5px;
             }
-            .dev-footer { text-align: center; margin-top: 20px; }
+            
+            /* Footer Jadi Watermark di Bawah */
+            .dev-footer { 
+                position: fixed; /* Nempel di bawah layar */
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                text-align: center; 
+                font-size: 0.65rem; /* Font kecil estetik */
+                padding: 8px 0;
+                margin: 0;
+                background: rgba(255,255,255,0.8); /* Background transparan */
+                border-top: none;
+                z-index: 101;
+            }
         }
 
         /* =========================================
