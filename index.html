@@ -1040,7 +1040,6 @@
             btnNext.onclick = () => changeQuestion(1);
         }
         
-        // FIX: Prioritaskan logika Review Mode
         if (isReviewMode) {
              btnNext.style.display = 'block';
              btnNext.innerHTML = "Lanjut (Salah) ❯";
@@ -1100,6 +1099,13 @@
     window.submitQuiz = function() {
         if(timerInterval) clearInterval(timerInterval);
         isSubmitted = true;
+        
+        // FIX 1: Matikan Timer
+        document.getElementById('floatingTimer').style.display = 'none';
+        
+        // FIX 1.5: Matikan Mode Fokus
+        document.body.classList.remove('mode-focus');
+
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
@@ -1203,7 +1209,6 @@
         }
         
         isReviewMode = true;
-        // Pastikan overlay tertutup
         const overlay = document.getElementById('resultOverlay');
         if(overlay) overlay.style.setProperty('display', 'none', 'important');
         
@@ -1213,7 +1218,6 @@
         ind.style.color = "#c62828";
         ind.style.border = "1px solid #ffcdd2";
         
-        // Load soal salah pertama
         loadQuestion(wrongIndices[0]);
     };
 
@@ -1243,6 +1247,10 @@
    window.backToMenu = function() {
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
             if(window.timerInterval) clearInterval(window.timerInterval);
+            
+            // FIX 2: Pastikan Mode Fokus Hilang
+            document.body.classList.remove('mode-focus');
+
             const btnMobile = document.getElementById('btnMobileNav');
             const btnModul = document.getElementById('btnMobileModul');
             if(btnMobile) btnMobile.style.display = 'none';
