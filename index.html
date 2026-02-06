@@ -26,6 +26,18 @@
             --fail: #e74c3c;
         }
 
+        /* FIX CSS BIAR ANTI BLOK TEXT */
+        * {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
+        /* Kecualikan input biar tetep bisa ngetik */
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('ma.jpeg'); 
@@ -466,7 +478,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
     <div id="floatingTimer">00:00:00</div>
     <button id="btnMobileModul" onclick="toggleMobileModul()">📚 Daftar Modul</button>
@@ -865,7 +877,6 @@
         const optCont = document.getElementById('optionsContainer');
         const footer = document.querySelector('.footer-nav');
         
-        // GANTI BAGIAN LOADING LAMA DENGAN INI:
         if(qText) qText.innerHTML = `
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;">
                 <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
@@ -1527,27 +1538,36 @@
     }
 
 </script>
+
+<script>
     // 1. Matikan Klik Kanan
     document.addEventListener('contextmenu', event => event.preventDefault());
 
     // 2. Matikan Blok/Select Teks
     document.addEventListener('selectstart', event => event.preventDefault());
+    document.addEventListener('dragstart', event => event.preventDefault());
 
-    // 3. Matikan Shortcut Keyboard (Copy, Paste, Inspect Element)
+    // 3. Matikan Shortcut Keyboard
     document.addEventListener('keydown', function(e) {
-        // Cegah F12, Ctrl+Shift+I, Ctrl+Shift+J (Inspect Element)
-        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) {
+        // Cegah F12, Inspect, Copy Paste
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+            (e.ctrlKey && e.key === 'u') || 
+            (e.ctrlKey && e.key === 'U') || 
+            (e.ctrlKey && e.key === 's') || 
+            (e.ctrlKey && e.key === 'p') || 
+            (e.ctrlKey && e.key === 'a') || 
+            (e.ctrlKey && e.key === 'c')
+        ) {
             e.preventDefault();
-            return false;
-        }
-        
-        // Cegah Ctrl+C, Ctrl+V, Ctrl+U (View Source)
-        if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'a')) {
-            e.preventDefault();
-            alert("⚠️ Eits! Dilarang menyalin atau mengintip kode soal.");
+            e.stopPropagation();
+            alert("⚠️ Eits! Fitur ini dikunci demi keamanan ujian.");
             return false;
         }
     });
 </script>
+
 </body>
 </html>
