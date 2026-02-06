@@ -328,22 +328,21 @@
         .btn-prev { background-color: var(--secondary); } 
         .btn-next { background-color: var(--primary); }   
         .btn-finish { background-color: var(--success); width: 100%; }
-        /* TOMBOL UNGU (REQUEST) */
-        .btn-purple { background-color: var(--purple) !important; }
+        /* TOMBOL UNGU (REQUEST) - FIX WARNA */
+        .btn-purple { background-color: #8e44ad !important; color: white !important; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
         .feedback-box.show { display: block; }
 
-        /* WATERMARK EMAS (REQUEST) */
+        /* WATERMARK ABU-ABU (#666) - SESUAI REQUEST BARU */
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
             border-top: 1px solid rgba(255,255,255,0.5); text-align: center; padding: 12px 0;
-            color: var(--gold); /* EMAS */
-            font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;
+            color: #666; /* WARNA SAMAIN KAYA DEVELOPED BY */
+            font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
-            text-shadow: 0px 1px 1px rgba(0,0,0,0.1);
         }
 
         .result-overlay { 
@@ -602,7 +601,7 @@
                 <button onclick="startReviewWrong()" id="btnReviewWrong" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
                 <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
                 <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
-                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%; color: white;">Lihat Grafik Lengkap</button>
+                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%;">Lihat Grafik Lengkap</button>
                 <button class="btn" onclick="backToMenu()" style="width:100%; background:var(--filled); margin-top:5px;">🏠 Kembali ke Menu Utama</button>
             </div>
         </div>
@@ -1348,6 +1347,7 @@
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
+    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
     window.openStats = async function() {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
@@ -1383,66 +1383,78 @@
                 });
             }
 
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
-            window.statsChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
-                    datasets: [{
-                        label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
-                        borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                        borderWidth: 2, tension: 0.3, fill: true
-                    }, {
-                        label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
-                        borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
-                    }]
-                },
-                options: { animation: { duration: 1500, easing: 'easeOutQuart' }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
-            });
+            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                            borderWidth: 2, tension: 0.3, fill: true
+                        }, {
+                            label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
+                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
+                        }]
+                    },
+                    options: { 
+                        animation: { duration: 1500, easing: 'easeOutQuart' }, 
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } } 
+                    }
+                });
 
-            let modulStats = {};
-            allHistory.forEach(h => {
-                if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
-                modulStats[h.modul].total += h.score;
-                modulStats[h.modul].count++;
-            });
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
 
-            // --- FIX SORTING MODUL (1, 2, 3 ... 10, 11) ---
-            const sortedKeys = Object.keys(modulStats).sort((a, b) => {
-                // Ambil angka dari string "modul1", "modul13.1"
-                const numA = parseFloat(a.replace(/[^\d.]/g, ''));
-                const numB = parseFloat(b.replace(/[^\d.]/g, ''));
-                return numA - numB;
-            });
+                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                    const numA = parseFloat(a.replace(/[^\d.]/g, ''));
+                    const numB = parseFloat(b.replace(/[^\d.]/g, ''));
+                    return numA - numB;
+                });
 
-            const labels = [];
-            const dataScores = [];
-            const backgroundColors = [];
-            const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+                const labels = [];
+                const dataScores = [];
+                const backgroundColors = [];
+                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
 
-            sortedKeys.forEach((key, index) => {
-                let niceName = key;
-                let btn = document.getElementById('btn-'+key);
-                if(btn) niceName = btn.innerText.split(':')[0]; 
-                labels.push(niceName);
-                dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
-                backgroundColors.push(colors[index % colors.length]);
-            });
+                sortedKeys.forEach((key, index) => {
+                    let niceName = key;
+                    let btn = document.getElementById('btn-'+key);
+                    if(btn) niceName = btn.innerText.split(':')[0]; 
+                    labels.push(niceName);
+                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
+                    backgroundColors.push(colors[index % colors.length]);
+                });
 
-            const ctxAll = document.getElementById('allModulesChart').getContext('2d');
-            if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
-            window.allModulesChartInstance = new Chart(ctxAll, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
-                },
-                options: { 
-                    animation: { duration: 1500, easing: 'easeOutBounce' }, // ANIMASI BARU (Bawah ke Atas)
-                    responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } 
-                }
-            });
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
+                    },
+                    options: { 
+                        // ANIMASI FIX: DARI BAWAH KE ATAS
+                        animation: { 
+                            duration: 1500, 
+                            easing: 'easeOutBounce',
+                            y: { from: 0 } // Paksa mulai tumbuh dari 0
+                        },
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } }, 
+                        plugins: { legend: { display: false } } 
+                    }
+                });
+            }, 300); // INI JEDA WAKTUNYA (300ms)
 
         } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
     };
