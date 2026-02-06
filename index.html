@@ -16,7 +16,7 @@
             --secondary: #1a1a1a; /* Hitam Elegan */
             --accent: #2e7d32;    /* Hijau Daun */
             --gold: #d4af37;      /* Emas Mewah */
-            --purple: #8e44ad;    /* Ungu (Request Khusus Grafik) */
+            --purple: #8e44ad;    /* Ungu (Grafik) */
             --light: #f1f8e9;     
             --filled: #7f8c8d;    
             --success: #2e7d32;   
@@ -26,16 +26,25 @@
             --fail: #e74c3c;
         }
 
-        /* FIX CSS BIAR ANTI BLOK TEXT */
-        * {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+        /* --- ANTI CURANG (CSS LEVEL) --- */
+        /* Default: User biasa GABISA blok teks */
+        body:not(.is-admin) * {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        /* Kecualikan input biar tetep bisa ngetik */
+
+        /* Khusus ADMIN: BISA blok teks & klik kanan */
+        body.is-admin * {
+            -webkit-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+
+        /* Pengecualian: Input form selalu bisa diketik */
         input, textarea {
-            -webkit-user-select: text;
-            user-select: text;
+            -webkit-user-select: text !important;
+            user-select: text !important;
         }
 
         body {
@@ -478,7 +487,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+<body>
 
     <div id="floatingTimer">00:00:00</div>
     <button id="btnMobileModul" onclick="toggleMobileModul()">📚 Daftar Modul</button>
@@ -679,6 +688,7 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyAC4Tskg8XC1N0a13xcsV3A1Mq_8mDnY-A",
         authDomain: "simulasi-cbt-cakim-2026.firebaseapp.com",
@@ -688,6 +698,9 @@
         appId: "1:209182753461:web:1aa2201fa7c73e581234fc",
         measurementId: "G-NDNKMSMWV2"
     };
+
+    // --- GANTI EMAIL ADMIN DISINI ---
+    const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
 
     let db, auth, provider, currentUser;
     if (firebaseConfig.apiKey) {
@@ -709,6 +722,15 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
+                
+                // --- LOGIKA ADMIN SAKTI ---
+                if (user.email === ADMIN_EMAIL) {
+                    document.body.classList.add('is-admin'); // Aktifkan Mode Sakti
+                    console.log("Welcome Admin! Anti-Cheat Disabled.");
+                } else {
+                    document.body.classList.remove('is-admin'); // Mode Normal (Terkunci)
+                }
+
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
                 tampilkanLobby();
@@ -716,6 +738,7 @@
                 document.getElementById('userAvatar').src = user.photoURL;
                 document.getElementById('floatingTimer').style.display = 'none';
             } else {
+                document.body.classList.remove('is-admin'); // Reset
                 document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
                 document.getElementById('appSection').style.display = 'none';
                 document.getElementById('floatingTimer').style.display = 'none';
@@ -1541,14 +1564,26 @@
 
 <script>
     // 1. Matikan Klik Kanan
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('contextmenu', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
 
     // 2. Matikan Blok/Select Teks
-    document.addEventListener('selectstart', event => event.preventDefault());
-    document.addEventListener('dragstart', event => event.preventDefault());
+    document.addEventListener('selectstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+    
+    document.addEventListener('dragstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
 
     // 3. Matikan Shortcut Keyboard
     document.addEventListener('keydown', function(e) {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+
         // Cegah F12, Inspect, Copy Paste
         if (
             e.key === 'F12' || 
