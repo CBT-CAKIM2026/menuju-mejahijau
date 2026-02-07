@@ -1778,21 +1778,33 @@
     // --- FITUR 2: LOAD & EDIT ---
     let currentAdminModul = "";
 
+   // --- GANTI FUNGSI INI SAJA ---
     window.loadSoalAdmin = async () => {
         const modulId = document.getElementById('editModulTarget').value.trim();
         if(!modulId) return alert("Isi nama modul!");
         currentAdminModul = modulId;
 
         const listDiv = document.getElementById('listSoalAdmin');
-        listDiv.innerHTML = "Loading...";
+        listDiv.innerHTML = "Loading... (Sedang mengambil data)";
 
         try {
+            // Referensi ke collection
             const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
-            // Urutkan biar gampang nyarinya
-            const q = query(qRef, orderBy("createdAt", "desc")); 
-            const snapshot = await getDocs(q); 
+            
+            // REVISI: Hapus 'orderBy' biar data yang gak punya tanggal tetap muncul
+            // const q = query(qRef, orderBy("createdAt", "desc")); <--- INI BIANG KEROKNYA
+            
+            // Kita pakai getDocs langsung ke qRef (ambil semua tanpa filter)
+            const snapshot = await getDocs(qRef); 
 
             listDiv.innerHTML = "";
+            
+            if (snapshot.empty) {
+                listDiv.innerHTML = "<p style='padding:10px; color:red'>Zonk! Modul kosong atau ID salah.</p>";
+                return;
+            }
+
+            let counter = 0;
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 const div = document.createElement('div');
@@ -1800,12 +1812,20 @@
                 div.style.padding = "8px";
                 div.style.cursor = "pointer";
                 div.style.fontSize = "0.85rem";
-                div.innerText = (data.q || "").substring(0, 60) + "...";
+                
+                // Tampilkan sedikit teks pertanyaan biar gampang dikenali
+                // Kita kasih fallback kalau 'q' kosong, cek 'pertanyaan'
+                const teksSoal = data.q || data.pertanyaan || "(Soal Tanpa Teks)";
+                div.innerText = `${++counter}. ${teksSoal.substring(0, 50)}...`;
+                
+                // Pas diklik, isi form di kanan
                 div.onclick = () => populateEditForm(docSnap.id, data);
                 listDiv.appendChild(div);
             });
+            
         } catch (e) {
-            alert("Gagal load (mungkin salah nama modul): " + e.message);
+            console.error(e); // Cek Console (F12) kalau masih error
+            alert("Gagal load: " + e.message + "\n\nTips: Cek apakah ID Modul persis sama (huruf besar/kecil)?");
         }
     };
 
@@ -1905,3 +1925,4 @@
 
 </body>
 </html>
+
