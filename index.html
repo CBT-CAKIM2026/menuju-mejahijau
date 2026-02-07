@@ -10,250 +10,92 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* --- PALET WARNA MAHKAMAH AGUNG (HIJAU - EMAS - HITAM) --- */
+        /* --- PALET WARNA MAHKAMAH AGUNG --- */
         :root {
-            --primary: #004d00;   /* Hijau Botol Tua */
-            --secondary: #1a1a1a; /* Hitam Elegan */
-            --accent: #2e7d32;    /* Hijau Daun */
-            --gold: #d4af37;      /* Emas Mewah */
-            --purple: #8e44ad;    /* Ungu (Grafik) */
-            --light: #f1f8e9;     
-            --filled: #7f8c8d;    
-            --success: #2e7d32;   
-            --danger: #c0392b;    
-            --warning: #f39c12;   
-            --pass: #2ecc71;
-            --fail: #e74c3c;
+            --primary: #004d00; --secondary: #1a1a1a; --accent: #2e7d32;
+            --gold: #d4af37; --purple: #8e44ad; --light: #f1f8e9;
+            --filled: #7f8c8d; --success: #2e7d32; --danger: #c0392b;
+            --warning: #f39c12; --pass: #2ecc71; --fail: #e74c3c;
         }
 
-        /* --- ANTI CURANG (CSS LEVEL) --- */
-        body:not(.is-admin) * {
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        body.is-admin * {
-            -webkit-user-select: text !important;
-            -ms-user-select: text !important;
-            user-select: text !important;
-        }
-        input, textarea {
-            -webkit-user-select: text !important;
-            user-select: text !important;
-        }
+        /* --- ANTI CURANG --- */
+        body:not(.is-admin) * { -webkit-user-select: none; user-select: none; }
+        body.is-admin * { -webkit-user-select: text !important; user-select: text !important; }
+        input, textarea { -webkit-user-select: text !important; user-select: text !important; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('ma.jpeg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            height: 100dvh; /* Modern Mobile Fix */
-            color: #333;
-            overflow: hidden;
-            transition: all 0.3s;
+            background-image: url('ma.jpeg'); background-size: cover;
+            background-position: center; background-attachment: fixed;
+            margin: 0; display: flex; height: 100dvh; /* FIX MOBILE HEIGHT */
+            color: #333; overflow: hidden; transition: all 0.3s;
         }
 
-        /* =========================================
-           LOGIN SCREEN
-           ========================================= */
+        /* --- LOGIN SCREEN --- */
         #loginOverlay {
             background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
                         url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 99999; /* Paling Atas */
-            overflow-y: auto;
-            overflow-x: hidden;
-            font-family: 'Poppins', sans-serif;
-            color: #333;
-            display: block !important; 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 99999; overflow-y: auto; font-family: 'Poppins', sans-serif;
+            color: #333; display: block !important; 
         }
-
         .landing-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px; 
-            width: 100%; 
-            background-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: sticky; top: 0; z-index: 100; 
-            box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; width: 100%; background-color: var(--primary);
+            color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100; box-sizing: border-box;
             border-bottom: 3px solid var(--gold);
         }
-        
-        .nav-brand {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px;
-        }
-        
+        .nav-brand { font-size: 1.3rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px; }
         .nav-login-btn {
-            background-color: #ffffff;
-            color: var(--primary);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+            background-color: #ffffff; color: var(--primary); border: none;
+            padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
         }
         .nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 
         .hero-section {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            padding: 40px 60px 10px 60px;
-            max-width: 1300px;
-            margin: 0 auto;
-            min-height: 80vh;
-            box-sizing: border-box;
-            position: relative;
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            padding: 40px 60px 10px 60px; max-width: 1300px; margin: 0 auto;
+            min-height: 80vh; box-sizing: border-box; position: relative;
         }
-
-        .hero-left {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-right: 20px;
-            margin-left: -40px;
-        }
-
-        .hero-quote {
-            font-size: 2.8rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 10px;
-            color: #111;
-        }
+        .hero-left { display: flex; flex-direction: column; justify-content: center; padding-right: 20px; margin-left: -40px; }
+        .hero-quote { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; }
         .highlight-text { color: var(--primary); }
-
-        .hero-right {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-start;
-            padding-bottom: 25px;
-            padding-left: 20px;
-        }
-
+        .hero-right { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding-bottom: 25px; padding-left: 20px; }
         .hero-features { list-style: none; padding: 0; margin: 0; }
-        .hero-features li {
-            font-size: 1rem; 
-            color: #444; 
-            margin-bottom: 8px;
-            display: flex; align-items: center; 
-            gap: 15px;
-            font-weight: 600;
-        }
+        .hero-features li { font-size: 1rem; color: #444; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; font-weight: 600; }
         .feature-icon { color: var(--primary); font-size: 1.1rem; width: 25px; text-align: center; }
-
-        .dev-footer {
-            grid-column: 1 / -1;
-            font-size: 0.85rem; 
-            color: #666; 
-            margin-top: 5px; 
-            padding-top: 15px; 
-            border-top: 1px solid #bbb;
-            font-weight: 600;
-        }
+        .dev-footer { grid-column: 1 / -1; font-size: 0.85rem; color: #666; margin-top: 5px; padding-top: 15px; border-top: 1px solid #bbb; font-weight: 600; }
 
         @media (max-width: 992px) {
             .landing-nav { padding: 10px 15px; gap: 5px; }
             .nav-brand { font-size: 0.9rem; }
-            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; }
-            .nav-login-btn img { width: 18px; height: 18px; }
-            .nav-login-btn span { display: inline-block; } 
-
-            .hero-section {
-                display: flex;
-                flex-direction: column;
-                padding: 20px 20px;
-                gap: 20px;
-                justify-content: center;
-                min-height: 80vh;
-            }
-
+            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .hero-section { display: flex; flex-direction: column; padding: 20px; gap: 20px; justify-content: center; }
             .hero-left { margin-left: 0; padding-right: 0; text-align: center; margin-top: 10px; }
             .hero-quote { font-size: 1.6rem; } 
-
-            .hero-right {
-                padding-left: 0; align-items: center; justify-content: center; width: 100%;
-                padding-bottom: 40px; 
-            }
-
-            .hero-features li {
-                background: rgba(255,255,255,0.6); 
-                padding: 8px 12px; border-radius: 6px; width: 100%;
-                justify-content: flex-start; font-size: 0.85rem; margin-bottom: 5px;
-            }
-            
-            .dev-footer { 
-                position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; 
-                font-size: 0.65rem; padding: 8px 0; margin: 0;
-                background: rgba(255,255,255,0.8); border-top: none; z-index: 101;
-            }
+            .hero-right { padding-left: 0; align-items: center; justify-content: center; width: 100%; padding-bottom: 40px; }
+            .dev-footer { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 0.65rem; padding: 8px 0; background: rgba(255,255,255,0.8); z-index: 101; }
         }
 
-        /* =========================================
-           APP STYLES
-           ========================================= */
-        #appSection { 
-            display: none; 
-            width: 100%; 
-            height: 100%; 
-            display: flex;
-            background-color: #f4f7f6; 
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 10;
-        }
-
+        /* --- APP STYLES --- */
+        #appSection { display: none; width: 100%; height: 100%; display: flex; background-color: #f4f7f6; position: fixed; top: 0; left: 0; z-index: 10; }
         .sidebar-left {
-            width: 280px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            flex-shrink: 0;
-            z-index: 10;
+            width: 280px; background-color: white; border-right: 1px solid #ddd;
+            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10;
             transition: margin-left 0.3s ease;
         }
         body.mode-focus .sidebar-left { margin-left: -280px; }
         body.mode-focus #floatingTimer { display: block !important; }
 
-        .sidebar-header {
-            padding: 20px;
-            background-color: var(--primary);
-            color: white;
-            text-align: center;
-            border-bottom: 3px solid var(--gold);
-        }
-
-        .user-profile {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 10px; font-size: 0.9rem;
-        }
+        .sidebar-header { padding: 20px; background-color: var(--primary); color: white; text-align: center; border-bottom: 3px solid var(--gold); }
+        .user-profile { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; font-size: 0.9rem; }
         .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--gold); }
-
         .timer-container {
-            background: rgba(0,0,0,0.2);
-            padding: 10px; margin-top: 15px; border-radius: 5px;
-            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; 
-            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
-            display: block; 
+            background: rgba(0,0,0,0.2); padding: 10px; margin-top: 15px; border-radius: 5px;
+            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; border: 2px solid rgba(255,255,255,0.1);
         }
         .timer-green { background-color: var(--success) !important; color: white !important; border-color: var(--pass) !important; }
         .timer-yellow { background-color: var(--warning) !important; color: black !important; border-color: #f1c40f !important; }
@@ -261,26 +103,16 @@
         @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
 
         .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
-
         .modul-btn {
             display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
-            background: white; border: 1px solid #ddd; border-radius: 6px;
-            cursor: pointer; text-align: left; font-size: 0.9rem; font-weight: 600;
-            color: var(--secondary); transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: white; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;
+            text-align: left; font-size: 0.9rem; font-weight: 600; color: var(--secondary);
+            transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .modul-btn:hover { background: var(--light); transform: translateX(2px); border-color: var(--primary); }
-        .modul-btn.active-modul { 
-            background: var(--primary); 
-            color: white; 
-            border-color: var(--primary); 
-            border-left: 5px solid var(--gold);
-        }
+        .modul-btn.active-modul { background: var(--primary); color: white; border-color: var(--primary); border-left: 5px solid var(--gold); }
 
-        .main-content {
-            flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
-            overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease;
-        }
-
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease; }
         .card {
             background: white; padding: 40px; border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 900px;
@@ -289,56 +121,31 @@
 
         .sidebar-right {
             width: 300px; background-color: white; border-left: 1px solid #ddd;
-            display: flex; flex-direction: column; height: 100%;
-            flex-shrink: 0; z-index: 10;
+            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10;
         }
-
-        .right-header {
-            padding: 15px; border-bottom: 1px solid #eee; display: flex;
-            justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap;
-        }
-
-        .btn-small {
-            border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;
-            font-size: 0.75rem; font-weight: bold; display: flex; align-items: center;
-            gap: 5px; transition: 0.2s; color: white; flex: 1; justify-content: center;
-        }
+        .right-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap; }
+        .btn-small { border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 5px; color: white; flex: 1; justify-content: center; }
         .btn-logout { background: var(--danger); }
         .btn-stats { background: var(--accent); }
         .btn-rank { background: var(--warning); color: black; }
-        .btn-small:hover { opacity: 0.9; }
-
-        .sidebar-info {
-            padding: 15px; font-size: 0.8rem; text-align: center;
-            background: #f9f9f9; border-bottom: 1px solid #eee;
-        }
-
+        .sidebar-info { padding: 15px; font-size: 0.8rem; text-align: center; background: #f9f9f9; border-bottom: 1px solid #eee; }
         .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
         .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-
         .nav-btn {
             aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
             border-radius: 6px; font-weight: bold; display: flex; align-items: center;
             justify-content: center; font-size: 0.9rem; color: #555; transition: all 0.2s;
         }
         .nav-btn:hover { background-color: var(--light); }
-        .nav-btn.active { 
-            border: 2px solid var(--primary); 
-            background-color: var(--light);
-            color: var(--primary);
-            box-shadow: 0 0 5px rgba(0, 77, 0, 0.3); 
-            transform: scale(1.1); z-index: 2; 
-        }
+        .nav-btn.active { border: 2px solid var(--primary); background-color: var(--light); color: var(--primary); transform: scale(1.1); z-index: 2; }
         .nav-btn.filled { background-color: var(--secondary); color: white; border-color: var(--secondary); }
         .nav-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
         .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
         .nav-btn.ragu { background-color: var(--warning) !important; color: black !important; border-color: var(--warning) !important; }
-
         .finish-container { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
 
         .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light); padding-bottom: 15px; }
         .question-text { font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6; font-weight: 500; color: #2c3e50; }
-        
         .option-label {
             display: flex; align-items: center; padding: 15px; border: 2px solid #eee;
             border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem;
@@ -350,214 +157,81 @@
         .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
 
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-prev { background-color: var(--secondary); } 
-        .btn-next { background-color: var(--primary); }   
-        .btn-finish { background-color: var(--success); width: 100%; }
-        .btn-purple { background-color: #8e44ad !important; color: white !important; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
+        .btn-prev { background-color: var(--secondary); } .btn-next { background-color: var(--primary); } .btn-finish { background-color: var(--success); width: 100%; } .btn-purple { background-color: #8e44ad !important; color: white !important; }
         .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
         .feedback-box.show { display: block; }
-
         .watermark {
-            position: fixed; left: 0; bottom: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);
-            border-top: 1px solid #ddd; text-align: center; 
-            padding: 8px 0; /* Padding kecil */
-            color: #666; /* Warna Abu Gelap */
-            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; /* Z-Index Tinggi */
-            height: 35px; box-sizing: border-box;
+            position: fixed; left: 0; bottom: 0; width: 100%; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px); border-top: 1px solid #ddd; text-align: center; padding: 8px 0;
+            color: #666; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; z-index: 1000; height: 35px; box-sizing: border-box;
         }
 
-        /* --- Z-INDEX FIX: BIAR MODAL GAK KETUTUP --- */
-        .result-overlay { 
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.85); display: none; 
-            justify-content: center; align-items: center; 
-            z-index: 999999 !important; /* WAJIB TINGGI */
-            backdrop-filter: blur(5px); 
-        }
-        
-        .result-box { 
-            background: white; padding: 20px; border-radius: 15px; text-align: center; 
-            width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; 
-            border-top: 5px solid var(--primary);
-            position: relative; z-index: 1000000; /* LEBIH TINGGI LAGI */
-        }
-        
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        .result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999999 !important; backdrop-filter: blur(5px); }
+        .result-box { background: white; padding: 20px; border-radius: 15px; text-align: center; width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; border-top: 5px solid var(--primary); position: relative; z-index: 1000000; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .stats-table th, .stats-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         .stats-table th { background-color: var(--primary); color: white; }
         .stats-table tr:nth-child(even) { background-color: #f9f9f9; }
-        .stats-section-title { text-align: left; margin: 15px 0 5px 0; font-weight: bold; color: #555; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-
+        
         .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
         .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--warning); cursor: pointer; user-select: none; }
         .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
         .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
 
-        #floatingTimer {
-            display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
-            padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
-            color: #ffeb3b; background: rgba(0, 77, 0, 0.9);
-        }
+        #floatingTimer { display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white; color: #ffeb3b; background: rgba(0, 77, 0, 0.9); }
         
-        /* === TAMPILAN HP FIXED - FINAL REVISI === */
+        /* === TAMPILAN HP FIXED - FINAL === */
         @media (max-width: 768px) {
-            body { 
-                padding-bottom: 0 !important; 
-                flex-direction: column; 
-                overflow: hidden; 
-            }
-
-            .sidebar-left {
-                width: 100% !important; height: 100% !important; border-right: none;
-                z-index: 100; position: fixed; top: 0; left: 0;
-            }
+            body { padding-bottom: 0 !important; flex-direction: column; overflow: hidden; }
+            .sidebar-left { width: 100% !important; height: 100% !important; border-right: none; z-index: 100; position: fixed; top: 0; left: 0; }
             .sidebar-left .timer-container { display: none !important; }
-            
-            /* SCROLL MODUL AMAN */
-            .modul-selector { 
-                max-height: none !important; 
-                height: calc(100% - 85px); 
-                overflow-y: auto; 
-                padding-bottom: 120px !important; 
-            }
+            .modul-selector { max-height: none !important; height: calc(100% - 85px); overflow-y: auto; padding-bottom: 120px !important; }
 
-            /* --- FIX SCROLL & NAVIGASI --- */
+            /* FIX UTAMA NAVIGASI HP */
             .main-content { 
                 width: 100% !important; margin: 0 !important; 
-                /* Hitung tinggi viewport dikurangi header/footer area */
-                height: calc(100dvh - 120px) !important; 
-                flex: 1; 
-                overflow-y: scroll !important; /* Paksa scroll */
-                -webkit-overflow-scrolling: touch;
+                height: calc(100dvh - 120px) !important; flex: 1; 
+                overflow-y: scroll !important; -webkit-overflow-scrolling: touch;
                 padding: 15px 15px 0 15px !important;
             }
-
-            /* PAKSA SPACE KOSONG DI BAWAH KARTU BIAR NAVIGASI NAIK */
-            .card::after {
-                content: "";
-                display: block;
-                height: 200px; /* Spacer Gede */
-                width: 100%;
-            }
-
-            .card {
-                margin-bottom: 0 !important; 
-                padding: 20px !important;
-                /* Hapus shadow bawah biar gak aneh */
-                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            }
+            .card::after { content: ""; display: block; height: 200px; width: 100%; }
+            .card { margin-bottom: 0 !important; padding: 20px !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
             .sidebar-right { display: none; }
-            .sidebar-right.show-mobile {
-                display: flex !important; flex-direction: column;
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important;
-            }
+            .sidebar-right.show-mobile { display: flex !important; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important; }
             .nav-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 5px !important; }
             .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
             .finish-container { display: none !important; }
+            #floatingTimer { display: none; position: fixed; top: 10px; left: 10px; right: auto; font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px; }
 
-            #floatingTimer {
-                display: none; position: fixed; top: 10px; left: 10px; right: auto;
-                font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px;
-            }
-
-            /* FIX: Navigasi Ujian di HP */
-            .footer-nav {
-                flex-direction: column;
-                gap: 12px;
-                margin-top: 20px;
-                position: relative;
-                z-index: 10; 
-            }
-            
-            .footer-nav .ragu-wrapper {
-                width: 100%;
-                margin-right: 0;
-                justify-content: center;
-                background: #fff3e0;
-                padding: 10px;
-                border-radius: 8px;
-            }
-
-            .footer-nav > div:last-child {
-                width: 100% !important;
-                display: flex !important;
-                gap: 10px !important;
-            }
-
+            .footer-nav { flex-direction: column; gap: 12px; margin-top: 20px; position: relative; z-index: 10; }
+            .footer-nav .ragu-wrapper { width: 100%; margin-right: 0; justify-content: center; background: #fff3e0; padding: 10px; border-radius: 8px; }
+            .footer-nav > div:last-child { width: 100% !important; display: flex !important; gap: 10px !important; }
             .footer-nav .btn { padding: 12px 15px !important; font-size: 0.9rem !important; width: 50% !important; border-radius: 8px; flex: 1; }
             
-            /* STICKY FOOTER NAVIGASI APLIKASI (FIXED DI ATAS WATERMARK) */
-            #mobileFooter {
-                display: none; /* Default Hidden (Lobby) */
-                position: fixed;
-                bottom: 35px; /* TEPAT DI ATAS WATERMARK (35px) */
-                left: 0; width: 100%;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(5px);
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-                padding: 8px 15px;
-                z-index: 1001; /* Di atas watermark */
-                justify-content: space-between;
-                border-top: 1px solid #eee;
-                gap: 10px; box-sizing: border-box;
-            }
+            #mobileFooter { display: none; /* Default hidden */ position: fixed; bottom: 35px; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); padding: 8px 15px; z-index: 1001; justify-content: space-between; border-top: 1px solid #eee; gap: 10px; box-sizing: border-box; }
             
             .close-sidebar-btn { display: block !important; }
             .question-box { font-size: 15px; line-height: 1.5; }
             .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
             .question-header .focus-btn { display: none; } 
             
-            /* HEADER HP (ELEGAN & KECIL) */
-            .question-header { 
-                flex-direction: column; align-items: flex-start; gap: 5px; 
-                margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
-            }
+            .question-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
             #modulTitle { font-size: 0.95rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
             #qNum { font-size: 0.85rem !important; font-weight:600; }
-            #modeIndicator { 
-                font-size: 0.7rem; padding: 2px 8px; 
-                align-self: flex-start; margin-top: 5px;
-            }
-            
+            #modeIndicator { font-size: 0.7rem; padding: 2px 8px; align-self: flex-start; margin-top: 5px; }
             body.ujian-berjalan .sidebar-left { display: none; }
-
-            /* SCROLL DAFTAR SOAL AMAN - KASIH RUANG BAWAH */
             .nav-container { padding-bottom: 150px !important; }
         }
 
         #mobileFooter { display: none; }
-
-        /* TOMBOL FOOTER ELEGAN (FULL WIDTH DENGAN GAP) */
-        .mobile-nav-btn {
-            background: var(--primary); color: white; border: none;
-            padding: 10px 15px; border-radius: 8px; font-weight: 600;
-            flex: 1; border: 1px solid var(--gold);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.2s; white-space: nowrap;
-        }
+        .mobile-nav-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; flex: 1; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s; white-space: nowrap; }
         .mobile-nav-btn:active { transform: scale(0.95); opacity: 0.9; }
-
-        .close-sidebar-btn {
-            display: none; width: 100%; padding: 15px; background: var(--danger);
-            color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
-            font-weight: bold; font-size: 16px; z-index: 10000;
-        }
+        .close-sidebar-btn { display: none; width: 100%; padding: 15px; background: var(--danger); color: white; border: none; border-radius: 0; position: absolute; top:0; left:0; font-weight: bold; font-size: 16px; z-index: 10000; }
 
         @media (min-width: 769px) {
-            .ragu-wrapper {
-                flex: 1; background-color: #fdfdfd; padding: 12px 20px;
-                border-radius: 8px; margin-right: 20px; cursor: pointer;
-            }
+            .ragu-wrapper { flex: 1; background-color: #fdfdfd; padding: 12px 20px; border-radius: 8px; margin-right: 20px; cursor: pointer; }
             .ragu-wrapper:hover { background-color: #fff3e0; border-color: var(--warning); }
             #prevBtn { margin-right: 0 !important; }
             .footer-nav > div:last-child { width: auto !important; gap: 15px !important; }
@@ -848,12 +522,12 @@
     const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
 
     let db, auth, provider, currentUser;
-    if (firebaseConfig.apiKey) {
+    try {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
         provider = new GoogleAuthProvider();
-    }
+    } catch (e) { console.error("Firebase Init Error:", e); }
 
     window.handleLogin = async () => {
         if(!auth) { alert("Konfigurasi Firebase belum dipasang!"); return; }
@@ -897,7 +571,7 @@
         });
     }
 
-    // --- FUNGSI ADMIN EDIT/REVISI (FIXED) ---
+    // --- FUNGSI ADMIN EDIT/REVISI (FIXED: INDEX ERROR HANDLING & HIGHLIGHT) ---
     let currentAdminModul = "";
 
     window.loadSoalAdmin = async () => {
@@ -906,25 +580,21 @@
         currentAdminModul = modulId;
 
         const listDiv = document.getElementById('listSoalAdmin');
-        listDiv.innerHTML = "Loading data dari server...";
+        listDiv.innerHTML = "Loading data...";
 
         try {
             const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
-            
-            // COBA LOAD DENGAN ORDERBY DULU
+            // Coba pakai orderBy, kalau gagal (index belum ada), pake default
             let q;
             try {
                 q = query(qRef, orderBy("createdAt", "desc"));
-            } catch(err) {
-                console.warn("Mungkin index belum dibuat, load default...", err);
-                q = qRef; // Fallback kalau index error
-            }
+            } catch(e) { q = qRef; }
             
             const snapshot = await getDocs(q); 
 
             listDiv.innerHTML = "";
             if (snapshot.empty) {
-                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal di modul ini.</p>";
+                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal.</p>";
                 return;
             }
 
@@ -935,16 +605,12 @@
                 div.style.padding = "10px";
                 div.style.cursor = "pointer";
                 div.style.fontSize = "0.85rem";
-                div.className = "admin-soal-item"; // Class buat styling
-                
-                // Tampilkan sedikit teks soal
-                const shortQ = (data.q || "").substring(0, 50) + "...";
-                div.innerText = shortQ;
+                div.className = "admin-soal-item";
+                div.innerText = (data.q || "").substring(0, 60) + "...";
                 
                 div.onclick = () => {
-                    // Visual feedback: Highlight yang dipilih
                     document.querySelectorAll('.admin-soal-item').forEach(el => el.style.background = 'transparent');
-                    div.style.background = '#d1e7dd'; 
+                    div.style.background = '#d1e7dd'; // Highlight Hijau
                     populateEditForm(docSnap.id, data);
                 };
                 listDiv.appendChild(div);
@@ -952,10 +618,7 @@
         } catch (e) {
             console.error(e);
             let msg = e.message;
-            if (msg.includes("requires an index")) {
-                msg = "🔥 ERROR INDEX FIREBASE: Buka Console Firebase > Firestore > Indexes untuk buat index 'createdAt'.";
-                console.log("LINK BUAT INDEX: ", e.message); // Link biasanya ada di error log console browser
-            }
+            if(msg.includes("index")) msg = "Error Index: Buka Console (F12) & Klik Link Firebase.";
             alert("Gagal load: " + msg);
         }
     };
@@ -963,15 +626,12 @@
     function populateEditForm(id, data) {
         document.getElementById('editDocId').value = id;
         document.getElementById('editQ').value = data.q || "";
-        
-        // SAFE CHECK: Pastikan options adalah Array sebelum di-join
-        let opts = data.options;
-        if (Array.isArray(opts)) {
-            document.getElementById('editOpt').value = opts.join(","); 
+        // Cek Array/String
+        if(Array.isArray(data.options)) {
+            document.getElementById('editOpt').value = data.options.join(",");
         } else {
-            document.getElementById('editOpt').value = ""; // Kosongin kalau error
+            document.getElementById('editOpt').value = data.options || "";
         }
-
         document.getElementById('editAns').value = data.answer;
         document.getElementById('editExp').value = data.explanation || "";
         document.getElementById('editCite').value = data.cite || "";
@@ -979,52 +639,37 @@
 
     window.simpanPerubahan = async () => {
         const id = document.getElementById('editDocId').value;
-        if(!id) return alert("⚠️ Pilih (klik) dulu salah satu soal di daftar kiri!");
+        if(!id) return alert("Pilih soal dulu!");
 
-        // Validasi input
-        const rawOpt = document.getElementById('editOpt').value;
-        if(!rawOpt) return alert("Opsi jawaban tidak boleh kosong!");
-
-        const optionsArray = rawOpt.split(",").map(s => s.trim()); 
-
+        const opts = document.getElementById('editOpt').value.split(",").map(s => s.trim());
         const newData = {
             q: document.getElementById('editQ').value,
-            options: optionsArray,
+            options: opts,
             answer: parseInt(document.getElementById('editAns').value),
             explanation: document.getElementById('editExp').value,
             cite: document.getElementById('editCite').value
-            // KITA GAK UPDATE createdAt BIAR GAK GESER POSISINYA
         };
 
         try {
             const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
             await updateDoc(docRef, newData);
-            alert("✅ BERHASIL! Soal sudah direvisi.");
-            
-            // Refresh list biar kelihatan updatenya
+            alert("✅ Data terupdate!");
             loadSoalAdmin(); 
-            
-            // Bersihkan form
-            document.getElementById('editDocId').value = "";
-            document.getElementById('editQ').value = "";
-            document.getElementById('editOpt').value = "";
-            document.getElementById('editExp').value = "";
         } catch (e) {
-            console.error(e);
-            alert("Gagal update: " + e.message + "\n(Cek apakah email lo 'ilhamnp22@gmail.com' di Rules Firebase?)");
+            alert("Gagal update: " + e.message);
         }
     };
 
     window.hapusSoal = async () => {
         const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu yang mau dihapus!");
-        if(!confirm("Yakin mau hapus soal ini permanen?")) return;
+        if(!id) return alert("Pilih soal dulu!");
+        if(!confirm("Hapus permanen?")) return;
 
         try {
             const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
             await deleteDoc(docRef);
-            alert("🗑️ Soal dihapus.");
-            loadSoalAdmin(); 
+            alert("🗑️ Terhapus.");
+            loadSoalAdmin();
             document.getElementById('editDocId').value = "";
             document.getElementById('editQ').value = "";
         } catch (e) {
@@ -1032,47 +677,37 @@
         }
     };
 
-    // --- FITUR UPLOAD JSON (TETAP SAMA) ---
     window.eksekusiUpload = async () => {
         const modulId = document.getElementById('adminModulTarget').value.trim();
         const jsonRaw = document.getElementById('jsonUploadArea').value;
-        
-        if(!modulId || !jsonRaw) return alert("Modul ID dan JSON harus diisi!");
+        if(!modulId || !jsonRaw) return alert("Data tidak lengkap!");
         
         try {
             const dataSoal = JSON.parse(jsonRaw);
-            if(!Array.isArray(dataSoal)) return alert("Format JSON harus Array [ ... ]");
-
-            if(!confirm(`Siap upload ${dataSoal.length} soal ke ${modulId}?`)) return;
-
+            if(!confirm(`Upload ${dataSoal.length} soal?`)) return;
+            
             const batch = writeBatch(db);
             let count = 0;
-            
-            // Chunking batch (max 500 per batch) - Sederhananya loop manual
+            // Simple loop (non-batch for simplicity if small data, but let's keep addDoc for safety)
             for (const item of dataSoal) {
-                // Standarisasi field sesuai aplikasi lo
-                const docData = {
+                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), {
                     q: item.q || item.pertanyaan,
                     options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
-                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
+                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci),
                     explanation: item.explanation || item.pembahasan || "-",
                     cite: item.cite || "Modul Hakim",
                     createdAt: new Date()
-                };
-
-                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
+                });
                 count++;
             }
-            
-            alert(`✅ Sukses Upload ${count} Soal!`);
-            document.getElementById('jsonUploadArea').value = ""; // Reset
+            alert(`✅ Sukses ${count} Soal!`);
+            document.getElementById('jsonUploadArea').value = ""; 
         } catch (e) {
             alert("Error: " + e.message);
-            console.error(e);
         }
     };
 
-    // --- FUNGSI APLIKASI UTAMA (LEADERBOARD, STATS, DLL) ---
+    // --- FUNGSI USER (SAVE, LEADERBOARD, STATS) ---
     window.saveScoreToCloud = async (modulId, skor) => {
         if (!currentUser || !db) return;
         try {
@@ -1083,10 +718,10 @@
     };
 
     window.openLeaderboard = async () => {
-        if (!db) { alert("Database belum connect"); return; }
+        if (!db) return;
         document.getElementById('leaderboardOverlay').style.display = 'flex';
         const tbody = document.getElementById('leaderboardBody');
-        tbody.innerHTML = '<tr><td colspan="4">Sedang memuat data...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
         document.getElementById('lbModulName').innerText = document.getElementById('modulTitle').innerText;
 
         const q = query(collection(db, "leaderboard"), where("modul", "==", currentDatabaseId || "modul1"), orderBy("skor", "desc"), limit(100));
@@ -1116,14 +751,145 @@
 
     window.closeLeaderboard = () => { document.getElementById('leaderboardOverlay').style.display = 'none'; };
 
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
+    // --- FUNGSI CHART / STATS (FULL RESTORED) ---
+    window.resetStats = async function() {
+        if(!confirm("Hapus history modul ini?")) return;
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), where("modul", "==", window.currentDatabaseId));
+            const querySnapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
+            await batch.commit();
+            alert("Reset berhasil.");
+            window.openStats(); 
+        } catch (e) { alert("Gagal reset."); }
+    };
+
+    window.saveAndShowChart = async function(finalScore, correct, wrong) {
+        const usedSeconds = totalExamTime - timeRemaining; 
+        try { await addDoc(collection(db, "riwayat_belajar"), {
+            uid: currentUser.uid, nama: currentUser.displayName, modul: currentModulKey,            
+            score: finalScore, correct: correct, wrong: wrong, date: new Date().toLocaleString('id-ID'), 
+            timestamp: new Date(), duration: usedSeconds
+        }); } catch(e) { console.log(e); }
+    };
+
+    window.openStats = async function() {
+        if(!currentUser) return;
+        document.getElementById('statsOverlay').style.display = 'flex';
+        document.getElementById('statsTitle').innerText = "Loading...";
         
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
+            const querySnapshot = await getDocs(q);
+            let allHistory = [];
+            querySnapshot.forEach((doc) => {
+                let data = doc.data(); data.id = doc.id; allHistory.push(data);
+            });
+
+            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
+            document.getElementById('statsTitle').innerText = "Data Modul: " + (document.getElementById('modulTitle').innerText || window.currentDatabaseId);
+
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+            if (currentModulHistory.length === 0) tbody.innerHTML = '<tr><td colspan="5">Belum ada data.</td></tr>';
+            else {
+                [...currentModulHistory].reverse().forEach((d, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct}</td><td>${d.wrong}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // RENDER CHART
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai', data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)', borderWidth: 2, fill: true
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+
+                // CHART SEMUA MODUL
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+                
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
+                
+                const labels = Object.keys(modulStats);
+                const dataScores = labels.map(k => Math.round(modulStats[k].total / modulStats[k].count));
+                
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata', data: dataScores, backgroundColor: '#3498db' }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+            }, 300);
+
+        } catch (e) { console.error(e); }
+    };
+    
+    window.closeStats = function() { document.getElementById('statsOverlay').style.display = 'none'; };
+
+</script>
+
+<script>
+    // 1. Matikan Klik Kanan
+    document.addEventListener('contextmenu', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+
+    // 2. Matikan Blok/Select Teks
+    document.addEventListener('selectstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+    
+    document.addEventListener('dragstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+
+    // 3. Matikan Shortcut Keyboard
+    document.addEventListener('keydown', function(e) {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+
+        // Cegah F12, Inspect, Copy Paste
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+            (e.ctrlKey && e.key === 'u') || 
+            (e.ctrlKey && e.key === 'U') || 
+            (e.ctrlKey && e.key === 's') || 
+            (e.ctrlKey && e.key === 'p') || 
+            (e.ctrlKey && e.key === 'a') || 
+            (e.ctrlKey && e.key === 'c')
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert("⚠️ Eits! Fitur ini dikunci demi keamanan ujian.");
+            return false;
+        }
+    });
+
+    // --- LOGIC UTAMA APLIKASI (LOAD QUESTION DLL) ---
     let currentModulKey = 'modul1';
     let currentQuestions = [];
     let currentIdx = 0;
@@ -1146,15 +912,13 @@
 
         sidebar.classList.toggle('show-mobile');
 
-        // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
         if (sidebar.classList.contains('show-mobile')) {
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
-            mobileFooter.style.display = 'none'; // FIX: Display None langsung
+            mobileFooter.style.display = 'none'; 
         } else {
-            // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
             if (document.body.classList.contains('ujian-berjalan')) {
                 if(floatingTimer) floatingTimer.style.display = 'block';
-                mobileFooter.style.display = 'flex'; // FIX: Flex balik
+                mobileFooter.style.display = 'flex'; 
             }
         }
 
@@ -1175,12 +939,10 @@
         const mobileFooter = document.getElementById('mobileFooter');
 
         if (sidebar.style.display === 'flex') {
-            // TUTUP SIDEBAR
             sidebar.style.display = ''; 
             if(timer && document.body.classList.contains('ujian-berjalan')) timer.style.display = 'block';
             if(mobileFooter) mobileFooter.style.display = 'flex';
         } else {
-            // BUKA SIDEBAR
             sidebar.style.display = 'flex'; 
             if(timer) timer.style.display = 'none';
             if(mobileFooter) mobileFooter.style.display = 'none';
@@ -1307,7 +1069,6 @@
             
             if(window.innerWidth <= 768) {
                 document.body.classList.add('ujian-berjalan'); 
-                // FIX: Munculkan Footer HP HANYA saat ujian dimulai
                 const mobileFooter = document.getElementById('mobileFooter');
                 if(mobileFooter) mobileFooter.style.display = 'flex';
                 
@@ -1889,199 +1650,6 @@
         document.getElementById('feedbackBox').style.display = 'none';
         document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
     }
-
-    // ==========================================
-    // LOGIKA ADMIN PANEL (INJECTED)
-    // ==========================================
-
-    window.openAdminPanel = () => {
-        document.getElementById('adminOverlay').style.display = 'flex';
-    };
-
-    window.switchAdminTab = (tab) => {
-        if(tab === 'tambah') {
-            document.getElementById('tabTambah').style.display = 'block';
-            document.getElementById('tabEdit').style.display = 'none';
-        } else {
-            document.getElementById('tabTambah').style.display = 'none';
-            document.getElementById('tabEdit').style.display = 'block';
-        }
-    };
-
-    // --- FITUR 1: UPLOAD JSON ---
-    window.eksekusiUpload = async () => {
-        const modulId = document.getElementById('adminModulTarget').value.trim();
-        const jsonRaw = document.getElementById('jsonUploadArea').value;
-        
-        if(!modulId || !jsonRaw) return alert("Modul ID dan JSON harus diisi!");
-        
-        try {
-            const dataSoal = JSON.parse(jsonRaw);
-            if(!Array.isArray(dataSoal)) return alert("Format JSON harus Array [ ... ]");
-
-            if(!confirm(`Siap upload ${dataSoal.length} soal ke ${modulId}?`)) return;
-
-            const batch = writeBatch(db);
-            let count = 0;
-            
-            // Chunking batch (max 500 per batch) - Sederhananya loop manual
-            for (const item of dataSoal) {
-                // Standarisasi field sesuai aplikasi lo
-                const docData = {
-                    q: item.q || item.pertanyaan,
-                    options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
-                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
-                    explanation: item.explanation || item.pembahasan || "-",
-                    cite: item.cite || "Modul Hakim",
-                    createdAt: new Date()
-                };
-
-                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
-                count++;
-            }
-            
-            alert(`✅ Sukses Upload ${count} Soal!`);
-            document.getElementById('jsonUploadArea').value = ""; // Reset
-        } catch (e) {
-            alert("Error: " + e.message);
-            console.error(e);
-        }
-    };
-
-    // --- FITUR 2: LOAD & EDIT ---
-    let currentAdminModul = "";
-
-    window.loadSoalAdmin = async () => {
-        const modulId = document.getElementById('editModulTarget').value.trim();
-        if(!modulId) return alert("Isi nama modul dulu! (cth: modul1)");
-        currentAdminModul = modulId;
-
-        const listDiv = document.getElementById('listSoalAdmin');
-        listDiv.innerHTML = "Loading data dari server...";
-
-        try {
-            const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
-            
-            // COBA LOAD DENGAN ORDERBY DULU
-            let q;
-            try {
-                q = query(qRef, orderBy("createdAt", "desc"));
-            } catch(err) {
-                console.warn("Mungkin index belum dibuat, load default...", err);
-                q = qRef; // Fallback kalau index error
-            }
-            
-            const snapshot = await getDocs(q); 
-
-            listDiv.innerHTML = "";
-            if (snapshot.empty) {
-                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal di modul ini.</p>";
-                return;
-            }
-
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const div = document.createElement('div');
-                div.style.borderBottom = "1px solid #ddd";
-                div.style.padding = "10px";
-                div.style.cursor = "pointer";
-                div.style.fontSize = "0.85rem";
-                div.className = "admin-soal-item"; // Class buat styling
-                
-                // Tampilkan sedikit teks soal
-                const shortQ = (data.q || "").substring(0, 50) + "...";
-                div.innerText = shortQ;
-                
-                div.onclick = () => {
-                    // Visual feedback: Highlight yang dipilih
-                    document.querySelectorAll('.admin-soal-item').forEach(el => el.style.background = 'transparent');
-                    div.style.background = '#d1e7dd'; 
-                    populateEditForm(docSnap.id, data);
-                };
-                listDiv.appendChild(div);
-            });
-        } catch (e) {
-            console.error(e);
-            let msg = e.message;
-            if (msg.includes("requires an index")) {
-                msg = "🔥 ERROR INDEX FIREBASE: Buka Console Firebase > Firestore > Indexes untuk buat index 'createdAt'.";
-                console.log("LINK BUAT INDEX: ", e.message); // Link biasanya ada di error log console browser
-            }
-            alert("Gagal load: " + msg);
-        }
-    };
-
-    function populateEditForm(id, data) {
-        document.getElementById('editDocId').value = id;
-        document.getElementById('editQ').value = data.q || "";
-        
-        // SAFE CHECK: Pastikan options adalah Array sebelum di-join
-        let opts = data.options;
-        if (Array.isArray(opts)) {
-            document.getElementById('editOpt').value = opts.join(","); 
-        } else {
-            document.getElementById('editOpt').value = ""; // Kosongin kalau error
-        }
-
-        document.getElementById('editAns').value = data.answer;
-        document.getElementById('editExp').value = data.explanation || "";
-        document.getElementById('editCite').value = data.cite || "";
-    }
-
-    window.simpanPerubahan = async () => {
-        const id = document.getElementById('editDocId').value;
-        if(!id) return alert("⚠️ Pilih (klik) dulu salah satu soal di daftar kiri!");
-
-        // Validasi input
-        const rawOpt = document.getElementById('editOpt').value;
-        if(!rawOpt) return alert("Opsi jawaban tidak boleh kosong!");
-
-        const optionsArray = rawOpt.split(",").map(s => s.trim()); 
-
-        const newData = {
-            q: document.getElementById('editQ').value,
-            options: optionsArray,
-            answer: parseInt(document.getElementById('editAns').value),
-            explanation: document.getElementById('editExp').value,
-            cite: document.getElementById('editCite').value
-            // KITA GAK UPDATE createdAt BIAR GAK GESER POSISINYA
-        };
-
-        try {
-            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
-            await updateDoc(docRef, newData);
-            alert("✅ BERHASIL! Soal sudah direvisi.");
-            
-            // Refresh list biar kelihatan updatenya
-            loadSoalAdmin(); 
-            
-            // Bersihkan form
-            document.getElementById('editDocId').value = "";
-            document.getElementById('editQ').value = "";
-            document.getElementById('editOpt').value = "";
-            document.getElementById('editExp').value = "";
-        } catch (e) {
-            console.error(e);
-            alert("Gagal update: " + e.message + "\n(Cek apakah email lo 'ilhamnp22@gmail.com' di Rules Firebase?)");
-        }
-    };
-
-    window.hapusSoal = async () => {
-        const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu yang mau dihapus!");
-        if(!confirm("Yakin mau hapus soal ini permanen?")) return;
-
-        try {
-            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
-            await deleteDoc(docRef);
-            alert("🗑️ Soal dihapus.");
-            loadSoalAdmin(); 
-            document.getElementById('editDocId').value = "";
-            document.getElementById('editQ').value = "";
-        } catch (e) {
-            alert("Gagal hapus: " + e.message);
-        }
-    };
 
 </script>
 
