@@ -360,18 +360,21 @@
 
         .watermark {
             position: fixed; left: 0; bottom: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(255,255,255,0.5); text-align: center; padding: 12px 0;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);
+            border-top: 1px solid #ddd; text-align: center; 
+            padding: 8px 0; /* Padding kecil */
             color: #666; /* Warna Abu Gelap */
-            font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 10;
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; /* Z-Index Tinggi */
+            height: 35px; box-sizing: border-box;
         }
 
+        /* --- Z-INDEX FIX: BIAR MODAL GAK KETUTUP --- */
         .result-overlay { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: rgba(0,0,0,0.85); display: none; 
             justify-content: center; align-items: center; 
-            z-index: 100000 !important; /* WAJIB TINGGI BIAR DI ATAS SEMUA */
+            z-index: 999999 !important; /* WAJIB TINGGI */
             backdrop-filter: blur(5px); 
         }
         
@@ -380,6 +383,7 @@
             width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
             max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; 
             border-top: 5px solid var(--primary);
+            position: relative; z-index: 1000000; /* LEBIH TINGGI LAGI */
         }
         
         .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
@@ -401,7 +405,7 @@
             color: #ffeb3b; background: rgba(0, 77, 0, 0.9);
         }
         
-        /* === TAMPILAN HP FIXED & ELEGAN === */
+        /* === TAMPILAN HP FIXED === */
         @media (max-width: 768px) {
             body { padding-bottom: 0 !important; flex-direction: column; overflow: hidden; }
 
@@ -411,18 +415,18 @@
             }
             .sidebar-left .timer-container { display: none !important; }
             
-            /* FIX 1: SCROLL MODUL AMAN - KASIH RUANG BAWAH */
+            /* SCROLL MODUL AMAN */
             .modul-selector { 
                 max-height: none !important; 
-                height: calc(100% - 100px); 
+                height: calc(100% - 85px); /* Sesuaikan tinggi header */
                 overflow-y: auto; 
-                padding-bottom: 200px !important;
+                padding-bottom: 120px !important; /* Biar tombol paling bawah ga ketutup */
             }
 
-            /* FIX 2: MAIN CONTENT PADDING BAWAH SUPER GEDE (200px) BIAR NAVIGASI GAK KETUTUP */
+            /* MAIN CONTENT: PADDING BAWAH EXTRA GEDE (250px) BIAR SCROLL AMAN */
             .main-content { 
                 width: 100% !important; margin: 0 !important; 
-                padding: 15px 15px 250px 15px !important; 
+                padding: 15px 15px 250px 15px !important; /* KUNCI BIAR BISA SCROLL MENTOK */
                 flex: 1; height: 100vh; overflow-y: auto; 
             }
 
@@ -443,19 +447,19 @@
 
             .footer-nav .btn { padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px; }
             
-            /* FIX 3: STICKY FOOTER NAVIGASI KAPSUL */
+            /* STICKY FOOTER NAVIGASI (FIXED DI ATAS WATERMARK) */
             #mobileFooter {
                 display: none; /* Default Hidden (Lobby) */
                 position: fixed;
-                bottom: 20px; left: 50%; transform: translateX(-50%); /* Posisi Tengah */
-                width: 90%; max-width: 400px; /* Lebar Terbatas (Kapsul) */
-                background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
-                border-radius: 50px; /* Bentuk Kapsul */
-                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-                padding: 10px;
-                z-index: 1000;
-                justify-content: space-around;
-                border: 1px solid #eee;
+                bottom: 35px; /* TEPAT DI ATAS WATERMARK (35px) */
+                left: 0; width: 100%;
+                background: white;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                padding: 8px 15px;
+                z-index: 1001; /* Di atas watermark */
+                justify-content: space-between;
+                border-top: 1px solid #eee;
+                gap: 10px; box-sizing: border-box;
             }
             
             .close-sidebar-btn { display: block !important; }
@@ -468,31 +472,31 @@
                 flex-direction: column; align-items: flex-start; gap: 5px; 
                 margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
             }
-            #modulTitle { font-size: 1rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
-            #qNum { font-size: 0.9rem !important; font-weight:600; }
+            #modulTitle { font-size: 0.95rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
+            #qNum { font-size: 0.85rem !important; font-weight:600; }
             #modeIndicator { 
-                font-size: 0.7rem; padding: 4px 10px; 
+                font-size: 0.7rem; padding: 2px 8px; 
                 align-self: flex-start; margin-top: 5px;
             }
             
             body.ujian-berjalan .sidebar-left { display: none; }
 
             /* SCROLL DAFTAR SOAL AMAN - KASIH RUANG BAWAH */
-            .nav-container { padding-bottom: 200px !important; }
+            .nav-container { padding-bottom: 150px !important; }
         }
 
         #mobileFooter { display: none; }
 
-        /* TOMBOL FOOTER KAPSUL ELEGAN */
+        /* TOMBOL FOOTER ELEGAN (FULL WIDTH DENGAN GAP) */
         .mobile-nav-btn {
             background: var(--primary); color: white; border: none;
-            padding: 10px 20px; border-radius: 30px; font-weight: 600;
-            flex: 1; margin: 0 5px; border: 1px solid var(--gold);
+            padding: 10px 15px; border-radius: 8px; font-weight: 600;
+            flex: 1; border: 1px solid var(--gold);
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.2s;
+            font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s; white-space: nowrap;
         }
-        .mobile-nav-btn:active { transform: scale(0.95); }
+        .mobile-nav-btn:active { transform: scale(0.95); opacity: 0.9; }
 
         .close-sidebar-btn {
             display: none; width: 100%; padding: 15px; background: var(--danger);
