@@ -1,1698 +1,1906 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIMULASI CBT CAKIM PA</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIMULASI CBT CAKIM PA</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- PALET WARNA MAHKAMAH AGUNG --- */
-        :root {
-            --primary: #004d00; --secondary: #1a1a1a; --accent: #2e7d32;
-            --gold: #d4af37; --purple: #8e44ad; --light: #f1f8e9;
-            --filled: #7f8c8d; --success: #2e7d32; --danger: #c0392b;
-            --warning: #f39c12; --pass: #2ecc71; --fail: #e74c3c;
-        }
+    <style>
+        /* --- PALET WARNA MAHKAMAH AGUNG (HIJAU - EMAS - HITAM) --- */
+        :root {
+            --primary: #004d00;   /* Hijau Botol Tua */
+            --secondary: #1a1a1a; /* Hitam Elegan */
+            --accent: #2e7d32;    /* Hijau Daun */
+            --gold: #d4af37;      /* Emas Mewah */
+            --purple: #8e44ad;    /* Ungu (Grafik) */
+            --light: #f1f8e9;     
+            --filled: #7f8c8d;    
+            --success: #2e7d32;   
+            --danger: #c0392b;    
+            --warning: #f39c12;   
+            --pass: #2ecc71;
+            --fail: #e74c3c;
+        }
 
-        /* --- ANTI CURANG --- */
-        body:not(.is-admin) * { -webkit-user-select: none; user-select: none; }
-        body.is-admin * { -webkit-user-select: text !important; user-select: text !important; }
-        input, textarea { -webkit-user-select: text !important; user-select: text !important; }
+        /* --- ANTI CURANG (CSS LEVEL) --- */
+        body:not(.is-admin) * {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        body.is-admin * {
+            -webkit-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+        input, textarea {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('ma.jpeg'); background-size: cover;
-            background-position: center; background-attachment: fixed;
-            margin: 0; display: flex; height: 100dvh; /* FIX MOBILE HEIGHT */
-            color: #333; overflow: hidden; transition: all 0.3s;
-        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('ma.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            height: 100dvh; /* Modern Mobile Fix */
+            color: #333;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
 
-        /* --- LOGIN SCREEN --- */
-        #loginOverlay {
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
-                        url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 99999; overflow-y: auto; font-family: 'Poppins', sans-serif;
-            color: #333; display: block !important; 
-        }
-        .landing-nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px; width: 100%; background-color: var(--primary);
-            color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: sticky; top: 0; z-index: 100; box-sizing: border-box;
-            border-bottom: 3px solid var(--gold);
-        }
-        .nav-brand { font-size: 1.3rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px; }
-        .nav-login-btn {
-            background-color: #ffffff; color: var(--primary); border: none;
-            padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.95rem;
-            cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
-        }
-        .nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
+        /* =========================================
+           LOGIN SCREEN
+           ========================================= */
+        #loginOverlay {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
+                        url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 99999; /* Paling Atas */
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            display: block !important; 
+        }
 
-        .hero-section {
-            display: grid; grid-template-columns: 1.2fr 0.8fr;
-            padding: 40px 60px 10px 60px; max-width: 1300px; margin: 0 auto;
-            min-height: 80vh; box-sizing: border-box; position: relative;
-        }
-        .hero-left { display: flex; flex-direction: column; justify-content: center; padding-right: 20px; margin-left: -40px; }
-        .hero-quote { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; }
-        .highlight-text { color: var(--primary); }
-        .hero-right { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding-bottom: 25px; padding-left: 20px; }
-        .hero-features { list-style: none; padding: 0; margin: 0; }
-        .hero-features li { font-size: 1rem; color: #444; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; font-weight: 600; }
-        .feature-icon { color: var(--primary); font-size: 1.1rem; width: 25px; text-align: center; }
-        .dev-footer { grid-column: 1 / -1; font-size: 0.85rem; color: #666; margin-top: 5px; padding-top: 15px; border-top: 1px solid #bbb; font-weight: 600; }
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px; 
+            width: 100%; 
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100; 
+            box-sizing: border-box;
+            border-bottom: 3px solid var(--gold);
+        }
+        
+        .nav-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px;
+        }
+        
+        .nav-login-btn {
+            background-color: #ffffff;
+            color: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+        }
+        .nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 
-        @media (max-width: 992px) {
-            .landing-nav { padding: 10px 15px; gap: 5px; }
-            .nav-brand { font-size: 0.9rem; }
-            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; }
-            .hero-section { display: flex; flex-direction: column; padding: 20px; gap: 20px; justify-content: center; }
-            .hero-left { margin-left: 0; padding-right: 0; text-align: center; margin-top: 10px; }
-            .hero-quote { font-size: 1.6rem; } 
-            .hero-right { padding-left: 0; align-items: center; justify-content: center; width: 100%; padding-bottom: 40px; }
-            .dev-footer { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 0.65rem; padding: 8px 0; background: rgba(255,255,255,0.8); z-index: 101; }
-        }
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            padding: 40px 60px 10px 60px;
+            max-width: 1300px;
+            margin: 0 auto;
+            min-height: 80vh;
+            box-sizing: border-box;
+            position: relative;
+        }
 
-        /* --- APP STYLES --- */
-        #appSection { display: none; width: 100%; height: 100%; display: flex; background-color: #f4f7f6; position: fixed; top: 0; left: 0; z-index: 10; }
-        .sidebar-left {
-            width: 280px; background-color: white; border-right: 1px solid #ddd;
-            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10;
-            transition: margin-left 0.3s ease;
-        }
-        body.mode-focus .sidebar-left { margin-left: -280px; }
-        body.mode-focus #floatingTimer { display: block !important; }
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 20px;
+            margin-left: -40px;
+        }
 
-        .sidebar-header { padding: 20px; background-color: var(--primary); color: white; text-align: center; border-bottom: 3px solid var(--gold); }
-        .user-profile { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; font-size: 0.9rem; }
-        .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--gold); }
-        .timer-container {
-            background: rgba(0,0,0,0.2); padding: 10px; margin-top: 15px; border-radius: 5px;
-            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; border: 2px solid rgba(255,255,255,0.1);
-        }
-        .timer-green { background-color: var(--success) !important; color: white !important; border-color: var(--pass) !important; }
-        .timer-yellow { background-color: var(--warning) !important; color: black !important; border-color: #f1c40f !important; }
-        .timer-panic { background-color: var(--danger) !important; color: white !important; border-color: var(--fail) !important; animation: panicPulse 0.5s infinite alternate; }
-        @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
+        .hero-quote {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: #111;
+        }
+        .highlight-text { color: var(--primary); }
 
-        .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
-        .modul-btn {
-            display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
-            background: white; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;
-            text-align: left; font-size: 0.9rem; font-weight: 600; color: var(--secondary);
-            transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .modul-btn:hover { background: var(--light); transform: translateX(2px); border-color: var(--primary); }
-        .modul-btn.active-modul { background: var(--primary); color: white; border-color: var(--primary); border-left: 5px solid var(--gold); }
+        .hero-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding-bottom: 25px;
+            padding-left: 20px;
+        }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease; }
-        .card {
-            background: white; padding: 40px; border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 900px;
-            margin: 0 auto; width: 100%; margin-bottom: 50px; border-top: 4px solid var(--primary);
-        }
+        .hero-features { list-style: none; padding: 0; margin: 0; }
+        .hero-features li {
+            font-size: 1rem; 
+            color: #444; 
+            margin-bottom: 8px;
+            display: flex; align-items: center; 
+            gap: 15px;
+            font-weight: 600;
+        }
+        .feature-icon { color: var(--primary); font-size: 1.1rem; width: 25px; text-align: center; }
 
-        .sidebar-right {
-            width: 300px; background-color: white; border-left: 1px solid #ddd;
-            display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10;
-        }
-        .right-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap; }
-        .btn-small { border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 5px; color: white; flex: 1; justify-content: center; }
-        .btn-logout { background: var(--danger); }
-        .btn-stats { background: var(--accent); }
-        .btn-rank { background: var(--warning); color: black; }
-        .sidebar-info { padding: 15px; font-size: 0.8rem; text-align: center; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
-        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .nav-btn {
-            aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
-            border-radius: 6px; font-weight: bold; display: flex; align-items: center;
-            justify-content: center; font-size: 0.9rem; color: #555; transition: all 0.2s;
-        }
-        .nav-btn:hover { background-color: var(--light); }
-        .nav-btn.active { border: 2px solid var(--primary); background-color: var(--light); color: var(--primary); transform: scale(1.1); z-index: 2; }
-        .nav-btn.filled { background-color: var(--secondary); color: white; border-color: var(--secondary); }
-        .nav-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
-        .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
-        .nav-btn.ragu { background-color: var(--warning) !important; color: black !important; border-color: var(--warning) !important; }
-        .finish-container { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
+        .dev-footer {
+            grid-column: 1 / -1;
+            font-size: 0.85rem; 
+            color: #666; 
+            margin-top: 5px; 
+            padding-top: 15px; 
+            border-top: 1px solid #bbb;
+            font-weight: 600;
+        }
 
-        .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light); padding-bottom: 15px; }
-        .question-text { font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6; font-weight: 500; color: #2c3e50; }
-        .option-label {
-            display: flex; align-items: center; padding: 15px; border: 2px solid #eee;
-            border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem;
-            background: white; margin-bottom: 10px;
-        }
-        .option-label:hover { background-color: var(--light); border-color: var(--primary); }
-        .option-label.selected { background-color: #e8f5e9; border-color: var(--primary); font-weight: 500; }
-        .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
-        .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
+        @media (max-width: 992px) {
+            .landing-nav { padding: 10px 15px; gap: 5px; }
+            .nav-brand { font-size: 0.9rem; }
+            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; }
+            .nav-login-btn img { width: 18px; height: 18px; }
+            .nav-login-btn span { display: inline-block; } 
 
-        .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-prev { background-color: var(--secondary); } .btn-next { background-color: var(--primary); } .btn-finish { background-color: var(--success); width: 100%; } .btn-purple { background-color: #8e44ad !important; color: white !important; }
-        .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
-        .feedback-box.show { display: block; }
-        .watermark {
-            position: fixed; left: 0; bottom: 0; width: 100%; background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px); border-top: 1px solid #ddd; text-align: center; padding: 8px 0;
-            color: #666; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; z-index: 1000; height: 35px; box-sizing: border-box;
-        }
+            .hero-section {
+                display: flex;
+                flex-direction: column;
+                padding: 20px 20px;
+                gap: 20px;
+                justify-content: center;
+                min-height: 80vh;
+            }
 
-        .result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999999 !important; backdrop-filter: blur(5px); }
-        .result-box { background: white; padding: 20px; border-radius: 15px; text-align: center; width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; border-top: 5px solid var(--primary); position: relative; z-index: 1000000; }
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
-        .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
-        .stats-table th, .stats-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-        .stats-table th { background-color: var(--primary); color: white; }
-        .stats-table tr:nth-child(even) { background-color: #f9f9f9; }
-        
-        .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
-        .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--warning); cursor: pointer; user-select: none; }
-        .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
-        .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
+            .hero-left { margin-left: 0; padding-right: 0; text-align: center; margin-top: 10px; }
+            .hero-quote { font-size: 1.6rem; } 
 
-        #floatingTimer { display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white; color: #ffeb3b; background: rgba(0, 77, 0, 0.9); }
-        
-        /* === TAMPILAN HP FIXED - FINAL === */
-        @media (max-width: 768px) {
-            body { padding-bottom: 0 !important; flex-direction: column; overflow: hidden; }
-            .sidebar-left { width: 100% !important; height: 100% !important; border-right: none; z-index: 100; position: fixed; top: 0; left: 0; }
-            .sidebar-left .timer-container { display: none !important; }
-            .modul-selector { max-height: none !important; height: calc(100% - 85px); overflow-y: auto; padding-bottom: 120px !important; }
+            .hero-right {
+                padding-left: 0; align-items: center; justify-content: center; width: 100%;
+                padding-bottom: 40px; 
+            }
 
-            /* FIX UTAMA NAVIGASI HP */
-            .main-content { 
-                width: 100% !important; margin: 0 !important; 
-                height: calc(100dvh - 120px) !important; flex: 1; 
-                overflow-y: scroll !important; -webkit-overflow-scrolling: touch;
-                padding: 15px 15px 0 15px !important;
-            }
-            .card::after { content: ""; display: block; height: 200px; width: 100%; }
-            .card { margin-bottom: 0 !important; padding: 20px !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+            .hero-features li {
+                background: rgba(255,255,255,0.6); 
+                padding: 8px 12px; border-radius: 6px; width: 100%;
+                justify-content: flex-start; font-size: 0.85rem; margin-bottom: 5px;
+            }
+            
+            .dev-footer { 
+                position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; 
+                font-size: 0.65rem; padding: 8px 0; margin: 0;
+                background: rgba(255,255,255,0.8); border-top: none; z-index: 101;
+            }
+        }
 
-            .sidebar-right { display: none; }
-            .sidebar-right.show-mobile { display: flex !important; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important; }
-            .nav-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 5px !important; }
-            .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
-            .finish-container { display: none !important; }
-            #floatingTimer { display: none; position: fixed; top: 10px; left: 10px; right: auto; font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px; }
+        /* =========================================
+           APP STYLES
+           ========================================= */
+        #appSection { 
+            display: none; 
+            width: 100%; 
+            height: 100%; 
+            display: flex;
+            background-color: #f4f7f6; 
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 10;
+        }
 
-            .footer-nav { flex-direction: column; gap: 12px; margin-top: 20px; position: relative; z-index: 10; }
-            .footer-nav .ragu-wrapper { width: 100%; margin-right: 0; justify-content: center; background: #fff3e0; padding: 10px; border-radius: 8px; }
-            .footer-nav > div:last-child { width: 100% !important; display: flex !important; gap: 10px !important; }
-            .footer-nav .btn { padding: 12px 15px !important; font-size: 0.9rem !important; width: 50% !important; border-radius: 8px; flex: 1; }
-            
-            #mobileFooter { display: none; /* Default hidden */ position: fixed; bottom: 35px; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); padding: 8px 15px; z-index: 1001; justify-content: space-between; border-top: 1px solid #eee; gap: 10px; box-sizing: border-box; }
-            
-            .close-sidebar-btn { display: block !important; }
-            .question-box { font-size: 15px; line-height: 1.5; }
-            .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
-            .question-header .focus-btn { display: none; } 
-            
-            .question-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-            #modulTitle { font-size: 0.95rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
-            #qNum { font-size: 0.85rem !important; font-weight:600; }
-            #modeIndicator { font-size: 0.7rem; padding: 2px 8px; align-self: flex-start; margin-top: 5px; }
-            body.ujian-berjalan .sidebar-left { display: none; }
-            .nav-container { padding-bottom: 150px !important; }
-        }
+        .sidebar-left {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
+            z-index: 10;
+            transition: margin-left 0.3s ease;
+        }
+        body.mode-focus .sidebar-left { margin-left: -280px; }
+        body.mode-focus #floatingTimer { display: block !important; }
 
-        #mobileFooter { display: none; }
-        .mobile-nav-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; flex: 1; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s; white-space: nowrap; }
-        .mobile-nav-btn:active { transform: scale(0.95); opacity: 0.9; }
-        .close-sidebar-btn { display: none; width: 100%; padding: 15px; background: var(--danger); color: white; border: none; border-radius: 0; position: absolute; top:0; left:0; font-weight: bold; font-size: 16px; z-index: 10000; }
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+        }
 
-        @media (min-width: 769px) {
-            .ragu-wrapper { flex: 1; background-color: #fdfdfd; padding: 12px 20px; border-radius: 8px; margin-right: 20px; cursor: pointer; }
-            .ragu-wrapper:hover { background-color: #fff3e0; border-color: var(--warning); }
-            #prevBtn { margin-right: 0 !important; }
-            .footer-nav > div:last-child { width: auto !important; gap: 15px !important; }
-        }
-    </style>
+        .user-profile {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+        .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--gold); }
+
+        .timer-container {
+            background: rgba(0,0,0,0.2);
+            padding: 10px; margin-top: 15px; border-radius: 5px;
+            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; 
+            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
+            display: block; 
+        }
+        .timer-green { background-color: var(--success) !important; color: white !important; border-color: var(--pass) !important; }
+        .timer-yellow { background-color: var(--warning) !important; color: black !important; border-color: #f1c40f !important; }
+        .timer-panic { background-color: var(--danger) !important; color: white !important; border-color: var(--fail) !important; animation: panicPulse 0.5s infinite alternate; }
+        @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
+
+        .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
+
+        .modul-btn {
+            display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
+            background: white; border: 1px solid #ddd; border-radius: 6px;
+            cursor: pointer; text-align: left; font-size: 0.9rem; font-weight: 600;
+            color: var(--secondary); transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .modul-btn:hover { background: var(--light); transform: translateX(2px); border-color: var(--primary); }
+        .modul-btn.active-modul { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary); 
+            border-left: 5px solid var(--gold);
+        }
+
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; padding: 20px 40px;
+            overflow-y: auto; background: #f4f7f6; transition: all 0.3s ease;
+        }
+
+        .card {
+            background: white; padding: 40px; border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 900px;
+            margin: 0 auto; width: 100%; margin-bottom: 50px; border-top: 4px solid var(--primary);
+        }
+
+        .sidebar-right {
+            width: 300px; background-color: white; border-left: 1px solid #ddd;
+            display: flex; flex-direction: column; height: 100%;
+            flex-shrink: 0; z-index: 10;
+        }
+
+        .right-header {
+            padding: 15px; border-bottom: 1px solid #eee; display: flex;
+            justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap;
+        }
+
+        .btn-small {
+            border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;
+            font-size: 0.75rem; font-weight: bold; display: flex; align-items: center;
+            gap: 5px; transition: 0.2s; color: white; flex: 1; justify-content: center;
+        }
+        .btn-logout { background: var(--danger); }
+        .btn-stats { background: var(--accent); }
+        .btn-rank { background: var(--warning); color: black; }
+        .btn-small:hover { opacity: 0.9; }
+
+        .sidebar-info {
+            padding: 15px; font-size: 0.8rem; text-align: center;
+            background: #f9f9f9; border-bottom: 1px solid #eee;
+        }
+
+        .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #ddd; background: white; cursor: pointer;
+            border-radius: 6px; font-weight: bold; display: flex; align-items: center;
+            justify-content: center; font-size: 0.9rem; color: #555; transition: all 0.2s;
+        }
+        .nav-btn:hover { background-color: var(--light); }
+        .nav-btn.active { 
+            border: 2px solid var(--primary); 
+            background-color: var(--light);
+            color: var(--primary);
+            box-shadow: 0 0 5px rgba(0, 77, 0, 0.3); 
+            transform: scale(1.1); z-index: 2; 
+        }
+        .nav-btn.filled { background-color: var(--secondary); color: white; border-color: var(--secondary); }
+        .nav-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
+        .nav-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
+        .nav-btn.ragu { background-color: var(--warning) !important; color: black !important; border-color: var(--warning) !important; }
+
+        .finish-container { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
+
+        .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light); padding-bottom: 15px; }
+        .question-text { font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6; font-weight: 500; color: #2c3e50; }
+        
+        .option-label {
+            display: flex; align-items: center; padding: 15px; border: 2px solid #eee;
+            border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem;
+            background: white; margin-bottom: 10px;
+        }
+        .option-label:hover { background-color: var(--light); border-color: var(--primary); }
+        .option-label.selected { background-color: #e8f5e9; border-color: var(--primary); font-weight: 500; }
+        .option-label.review-correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
+        .option-label.review-wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
+
+        .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-prev { background-color: var(--secondary); } 
+        .btn-next { background-color: var(--primary); }   
+        .btn-finish { background-color: var(--success); width: 100%; }
+        .btn-purple { background-color: #8e44ad !important; color: white !important; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .feedback-box { margin-top: 25px; padding: 20px; border-radius: 8px; background-color: #fff3cd; border-left: 5px solid var(--warning); display: none; }
+        .feedback-box.show { display: block; }
+
+        .watermark {
+            position: fixed; left: 0; bottom: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);
+            border-top: 1px solid #ddd; text-align: center; 
+            padding: 8px 0; /* Padding kecil */
+            color: #666; /* Warna Abu Gelap */
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; /* Z-Index Tinggi */
+            height: 35px; box-sizing: border-box;
+        }
+
+        /* --- Z-INDEX FIX: BIAR MODAL GAK KETUTUP --- */
+        .result-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.85); display: none; 
+            justify-content: center; align-items: center; 
+            z-index: 999999 !important; /* WAJIB TINGGI */
+            backdrop-filter: blur(5px); 
+        }
+        
+        .result-box { 
+            background: white; padding: 20px; border-radius: 15px; text-align: center; 
+            width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; 
+            border-top: 5px solid var(--primary);
+            position: relative; z-index: 1000000; /* LEBIH TINGGI LAGI */
+        }
+        
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .stats-table th, .stats-table td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+        .stats-table th { background-color: var(--primary); color: white; }
+        .stats-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .stats-section-title { text-align: left; margin: 15px 0 5px 0; font-weight: bold; color: #555; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+
+        .footer-nav { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
+        .ragu-wrapper { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--warning); cursor: pointer; user-select: none; }
+        .ragu-wrapper input { width: 18px; height: 18px; cursor: pointer; }
+        .focus-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary); margin-right: 15px; }
+
+        #floatingTimer {
+            display: none; position: fixed; top: 50px; left: 30px; z-index: 99999; 
+            padding: 10px 25px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid white;
+            color: #ffeb3b; background: rgba(0, 77, 0, 0.9);
+        }
+        
+        /* === TAMPILAN HP FIXED - FINAL REVISI === */
+        @media (max-width: 768px) {
+            body { 
+                padding-bottom: 0 !important; 
+                flex-direction: column; 
+                overflow: hidden; 
+            }
+
+            .sidebar-left {
+                width: 100% !important; height: 100% !important; border-right: none;
+                z-index: 100; position: fixed; top: 0; left: 0;
+            }
+            .sidebar-left .timer-container { display: none !important; }
+            
+            /* SCROLL MODUL AMAN */
+            .modul-selector { 
+                max-height: none !important; 
+                height: calc(100% - 85px); 
+                overflow-y: auto; 
+                padding-bottom: 120px !important; 
+            }
+
+            /* --- FIX SCROLL & NAVIGASI --- */
+            .main-content { 
+                width: 100% !important; margin: 0 !important; 
+                /* Hitung tinggi viewport dikurangi header/footer area */
+                height: calc(100dvh - 120px) !important; 
+                flex: 1; 
+                overflow-y: scroll !important; /* Paksa scroll */
+                -webkit-overflow-scrolling: touch;
+                padding: 15px 15px 0 15px !important;
+            }
+
+            /* PAKSA SPACE KOSONG DI BAWAH KARTU BIAR NAVIGASI NAIK */
+            .card::after {
+                content: "";
+                display: block;
+                height: 200px; /* Spacer Gede */
+                width: 100%;
+            }
+
+            .card {
+                margin-bottom: 0 !important; 
+                padding: 20px !important;
+                /* Hapus shadow bawah biar gak aneh */
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            .sidebar-right { display: none; }
+            .sidebar-right.show-mobile {
+                display: flex !important; flex-direction: column;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                z-index: 15000; background: white; padding-top: 50px; margin-right: 0 !important;
+            }
+            .nav-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 5px !important; }
+            .nav-btn { font-size: 0.75rem !important; aspect-ratio: 1; border-radius: 4px; }
+            .finish-container { display: none !important; }
+
+            #floatingTimer {
+                display: none; position: fixed; top: 10px; left: 10px; right: auto;
+                font-size: 13px; padding: 6px 12px; z-index: 99999; border-radius: 20px;
+            }
+
+            /* FIX: Navigasi Ujian di HP */
+            .footer-nav {
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 20px;
+                position: relative;
+                z-index: 10; 
+            }
+            
+            .footer-nav .ragu-wrapper {
+                width: 100%;
+                margin-right: 0;
+                justify-content: center;
+                background: #fff3e0;
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            .footer-nav > div:last-child {
+                width: 100% !important;
+                display: flex !important;
+                gap: 10px !important;
+            }
+
+            .footer-nav .btn { padding: 12px 15px !important; font-size: 0.9rem !important; width: 50% !important; border-radius: 8px; flex: 1; }
+            
+            /* STICKY FOOTER NAVIGASI APLIKASI (FIXED DI ATAS WATERMARK) */
+            #mobileFooter {
+                display: none; /* Default Hidden (Lobby) */
+                position: fixed;
+                bottom: 35px; /* TEPAT DI ATAS WATERMARK (35px) */
+                left: 0; width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(5px);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                padding: 8px 15px;
+                z-index: 1001; /* Di atas watermark */
+                justify-content: space-between;
+                border-top: 1px solid #eee;
+                gap: 10px; box-sizing: border-box;
+            }
+            
+            .close-sidebar-btn { display: block !important; }
+            .question-box { font-size: 15px; line-height: 1.5; }
+            .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
+            .question-header .focus-btn { display: none; } 
+            
+            /* HEADER HP (ELEGAN & KECIL) */
+            .question-header { 
+                flex-direction: column; align-items: flex-start; gap: 5px; 
+                margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+            }
+            #modulTitle { font-size: 0.95rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
+            #qNum { font-size: 0.85rem !important; font-weight:600; }
+            #modeIndicator { 
+                font-size: 0.7rem; padding: 2px 8px; 
+                align-self: flex-start; margin-top: 5px;
+            }
+            
+            body.ujian-berjalan .sidebar-left { display: none; }
+
+            /* SCROLL DAFTAR SOAL AMAN - KASIH RUANG BAWAH */
+            .nav-container { padding-bottom: 150px !important; }
+        }
+
+        #mobileFooter { display: none; }
+
+        /* TOMBOL FOOTER ELEGAN (FULL WIDTH DENGAN GAP) */
+        .mobile-nav-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 10px 15px; border-radius: 8px; font-weight: 600;
+            flex: 1; border: 1px solid var(--gold);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .mobile-nav-btn:active { transform: scale(0.95); opacity: 0.9; }
+
+        .close-sidebar-btn {
+            display: none; width: 100%; padding: 15px; background: var(--danger);
+            color: white; border: none; border-radius: 0; position: absolute; top:0; left:0;
+            font-weight: bold; font-size: 16px; z-index: 10000;
+        }
+
+        @media (min-width: 769px) {
+            .ragu-wrapper {
+                flex: 1; background-color: #fdfdfd; padding: 12px 20px;
+                border-radius: 8px; margin-right: 20px; cursor: pointer;
+            }
+            .ragu-wrapper:hover { background-color: #fff3e0; border-color: var(--warning); }
+            #prevBtn { margin-right: 0 !important; }
+            .footer-nav > div:last-child { width: auto !important; gap: 15px !important; }
+        }
+    </style>
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
-    <div id="floatingTimer">00:00:00</div>
-    
-    <div id="mobileFooter">
-        <button class="mobile-nav-btn" onclick="toggleMobileModul()"><i class="fas fa-book"></i> Daftar Modul</button>
-        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()"><i class="fas fa-th"></i> Daftar Soal</button>
-    </div>
+    <div id="floatingTimer">00:00:00</div>
+    
+    <div id="mobileFooter">
+        <button class="mobile-nav-btn" onclick="toggleMobileModul()"><i class="fas fa-book"></i> Daftar Modul</button>
+        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()"><i class="fas fa-th"></i> Daftar Soal</button>
+    </div>
 
 <div id="loginOverlay">
-    <nav class="landing-nav">
-        <div class="nav-brand">⚖️ CBT CAKIM PA 2026</div>
-        <button class="nav-login-btn" onclick="handleLogin()">
-            <img src="https://img.icons8.com/color/48/google-logo.png" width="25" height="25" alt="G">
-            <span>Masuk dengan Google</span>
-        </button>
-    </nav>
-    <section class="hero-section">
-        <div class="hero-left">
-            <h1 class="hero-quote">
-                Belajar Hari Ini,<br>
-                <span class="highlight-text">Dipercaya Esok Hari.</span><br>
-                Ilmu Mengangkat Derajat,<br>
-                <span class="highlight-text">Integritas Menjaga Kehormatan.</span>
-            </h1>
-        </div>
-        <div class="hero-right">
-            <ul class="hero-features">
-                <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap</span></li>
-                <li><i class="fas fa-chart-line feature-icon"></i> <span>Analisis & Peringkat Real-time</span></li>
-                <li><i class="fas fa-gavel feature-icon"></i> <span>Pembahasan Hukum Mendalam</span></li>
-                <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
-            </ul>
-        </div>
-        <div id="loginError" style="color: #c0392b; font-size: 0.9rem; position:absolute; top:80px; right:60px;"></div>
-        <div class="dev-footer">Developed by Ilham Nur Pratama - APP 2023 - PA SERANG</div>
-    </section>
+    <nav class="landing-nav">
+        <div class="nav-brand">⚖️ CBT CAKIM PA 2026</div>
+        <button class="nav-login-btn" onclick="handleLogin()">
+            <img src="https://img.icons8.com/color/48/google-logo.png" width="25" height="25" alt="G">
+            <span>Masuk dengan Google</span>
+        </button>
+    </nav>
+    <section class="hero-section">
+        <div class="hero-left">
+            <h1 class="hero-quote">
+                Belajar Hari Ini,<br>
+                <span class="highlight-text">Dipercaya Esok Hari.</span><br>
+                Ilmu Mengangkat Derajat,<br>
+                <span class="highlight-text">Integritas Menjaga Kehormatan.</span>
+            </h1>
+        </div>
+        <div class="hero-right">
+            <ul class="hero-features">
+                <li><i class="fas fa-database feature-icon"></i> <span>Database Soal Terlengkap</span></li>
+                <li><i class="fas fa-chart-line feature-icon"></i> <span>Analisis & Peringkat Real-time</span></li>
+                <li><i class="fas fa-gavel feature-icon"></i> <span>Pembahasan Hukum Mendalam</span></li>
+                <li><i class="fas fa-mobile-alt feature-icon"></i> <span>Akses Fleksibel (HP & Laptop)</span></li>
+            </ul>
+        </div>
+        <div id="loginError" style="color: #c0392b; font-size: 0.9rem; position:absolute; top:80px; right:60px;"></div>
+        <div class="dev-footer">Developed by Ilham Nur Pratama - APP 2023 - PA SERANG</div>
+    </section>
 </div>
-    
-    <div id="appSection" style="display:none;">
-        <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
-        <div class="sidebar-left">
-            <div class="sidebar-header">
-                <h3>CBT CAKIM 2026</h3>
-                <div class="user-profile">
-                   <img id="userAvatar" src="" class="user-avatar" alt="">
-                   <span id="roleDisplay">Peserta</span>
-                </div>
-                <div class="timer-container" id="timerDisplay">00:00:00</div>
-            </div>
-            <div class="modul-selector">
-                <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
-                <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
-                <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
-                <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
-                <button class="modul-btn" id="btn-modul4" onclick="switchDatabase('modul4')">Modul 4: Pendaftaran & Relaas</button>
-                <button class="modul-btn" id="btn-modul5" onclick="switchDatabase('modul5')">Modul 5: Gugatan & Permohonan</button>
-                <button class="modul-btn" id="btn-modul6" onclick="switchDatabase('modul6')">Modul 6: PMH & Wanprestasi</button>
-                <button class="modul-btn" id="btn-modul7" onclick="switchDatabase('modul7')">Modul 7: Mediasi</button>
-                <button class="modul-btn" id="btn-modul8" onclick="switchDatabase('modul8')">Modul 8: Perkawinan (KHI)</button>
-                <button class="modul-btn" id="btn-modul8.1" onclick="switchDatabase('modul8.1')">Modul 8.1: Perkawinan (Lanjutan)</button>
-                <button class="modul-btn" id="btn-modul8.2" onclick="switchDatabase('modul8.2')">Modul 8.2: Perkawinan (Akhir)</button>
-                <button class="modul-btn" id="btn-modul8.3" onclick="switchDatabase('modul8.3')">Modul 8.3: Perkawinan (UU 1/1974)</button>
-                <button class="modul-btn" id="btn-modul8.4" onclick="switchDatabase('modul8.4')">Modul 8.4: Pelaksana (PP 9/1975)</button>
-                <button class="modul-btn" id="btn-modul9" onclick="switchDatabase('modul9')">Modul 9: Perwalian & Pengangkatan</button>
-                <button class="modul-btn" id="btn-modul10" onclick="switchDatabase('modul10')">Modul 10: Waris Islam (Dasar)</button>
-                <button class="modul-btn" id="btn-modul10.1" onclick="switchDatabase('modul10.1')">Modul 10.1: Waris (KHI)</button>
-                <button class="modul-btn" id="btn-modul10.2" onclick="switchDatabase('modul10.2')">Modul 10.2: Waris (BW)</button>
-                <button class="modul-btn" id="btn-modul10.3" onclick="switchDatabase('modul10.3')">Modul 10.3: Studi Kasus Waris</button>
-                <button class="modul-btn" id="btn-modul11" onclick="switchDatabase('modul11')">Modul 11: Wasiat & Hibah</button>
-                <button class="modul-btn" id="btn-modul12" onclick="switchDatabase('modul12')">Modul 12: Sita Jaminan</button> 
-                <button class="modul-btn" id="btn-modul13" onclick="switchDatabase('modul13')">Modul 13: Ekonomi Syariah</button>
-                <button class="modul-btn" id="btn-modul13.1" onclick="switchDatabase('modul13.1')">Modul 13.1: Akad Syariah</button>
-                <button class="modul-btn" id="btn-modul13.2" onclick="switchDatabase('modul13.2')">Modul 13.2: Kasus Akad</button>
-                <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan</button>
-                <button class="modul-btn" id="btn-modul15" onclick="switchDatabase('modul15')">Modul 15: Buku Saku PA 1.1</button>
-                <button class="modul-btn" id="btn-modul15.1" onclick="switchDatabase('modul15.1')">Modul 15.1: Buku Saku PA 1.2</button>
-                <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA 1.3</button>
-           </div>
-        </div>
+    
+    <div id="appSection" style="display:none;">
+        <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
+        <div class="sidebar-left">
+            <div class="sidebar-header">
+                <h3>CBT CAKIM 2026</h3>
+                <div class="user-profile">
+                   <img id="userAvatar" src="" class="user-avatar" alt="">
+                   <span id="roleDisplay">Peserta</span>
+                </div>
+                <div class="timer-container" id="timerDisplay">00:00:00</div>
+            </div>
+            <div class="modul-selector">
+                <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">MATERI TERBARU (URUT):</small>
+                <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
+                <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
+                <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
+                <button class="modul-btn" id="btn-modul4" onclick="switchDatabase('modul4')">Modul 4: Pendaftaran & Relaas</button>
+                <button class="modul-btn" id="btn-modul5" onclick="switchDatabase('modul5')">Modul 5: Gugatan & Permohonan</button>
+                <button class="modul-btn" id="btn-modul6" onclick="switchDatabase('modul6')">Modul 6: PMH & Wanprestasi</button>
+                <button class="modul-btn" id="btn-modul7" onclick="switchDatabase('modul7')">Modul 7: Mediasi</button>
+                <button class="modul-btn" id="btn-modul8" onclick="switchDatabase('modul8')">Modul 8: Perkawinan (KHI)</button>
+                <button class="modul-btn" id="btn-modul8.1" onclick="switchDatabase('modul8.1')">Modul 8.1: Perkawinan (Lanjutan)</button>
+                <button class="modul-btn" id="btn-modul8.2" onclick="switchDatabase('modul8.2')">Modul 8.2: Perkawinan (Akhir)</button>
+                <button class="modul-btn" id="btn-modul8.3" onclick="switchDatabase('modul8.3')">Modul 8.3: Perkawinan (UU 1/1974)</button>
+                <button class="modul-btn" id="btn-modul8.4" onclick="switchDatabase('modul8.4')">Modul 8.4: Pelaksana (PP 9/1975)</button>
+                <button class="modul-btn" id="btn-modul9" onclick="switchDatabase('modul9')">Modul 9: Perwalian & Pengangkatan</button>
+                <button class="modul-btn" id="btn-modul10" onclick="switchDatabase('modul10')">Modul 10: Waris Islam (Dasar)</button>
+                <button class="modul-btn" id="btn-modul10.1" onclick="switchDatabase('modul10.1')">Modul 10.1: Waris (KHI)</button>
+                <button class="modul-btn" id="btn-modul10.2" onclick="switchDatabase('modul10.2')">Modul 10.2: Waris (BW)</button>
+                <button class="modul-btn" id="btn-modul10.3" onclick="switchDatabase('modul10.3')">Modul 10.3: Studi Kasus Waris</button>
+                <button class="modul-btn" id="btn-modul11" onclick="switchDatabase('modul11')">Modul 11: Wasiat & Hibah</button>
+                <button class="modul-btn" id="btn-modul12" onclick="switchDatabase('modul12')">Modul 12: Sita Jaminan</button> 
+                <button class="modul-btn" id="btn-modul13" onclick="switchDatabase('modul13')">Modul 13: Ekonomi Syariah</button>
+                <button class="modul-btn" id="btn-modul13.1" onclick="switchDatabase('modul13.1')">Modul 13.1: Akad Syariah</button>
+                <button class="modul-btn" id="btn-modul13.2" onclick="switchDatabase('modul13.2')">Modul 13.2: Kasus Akad</button>
+                <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan</button>
+                <button class="modul-btn" id="btn-modul15" onclick="switchDatabase('modul15')">Modul 15: Buku Saku PA 1.1</button>
+                <button class="modul-btn" id="btn-modul15.1" onclick="switchDatabase('modul15.1')">Modul 15.1: Buku Saku PA 1.2</button>
+                <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA 1.3</button>
+           </div>
+        </div>
 
-        <div class="main-content">
-            <div class="card">
-                <div class="question-header">
-                    <div style="display:flex; align-items:center;">
-                        <button class="focus-btn" onclick="toggleFocusMode()" title="Mode Fokus">☰</button>
-                        <div>
-                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary); display:block;" id="modulTitle">Modul 1</span>
-                            <span style="font-size: 1rem; color: #7f8c8d;">Soal No. <span id="qNum" style="font-weight:bold; color:var(--primary);">1</span></span>
-                        </div>
-                    </div>
-                    <span id="modeIndicator" style="color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2;">Mode: Ujian</span>
-                </div>
+        <div class="main-content">
+            <div class="card">
+                <div class="question-header">
+                    <div style="display:flex; align-items:center;">
+                        <button class="focus-btn" onclick="toggleFocusMode()" title="Mode Fokus">☰</button>
+                        <div>
+                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary); display:block;" id="modulTitle">Modul 1</span>
+                            <span style="font-size: 1rem; color: #7f8c8d;">Soal No. <span id="qNum" style="font-weight:bold; color:var(--primary);">1</span></span>
+                        </div>
+                    </div>
+                    <span id="modeIndicator" style="color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2;">Mode: Ujian</span>
+                </div>
 
-                <div id="questionText" class="question-text"></div>
-                <div id="optionsContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
 
-                <div id="feedbackBox" class="feedback-box">
-                    <h3 style="margin-top:0;">Pembahasan</h3>
-                    <p id="feedbackText"></p>
-                    <span id="feedbackCite" style="display:block; margin-top:10px; font-style:italic; font-weight:bold; color:#555;"></span>
-                </div>
+                <div id="feedbackBox" class="feedback-box">
+                    <h3 style="margin-top:0;">Pembahasan</h3>
+                    <p id="feedbackText"></p>
+                    <span id="feedbackCite" style="display:block; margin-top:10px; font-style:italic; font-weight:bold; color:#555;"></span>
+                </div>
 
-                <div class="footer-nav">
-                    <div class="ragu-wrapper">
-                        <input type="checkbox" id="checkRagu" onchange="toggleRagu()">
-                        <label for="checkRagu">Ragu-Ragu</label>
-                    </div>
+                <div class="footer-nav">
+                    <div class="ragu-wrapper">
+                        <input type="checkbox" id="checkRagu" onchange="toggleRagu()">
+                        <label for="checkRagu">Ragu-Ragu</label>
+                    </div>
 
-                    <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end;">
-                        <button class="btn btn-prev" id="prevBtn" onclick="changeQuestion(-1)" style="margin-right: auto;">❮ Sebelumnya</button>
-                        <button class="btn btn-next" id="nextBtn" onclick="changeQuestion(1)">Selanjutnya ❯</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end;">
+                        <button class="btn btn-prev" id="prevBtn" onclick="changeQuestion(-1)" style="margin-right: auto;">❮ Sebelumnya</button>
+                        <button class="btn btn-next" id="nextBtn" onclick="changeQuestion(1)">Selanjutnya ❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="sidebar-right">
-            <div class="right-header">
-                <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
-                <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
-                <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
-                <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
-                <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
-            </div>
-            
-            <div class="sidebar-info">
-                <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
-                <div style="display:flex; justify-content:center; gap:15px;">
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
-                </div>
-            </div>
+        <div class="sidebar-right">
+            <div class="right-header">
+                <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
+                <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
+                <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
+                <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
+                <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
+            </div>
+            
+            <div class="sidebar-info">
+                <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
+                <div style="display:flex; justify-content:center; gap:15px;">
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
+                </div>
+            </div>
 
-            <div class="nav-container">
-                <div class="nav-grid" id="navGrid"></div>
-            </div>
+            <div class="nav-container">
+                <div class="nav-grid" id="navGrid"></div>
+            </div>
 
-            <div class="finish-container">
-                <button class="btn btn-finish" onclick="confirmFinish()">Selesai</button>
-            </div>
-        </div>
-    </div>
+            <div class="finish-container">
+                <button class="btn btn-finish" onclick="confirmFinish()">Selesai</button>
+            </div>
+        </div>
+    </div>
 
-    <div id="resultOverlay" class="result-overlay">
-        <div class="result-box" style="width:400px;">
-            <h2>Hasil Ujian</h2>
-            <p id="passStatus" style="font-size:1.5rem; font-weight:bold; margin:5px 0;"></p>
-            <p>Skor Akhir:</p>
-            <div class="score-circle" id="finalScore">0</div>
-            <p id="resultMsg" style="font-weight:500; color:#555;"></p>
-            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
-                <button onclick="startReviewWrong()" id="btnReviewWrong" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
-                <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
-                <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
-                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%;">Lihat Grafik Lengkap</button>
-                <button class="btn" onclick="backToMenu()" style="width:100%; background:var(--filled); margin-top:5px;">🏠 Kembali ke Menu Utama</button>
-            </div>
-        </div>
-    </div>
+    <div id="resultOverlay" class="result-overlay">
+        <div class="result-box" style="width:400px;">
+            <h2>Hasil Ujian</h2>
+            <p id="passStatus" style="font-size:1.5rem; font-weight:bold; margin:5px 0;"></p>
+            <p>Skor Akhir:</p>
+            <div class="score-circle" id="finalScore">0</div>
+            <p id="resultMsg" style="font-weight:500; color:#555;"></p>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <button onclick="startReviewWrong()" id="btnReviewWrong" style="width:100%; display:none; margin-bottom:10px; background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 Review Jawaban Salah</button>
+                <button class="btn btn-next" onclick="closeResult()" style="width:100%;">Lihat Pembahasan</button>
+                <button class="btn btn-rank" onclick="closeResult(); openLeaderboard();" style="width:100%;">Lihat Peringkat Teman</button>
+                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%;">Lihat Grafik Lengkap</button>
+                <button class="btn" onclick="backToMenu()" style="width:100%; background:var(--filled); margin-top:5px;">🏠 Kembali ke Menu Utama</button>
+            </div>
+        </div>
+    </div>
 
-    <div id="leaderboardOverlay" class="result-overlay">
-        <div class="result-box" style="width: 500px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2 style="margin:0;">🏆 Top Skor - <span id="lbModulName">Modul Ini</span></h2>
-                <button onclick="closeLeaderboard()" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
-            </div>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table class="stats-table">
-                    <thead><tr><th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th></tr></thead>
-                    <tbody id="leaderboardBody"><tr><td colspan="4">Memuat data...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <div id="leaderboardOverlay" class="result-overlay">
+        <div class="result-box" style="width: 500px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0;">🏆 Top Skor - <span id="lbModulName">Modul Ini</span></h2>
+                <button onclick="closeLeaderboard()" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+            </div>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="stats-table">
+                    <thead><tr><th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th></tr></thead>
+                    <tbody id="leaderboardBody"><tr><td colspan="4">Memuat data...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <div id="statsOverlay" class="result-overlay">
-        <div class="result-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2 style="margin:0;">Statistik Belajar</h2>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="resetStats()" style="background-color:var(--warning); border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold; color:white; font-size:0.8rem;">🔄 Reset Data Modul Ini</button>
-                    <button onclick="closeStats()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--danger);">&times;</button>
-                </div>
-            </div>
-            <h4 id="statsTitle" class="stats-section-title">Data Modul Ini: -</h4>
-            <div style="width: 100%; height: 200px; margin-bottom: 20px;"><canvas id="statsChart"></canvas></div>
-            <div style="max-height: 150px; overflow-y: auto; margin-bottom:20px;">
-                <table class="stats-table">
-                    <thead><tr><th>No</th><th>Tanggal & Jam</th><th>Skor</th><th>Benar</th><th>Salah</th></tr></thead>
-                    <tbody id="statsTableBody"></tbody>
-                </table>
-            </div>
-            <h4 class="stats-section-title">🏆 Peta Kekuatan</h4>
-            <div style="width: 100%; height: 250px; margin-bottom: 20px;"><canvas id="allModulesChart"></canvas></div>
-            <div style="margin-top:20px;"><button class="btn" onclick="closeStats()" style="width:100%; background-color: var(--danger);">Tutup</button></div>
-        </div>
-    </div>
+    <div id="statsOverlay" class="result-overlay">
+        <div class="result-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0;">Statistik Belajar</h2>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="resetStats()" style="background-color:var(--warning); border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold; color:white; font-size:0.8rem;">🔄 Reset Data Modul Ini</button>
+                    <button onclick="closeStats()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--danger);">&times;</button>
+                </div>
+            </div>
+            <h4 id="statsTitle" class="stats-section-title">Data Modul Ini: -</h4>
+            <div style="width: 100%; height: 200px; margin-bottom: 20px;"><canvas id="statsChart"></canvas></div>
+            <div style="max-height: 150px; overflow-y: auto; margin-bottom:20px;">
+                <table class="stats-table">
+                    <thead><tr><th>No</th><th>Tanggal & Jam</th><th>Skor</th><th>Benar</th><th>Salah</th></tr></thead>
+                    <tbody id="statsTableBody"></tbody>
+                </table>
+            </div>
+            <h4 class="stats-section-title">🏆 Peta Kekuatan</h4>
+            <div style="width: 100%; height: 250px; margin-bottom: 20px;"><canvas id="allModulesChart"></canvas></div>
+            <div style="margin-top:20px;"><button class="btn" onclick="closeStats()" style="width:100%; background-color: var(--danger);">Tutup</button></div>
+        </div>
+    </div>
 
-    <div id="adminOverlay" class="result-overlay">
-        <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
-                <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
-            </div>
+    <div id="adminOverlay" class="result-overlay">
+        <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+                <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
+                <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+            </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button onclick="switchAdminTab('tambah')" class="btn-small" style="background:var(--primary); font-size:1rem;">➕ Tambah Baru (JSON)</button>
-                <button onclick="switchAdminTab('edit')" class="btn-small" style="background:var(--warning); color:black; font-size:1rem;">✏️ Edit / Revisi</button>
-            </div>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button onclick="switchAdminTab('tambah')" class="btn-small" style="background:var(--primary); font-size:1rem;">➕ Tambah Baru (JSON)</button>
+                <button onclick="switchAdminTab('edit')" class="btn-small" style="background:var(--warning); color:black; font-size:1rem;">✏️ Edit / Revisi</button>
+            </div>
 
-            <div id="tabTambah">
-                <label style="font-weight:bold;">Target Modul (ID):</label>
-                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:8px; margin-bottom:10px;">
-                
-                <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
-                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc;" placeholder='[{"q": "Pertanyaan...", "options": ["A","B"], "answer": 0, "explanation": "..."}]'></textarea>
-                
-                <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
-            </div>
+            <div id="tabTambah">
+                <label style="font-weight:bold;">Target Modul (ID):</label>
+                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:8px; margin-bottom:10px;">
+                
+                <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
+                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc;" placeholder='[{"q": "Pertanyaan...", "options": ["A","B"], "answer": 0, "explanation": "..."}]'></textarea>
+                
+                <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
+            </div>
 
-            <div id="tabEdit" style="display:none;">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
-                    <button onclick="loadSoalAdmin()" class="btn-small" style="background:var(--primary);">🔍 Load Soal</button>
-                </div>
-                
-                <div style="display:flex; gap:20px; height: 400px;">
-                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9;">
-                        <p style="padding:10px; color:gray;">Klik Load Soal dulu...</p>
-                    </div>
-                    
-                    <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
-                        <input type="hidden" id="editDocId">
-                        <label>Pertanyaan:</label>
-                        <textarea id="editQ" rows="3" style="width:95%;"></textarea>
-                        
-                        <label>Opsi (Pisahkan dengan koma):</label>
-                        <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
-                        
-                        <div style="display:flex; gap:10px;">
-                            <div style="flex:1">
-                                <label>Indeks Jawaban (0=A, 1=B):</label>
-                                <input type="number" id="editAns" style="width:100%;">
-                            </div>
-                        </div>
+            <div id="tabEdit" style="display:none;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
+                    <button onclick="loadSoalAdmin()" class="btn-small" style="background:var(--primary);">🔍 Load Soal</button>
+                </div>
+                
+                <div style="display:flex; gap:20px; height: 400px;">
+                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9;">
+                        <p style="padding:10px; color:gray;">Klik Load Soal dulu...</p>
+                    </div>
+                    
+                    <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
+                        <input type="hidden" id="editDocId">
+                        <label>Pertanyaan:</label>
+                        <textarea id="editQ" rows="3" style="width:95%;"></textarea>
+                        
+                        <label>Opsi (Pisahkan dengan koma):</label>
+                        <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <div style="flex:1">
+                                <label>Indeks Jawaban (0=A, 1=B):</label>
+                                <input type="number" id="editAns" style="width:100%;">
+                            </div>
+                        </div>
 
-                        <label>Pembahasan:</label>
-                        <textarea id="editExp" rows="3" style="width:95%;"></textarea>
-                        
-                        <label>Sumber (Cite):</label>
-                        <input type="text" id="editCite" style="width:95%;">
+                        <label>Pembahasan:</label>
+                        <textarea id="editExp" rows="3" style="width:95%;"></textarea>
+                        
+                        <label>Sumber (Cite):</label>
+                        <input type="text" id="editCite" style="width:95%;">
 
-                        <div style="display:flex; gap:5px; margin-top:10px;">
-                            <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
-                            <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                        <div style="display:flex; gap:5px; margin-top:10px;">
+                            <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
+                            <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // --- CONFIG FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyAC4Tskg8XC1N0a13xcsV3A1Mq_8mDnY-A",
-        authDomain: "simulasi-cbt-cakim-2026.firebaseapp.com",
-        projectId: "simulasi-cbt-cakim-2026",
-        storageBucket: "simulasi-cbt-cakim-2026.firebasestorage.app",
-        messagingSenderId: "209182753461",
-        appId: "1:209182753461:web:1aa2201fa7c73e581234fc",
-        measurementId: "G-NDNKMSMWV2"
-    };
+    // --- CONFIG FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAC4Tskg8XC1N0a13xcsV3A1Mq_8mDnY-A",
+        authDomain: "simulasi-cbt-cakim-2026.firebaseapp.com",
+        projectId: "simulasi-cbt-cakim-2026",
+        storageBucket: "simulasi-cbt-cakim-2026.firebasestorage.app",
+        messagingSenderId: "209182753461",
+        appId: "1:209182753461:web:1aa2201fa7c73e581234fc",
+        measurementId: "G-NDNKMSMWV2"
+    };
 
-    // --- EMAIL ADMIN (PASTIKAN SAMA PERSIS DENGAN RULES FIREBASE) ---
-    const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
+    // --- EMAIL ADMIN (GANTI DENGAN EMAIL LO) ---
+    const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
 
-    let db, auth, provider, currentUser;
-    try {
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-        provider = new GoogleAuthProvider();
-    } catch (e) { console.error("Firebase Init Error:", e); }
+    let db, auth, provider, currentUser;
+    if (firebaseConfig.apiKey) {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        provider = new GoogleAuthProvider();
+    }
 
-    window.handleLogin = async () => {
-        if(!auth) { alert("Konfigurasi Firebase belum dipasang!"); return; }
-        try { await signInWithPopup(auth, provider); } 
-        catch (error) { document.getElementById('loginError').innerText = error.message; }
-    };
+    window.handleLogin = async () => {
+        if(!auth) { alert("Konfigurasi Firebase belum dipasang!"); return; }
+        try { await signInWithPopup(auth, provider); } 
+        catch (error) { document.getElementById('loginError').innerText = error.message; }
+    };
 
-    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
+    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
 
-    if(auth) {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                
-                // --- LOGIKA ADMIN SAKTI ---
-                if (user.email === ADMIN_EMAIL) {
-                    document.body.classList.add('is-admin'); 
-                    console.log("Welcome Admin! Anti-Cheat Disabled.");
-                    const btnAdmin = document.getElementById('btnAdminPanel');
-                    if(btnAdmin) btnAdmin.style.display = 'flex'; 
-                } else {
-                    document.body.classList.remove('is-admin');
-                }
+    if(auth) {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                
+                // --- LOGIKA ADMIN SAKTI ---
+                if (user.email === ADMIN_EMAIL) {
+                    document.body.classList.add('is-admin'); 
+                    console.log("Welcome Admin! Anti-Cheat Disabled.");
+                    const btnAdmin = document.getElementById('btnAdminPanel');
+                    if(btnAdmin) btnAdmin.style.display = 'flex'; 
+                } else {
+                    document.body.classList.remove('is-admin');
+                }
 
-                document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
-                document.getElementById('appSection').style.display = 'flex';
-                
-                tampilkanLobby();
-                document.getElementById('roleDisplay').innerText = user.displayName;
-                document.getElementById('userAvatar').src = user.photoURL;
-                document.getElementById('floatingTimer').style.display = 'none';
-                document.getElementById('mobileFooter').style.display = 'none'; 
+                document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
+                document.getElementById('appSection').style.display = 'flex';
+                
+                // FIX: Tampilkan LOBBY AWAL & Foto Profil
+                tampilkanLobby();
+                document.getElementById('roleDisplay').innerText = user.displayName;
+                document.getElementById('userAvatar').src = user.photoURL;
+                
+                // FIX: SEMBUNYIKAN TIMER & FOOTER HP DI LOBBY
+                document.getElementById('floatingTimer').style.display = 'none';
+                document.getElementById('mobileFooter').style.display = 'none'; 
 
-            } else {
-                document.body.classList.remove('is-admin');
-                document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
-                document.getElementById('appSection').style.display = 'none';
-                document.getElementById('floatingTimer').style.display = 'none';
-                document.getElementById('mobileFooter').style.display = 'none';
-            }
-        });
-    }
+            } else {
+                document.body.classList.remove('is-admin');
+                document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
+                document.getElementById('appSection').style.display = 'none';
+                document.getElementById('floatingTimer').style.display = 'none';
+                document.getElementById('mobileFooter').style.display = 'none';
+            }
+        });
+    }
 
-    // --- FUNGSI ADMIN EDIT/REVISI (FIXED: INDEX ERROR HANDLING & HIGHLIGHT) ---
-    let currentAdminModul = "";
+    window.saveScoreToCloud = async (modulId, skor) => {
+        if (!currentUser || !db) return;
+        try {
+            await addDoc(collection(db, "leaderboard"), {
+                uid: currentUser.uid, nama: currentUser.displayName, modul: modulId, skor: skor, tanggal: new Date()
+            });
+        } catch (e) { console.error("Gagal simpan skor:", e); }
+    };
 
-    window.loadSoalAdmin = async () => {
-        const modulId = document.getElementById('editModulTarget').value.trim();
-        if(!modulId) return alert("Isi nama modul dulu! (cth: modul1)");
-        currentAdminModul = modulId;
+    window.openLeaderboard = async () => {
+        if (!db) { alert("Database belum connect"); return; }
+        document.getElementById('leaderboardOverlay').style.display = 'flex';
+        const tbody = document.getElementById('leaderboardBody');
+        tbody.innerHTML = '<tr><td colspan="4">Sedang memuat data...</td></tr>';
+        document.getElementById('lbModulName').innerText = document.getElementById('modulTitle').innerText;
 
-        const listDiv = document.getElementById('listSoalAdmin');
-        listDiv.innerHTML = "Loading data...";
+        const q = query(collection(db, "leaderboard"), where("modul", "==", currentDatabaseId || "modul1"), orderBy("skor", "desc"), limit(100));
+        try {
+            const snapshot = await getDocs(q); 
+            const bestScores = {};
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!bestScores[data.nama] || parseInt(data.skor) > parseInt(bestScores[data.nama].skor)) {
+                    bestScores[data.nama] = data;
+                }
+            });
+            let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
+            tbody.innerHTML = '';
+            if (sortedData.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
+            else {
+                sortedData.forEach((val, index) => {
+                    let rowStyle = index === 0 ? 'style="background:#fff3cd; font-weight:bold;"' : (index === 1 ? 'style="background:#f8f9fa; font-weight:bold;"' : '');
+                    let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td ${rowStyle}>${index + 1}</td><td ${rowStyle}>${val.nama}</td><td ${rowStyle}>${val.skor}</td><td ${rowStyle}>${tgl}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+        } catch (error) { console.error(error); tbody.innerHTML = '<tr><td colspan="4">Gagal memuat.</td></tr>'; }
+    };
 
-        try {
-            const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
-            // Coba pakai orderBy, kalau gagal (index belum ada), pake default
-            let q;
-            try {
-                q = query(qRef, orderBy("createdAt", "desc"));
-            } catch(e) { q = qRef; }
-            
-            const snapshot = await getDocs(q); 
+    window.closeLeaderboard = () => { document.getElementById('leaderboardOverlay').style.display = 'none'; };
 
-            listDiv.innerHTML = "";
-            if (snapshot.empty) {
-                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal.</p>";
-                return;
-            }
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+        
+    let currentModulKey = 'modul1';
+    let currentQuestions = [];
+    let currentIdx = 0;
+    let userAnswers = [];
+    let raguStatus = [];
+    let isSubmitted = false;
+    let timerInterval;
+    let timeRemaining;
+    let totalExamTime = 0;
+    let isReviewMode = false;
+    let wrongIndices = [];
 
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const div = document.createElement('div');
-                div.style.borderBottom = "1px solid #ddd";
-                div.style.padding = "10px";
-                div.style.cursor = "pointer";
-                div.style.fontSize = "0.85rem";
-                div.className = "admin-soal-item";
-                div.innerText = (data.q || "").substring(0, 60) + "...";
-                
-                div.onclick = () => {
-                    document.querySelectorAll('.admin-soal-item').forEach(el => el.style.background = 'transparent');
-                    div.style.background = '#d1e7dd'; // Highlight Hijau
-                    populateEditForm(docSnap.id, data);
-                };
-                listDiv.appendChild(div);
-            });
-        } catch (e) {
-            console.error(e);
-            let msg = e.message;
-            if(msg.includes("index")) msg = "Error Index: Buka Console (F12) & Klik Link Firebase.";
-            alert("Gagal load: " + msg);
-        }
-    };
+    window.currentDatabaseId = 'modul1';
 
-    function populateEditForm(id, data) {
-        document.getElementById('editDocId').value = id;
-        document.getElementById('editQ').value = data.q || "";
-        // Cek Array/String
-        if(Array.isArray(data.options)) {
-            document.getElementById('editOpt').value = data.options.join(",");
-        } else {
-            document.getElementById('editOpt').value = data.options || "";
-        }
-        document.getElementById('editAns').value = data.answer;
-        document.getElementById('editExp').value = data.explanation || "";
-        document.getElementById('editCite').value = data.cite || "";
-    }
+    // --- FIX TOGGLE SIDEBAR HP (AUTO HIDE BUTTONS) ---
+    window.toggleMobileSidebar = function() {
+        const sidebar = document.querySelector('.sidebar-right');
+        const floatingTimer = document.getElementById('floatingTimer');
+        const mobileFooter = document.getElementById('mobileFooter');
 
-    window.simpanPerubahan = async () => {
-        const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu!");
+        sidebar.classList.toggle('show-mobile');
 
-        const opts = document.getElementById('editOpt').value.split(",").map(s => s.trim());
-        const newData = {
-            q: document.getElementById('editQ').value,
-            options: opts,
-            answer: parseInt(document.getElementById('editAns').value),
-            explanation: document.getElementById('editExp').value,
-            cite: document.getElementById('editCite').value
-        };
+        // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
+        if (sidebar.classList.contains('show-mobile')) {
+            if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
+            mobileFooter.style.display = 'none'; // FIX: Display None langsung
+        } else {
+            // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
+            if (document.body.classList.contains('ujian-berjalan')) {
+                if(floatingTimer) floatingTimer.style.display = 'block';
+                mobileFooter.style.display = 'flex'; // FIX: Flex balik
+            }
+        }
 
-        try {
-            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
-            await updateDoc(docRef, newData);
-            alert("✅ Data terupdate!");
-            loadSoalAdmin(); 
-        } catch (e) {
-            alert("Gagal update: " + e.message);
-        }
-    };
+        if (!document.getElementById('btnCloseMobile')) {
+            const btnClose = document.createElement('button');
+            btnClose.id = 'btnCloseMobile';
+            btnClose.className = 'close-sidebar-btn';
+            btnClose.innerHTML = 'Tutup Daftar Soal ✖️';
+            btnClose.onclick = window.toggleMobileSidebar;
+            sidebar.insertBefore(btnClose, sidebar.firstChild);
+        }
+    }
 
-    window.hapusSoal = async () => {
-        const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu!");
-        if(!confirm("Hapus permanen?")) return;
+    // --- FIX TOGGLE MODUL HP (AUTO HIDE BUTTONS) ---
+    window.toggleMobileModul = function() {
+        const sidebar = document.querySelector('.sidebar-left');
+        const timer = document.getElementById('floatingTimer');
+        const mobileFooter = document.getElementById('mobileFooter');
 
-        try {
-            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
-            await deleteDoc(docRef);
-            alert("🗑️ Terhapus.");
-            loadSoalAdmin();
-            document.getElementById('editDocId').value = "";
-            document.getElementById('editQ').value = "";
-        } catch (e) {
-            alert("Gagal hapus: " + e.message);
-        }
-    };
+        if (sidebar.style.display === 'flex') {
+            // TUTUP SIDEBAR
+            sidebar.style.display = ''; 
+            if(timer && document.body.classList.contains('ujian-berjalan')) timer.style.display = 'block';
+            if(mobileFooter) mobileFooter.style.display = 'flex';
+        } else {
+            // BUKA SIDEBAR
+            sidebar.style.display = 'flex'; 
+            if(timer) timer.style.display = 'none';
+            if(mobileFooter) mobileFooter.style.display = 'none';
+        }
+    }
 
-    window.eksekusiUpload = async () => {
-        const modulId = document.getElementById('adminModulTarget').value.trim();
-        const jsonRaw = document.getElementById('jsonUploadArea').value;
-        if(!modulId || !jsonRaw) return alert("Data tidak lengkap!");
-        
-        try {
-            const dataSoal = JSON.parse(jsonRaw);
-            if(!confirm(`Upload ${dataSoal.length} soal?`)) return;
-            
-            const batch = writeBatch(db);
-            let count = 0;
-            // Simple loop (non-batch for simplicity if small data, but let's keep addDoc for safety)
-            for (const item of dataSoal) {
-                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), {
-                    q: item.q || item.pertanyaan,
-                    options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
-                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci),
-                    explanation: item.explanation || item.pembahasan || "-",
-                    cite: item.cite || "Modul Hakim",
-                    createdAt: new Date()
-                });
-                count++;
-            }
-            alert(`✅ Sukses ${count} Soal!`);
-            document.getElementById('jsonUploadArea').value = ""; 
-        } catch (e) {
-            alert("Error: " + e.message);
-        }
-    };
+    document.addEventListener('keydown', function(event) {
+        if(document.getElementById('appSection').style.display === 'none') return;
+        switch(event.key) {
+            case "ArrowRight": changeQuestion(1); break;
+            case "ArrowLeft": changeQuestion(-1); break;
+            case "a": case "A": selectKey(0); break;
+            case "b": case "B": selectKey(1); break;
+            case "c": case "C": selectKey(2); break;
+            case "d": case "D": selectKey(3); break;
+            case "e": case "E":
+                if(!isSubmitted) {
+                    const chk = document.getElementById('checkRagu');
+                    if(chk) { chk.checked = !chk.checked; toggleRagu(); }
+                }
+                break;
+        }
+    });
 
-    // --- FUNGSI USER (SAVE, LEADERBOARD, STATS) ---
-    window.saveScoreToCloud = async (modulId, skor) => {
-        if (!currentUser || !db) return;
-        try {
-            await addDoc(collection(db, "leaderboard"), {
-                uid: currentUser.uid, nama: currentUser.displayName, modul: modulId, skor: skor, tanggal: new Date()
-            });
-        } catch (e) { console.error("Gagal simpan skor:", e); }
-    };
+    function selectKey(idx) {
+        if(!isSubmitted && !isReviewMode) {
+            let labels = document.getElementsByClassName('option-label');
+            if(labels[idx]) labels[idx].click();
+        }
+    }
 
-    window.openLeaderboard = async () => {
-        if (!db) return;
-        document.getElementById('leaderboardOverlay').style.display = 'flex';
-        const tbody = document.getElementById('leaderboardBody');
-        tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
-        document.getElementById('lbModulName').innerText = document.getElementById('modulTitle').innerText;
+    window.switchDatabase = async function(key) {
+        if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
+        currentModulKey = key;
+        window.currentDatabaseId = key;
+        
+        const qText = document.getElementById('questionText');
+        const optCont = document.getElementById('optionsContainer');
+        const footer = document.querySelector('.footer-nav');
+        
+        if(qText) qText.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <p style="font-weight: 600; color: #555; animation: blink 1s infinite;">Sedang menyiapkan soal...</p>
+            </div>
+            <style>@keyframes blink { 50% { opacity: 0.5; } }</style>
+        `;
+        if(optCont) optCont.innerHTML = '';
+        if(footer) footer.style.visibility = 'hidden';
 
-        const q = query(collection(db, "leaderboard"), where("modul", "==", currentDatabaseId || "modul1"), orderBy("skor", "desc"), limit(100));
-        try {
-            const snapshot = await getDocs(q); 
-            const bestScores = {};
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                if (!bestScores[data.nama] || parseInt(data.skor) > parseInt(bestScores[data.nama].skor)) {
-                    bestScores[data.nama] = data;
-                }
-            });
-            let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
-            tbody.innerHTML = '';
-            if (sortedData.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
-            else {
-                sortedData.forEach((val, index) => {
-                    let rowStyle = index === 0 ? 'style="background:#fff3cd; font-weight:bold;"' : (index === 1 ? 'style="background:#f8f9fa; font-weight:bold;"' : '');
-                    let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `<td ${rowStyle}>${index + 1}</td><td ${rowStyle}>${val.nama}</td><td ${rowStyle}>${val.skor}</td><td ${rowStyle}>${tgl}</td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-        } catch (error) { console.error(error); tbody.innerHTML = '<tr><td colspan="4">Gagal memuat.</td></tr>'; }
-    };
+        try {
+            const docRef = doc(db, "bank_soal", key);
+            const docSnap = await getDoc(docRef);
+            let judulModul = "Modul Latihan";
+            if (docSnap.exists()) {
+                judulModul = docSnap.data().title;
+            }
 
-    window.closeLeaderboard = () => { document.getElementById('leaderboardOverlay').style.display = 'none'; };
+            const qRef = collection(db, "bank_soal", key, "daftar_soal");
+            const qSnap = await getDocs(qRef);
 
-    // --- FUNGSI CHART / STATS (FULL RESTORED) ---
-    window.resetStats = async function() {
-        if(!confirm("Hapus history modul ini?")) return;
-        try {
-            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), where("modul", "==", window.currentDatabaseId));
-            const querySnapshot = await getDocs(q);
-            const batch = writeBatch(db);
-            querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
-            await batch.commit();
-            alert("Reset berhasil.");
-            window.openStats(); 
-        } catch (e) { alert("Gagal reset."); }
-    };
+            if (qSnap.empty) {
+                alert("⚠️ Soal untuk modul ini belum di-upload ke server!");
+                if(qText) qText.innerText = "Belum ada soal.";
+                return;
+            }
 
-    window.saveAndShowChart = async function(finalScore, correct, wrong) {
-        const usedSeconds = totalExamTime - timeRemaining; 
-        try { await addDoc(collection(db, "riwayat_belajar"), {
-            uid: currentUser.uid, nama: currentUser.displayName, modul: currentModulKey,            
-            score: finalScore, correct: correct, wrong: wrong, date: new Date().toLocaleString('id-ID'), 
-            timestamp: new Date(), duration: usedSeconds
-        }); } catch(e) { console.log(e); }
-    };
+            let rawQuestions = [];
+            qSnap.forEach((doc) => {
+                rawQuestions.push(doc.data());
+            });
 
-    window.openStats = async function() {
-        if(!currentUser) return;
-        document.getElementById('statsOverlay').style.display = 'flex';
-        document.getElementById('statsTitle').innerText = "Loading...";
-        
-        try {
-            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
-            const querySnapshot = await getDocs(q);
-            let allHistory = [];
-            querySnapshot.forEach((doc) => {
-                let data = doc.data(); data.id = doc.id; allHistory.push(data);
-            });
+            shuffleArray(rawQuestions); 
+            rawQuestions.forEach(q => {
+                if(q.options && q.answer < q.options.length) {
+                    let correctText = q.options[q.answer]; 
+                    shuffleArray(q.options); 
+                    q.answer = q.options.indexOf(correctText); 
+                }
+            });
 
-            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
-            document.getElementById('statsTitle').innerText = "Data Modul: " + (document.getElementById('modulTitle').innerText || window.currentDatabaseId);
+            currentQuestions = rawQuestions;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            raguStatus = new Array(currentQuestions.length).fill(false);
+            isSubmitted = false;
+            isReviewMode = false;
+            currentIdx = 0;
 
-            const tbody = document.getElementById('statsTableBody');
-            tbody.innerHTML = '';
-            if (currentModulHistory.length === 0) tbody.innerHTML = '<tr><td colspan="5">Belum ada data.</td></tr>';
-            else {
-                [...currentModulHistory].reverse().forEach((d, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct}</td><td>${d.wrong}</td>`;
-                    tbody.appendChild(tr);
-                });
-            }
+            document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
+            const activeBtn = document.getElementById('btn-'+key);
+            if(activeBtn) activeBtn.classList.add('active-modul');
 
-            // RENDER CHART
-            setTimeout(() => {
-                const ctx = document.getElementById('statsChart').getContext('2d');
-                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
-                window.statsChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
-                        datasets: [{
-                            label: 'Nilai', data: currentModulHistory.map(d => d.score),
-                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)', borderWidth: 2, fill: true
-                        }]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
-                });
+            const titleEl = document.getElementById('modulTitle');
+            if(titleEl) titleEl.innerText = judulModul;
+            
+            const modeInd = document.getElementById('modeIndicator');
+            if(modeInd) {
+                modeInd.innerText = "Mode: Ujian";
+                modeInd.style = "color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2; display:block;";
+            }
+            
+            const finishCont = document.querySelector('.finish-container');
+            if(finishCont) finishCont.style.display = 'block';
+            
+            document.getElementById('resultOverlay').style.display = 'none';
+            document.getElementById('statsOverlay').style.display = 'none';
+            document.getElementById('leaderboardOverlay').style.display = 'none';
+            const btnScore = document.getElementById('btnShowScore');
+            if(btnScore) btnScore.style.display = 'none';
+            
+            if(footer) {
+                footer.style.visibility = 'visible';
+                footer.style.display = 'flex';
+            }
+            if(qText) qText.style.display = 'block';
+            
+            totalExamTime = currentQuestions.length * 25; 
+            timeRemaining = totalExamTime;
+            
+            updateTimerDisplay();
+            startTimer();
+            renderSidebarGrid();
+            loadQuestion(0);
+            
+            if(window.innerWidth <= 768) {
+                document.body.classList.add('ujian-berjalan'); 
+                // FIX: Munculkan Footer HP HANYA saat ujian dimulai
+                const mobileFooter = document.getElementById('mobileFooter');
+                if(mobileFooter) mobileFooter.style.display = 'flex';
+                
+                const timer = document.getElementById('floatingTimer');
+                if(timer) timer.style.display = 'block';
+                const sbLeft = document.querySelector('.sidebar-left');
+                if(sbLeft) sbLeft.style.display = ''; 
+            }
 
-                // CHART SEMUA MODUL
-                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
-                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
-                
-                let modulStats = {};
-                allHistory.forEach(h => {
-                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
-                    modulStats[h.modul].total += h.score;
-                    modulStats[h.modul].count++;
-                });
-                
-                const labels = Object.keys(modulStats);
-                const dataScores = labels.map(k => Math.round(modulStats[k].total / modulStats[k].count));
-                
-                window.allModulesChartInstance = new Chart(ctxAll, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{ label: 'Rata-rata', data: dataScores, backgroundColor: '#3498db' }]
-                    },
-                    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
-                });
-            }, 300);
+        } catch (e) {
+            console.error("Error ambil data:", e);
+            alert("Gagal memuat soal: " + e.message);
+        }
+    };
 
-        } catch (e) { console.error(e); }
-    };
-    
-    window.closeStats = function() { document.getElementById('statsOverlay').style.display = 'none'; };
+    window.downloadSoal = async function(modulKey) {
+        console.log(`Sedang mendownload soal ${modulKey}...`);
+        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
+        const snapshot = await getDocs(qRef);
+        let dataSoal = [];
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            dataSoal.push({
+                q: d.q, options: d.options, answer: d.answer, explanation: d.explanation, cite: d.cite
+            });
+        });
+        console.log("✅ COPY TEKS DI BAWAH INI KE NOTEPAD:");
+        console.log(JSON.stringify(dataSoal, null, 2)); 
+        return dataSoal;
+    };
+
+    window.timpaModul = async function(modulKey, dataBaruJson) {
+        if(!confirm(`⚠️ BAHAYA: Ini akan MENGHAPUS semua soal lama di ${modulKey} dan menggantinya dengan data baru. Yakin?`)) return;
+        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
+        const snapshot = await getDocs(qRef);
+        const batchDelete = writeBatch(db);
+        snapshot.forEach(doc => { batchDelete.delete(doc.ref); });
+        await batchDelete.commit();
+        const chunks = [];
+        let currentBatch = writeBatch(db);
+        let count = 0;
+        for (const soal of dataBaruJson) {
+            const newDocRef = doc(collection(db, "bank_soal", modulKey, "daftar_soal"));
+            currentBatch.set(newDocRef, soal);
+            count++;
+            if (count >= 490) {
+                chunks.push(currentBatch);
+                currentBatch = writeBatch(db);
+                count = 0;
+            }
+        }
+        if (count > 0) chunks.push(currentBatch);
+        for (let batch of chunks) await batch.commit();
+        alert("✅ SUKSES! Modul berhasil direvisi total.");
+        location.reload(); 
+    };
+    
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if(timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
+            else { clearInterval(timerInterval); finishTime(); }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const m = Math.floor(timeRemaining / 60);
+        const s = timeRemaining % 60;
+        const textWaktu = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        const t1 = document.getElementById('timerDisplay');
+        const t2 = document.getElementById('floatingTimer');
+        if(t1) t1.innerText = textWaktu;
+        if(t2) t2.innerText = textWaktu;
+        let persentase = (timeRemaining / totalExamTime) * 100;
+        let colorClass = 'timer-green';
+        if (persentase <= 10) colorClass = 'timer-panic';
+        else if (persentase <= 30) colorClass = 'timer-yellow';
+        if(t1) t1.className = 'timer-container ' + colorClass;
+        if(t2) t2.className = colorClass;
+    }
+
+    function finishTime() { alert("Waktu Habis!"); submitQuiz(); }
+
+    function renderSidebarGrid() {
+        const grid = document.getElementById('navGrid');
+        grid.innerHTML = '';
+        currentQuestions.forEach((_, idx) => {
+            const btn = document.createElement('div');
+            btn.className = 'nav-btn';
+            btn.id = `nav-${idx}`;
+            btn.innerText = idx + 1;
+            btn.onclick = () => {
+                loadQuestion(idx);
+                if (window.innerWidth <= 768) {
+                      const sb = document.querySelector('.sidebar-right');
+                      if (sb && sb.classList.contains('show-mobile')) {
+                          window.toggleMobileSidebar(); 
+                      }
+                }
+            };
+            grid.appendChild(btn);
+        });
+        updateSidebarStatus();
+    }
+
+    function updateSidebarStatus() {
+        currentQuestions.forEach((q, idx) => {
+            const btn = document.getElementById(`nav-${idx}`);
+            if(!btn) return;
+            btn.classList.remove('active', 'filled', 'correct', 'wrong', 'ragu');
+            if (idx === currentIdx) btn.classList.add('active');
+            if (isSubmitted) {
+                if (userAnswers[idx] === q.answer) btn.classList.add('correct');
+                else btn.classList.add('wrong');
+            } else {
+                if (raguStatus[idx]) btn.classList.add('ragu');
+                else if (userAnswers[idx] !== null) btn.classList.add('filled');
+            }
+        });
+    }
+
+    function loadQuestion(idx) {
+        document.querySelector('.question-header').style.visibility = 'visible';
+        document.querySelector('.footer-nav').style.visibility = 'visible';
+        currentIdx = idx;
+        const q = currentQuestions[idx];
+        if (!q) return;
+
+        // FIX: Auto scroll ke atas saat ganti soal
+        const mainContent = document.querySelector('.main-content');
+        if(mainContent) mainContent.scrollTop = 0;
+
+        document.getElementById('qNum').innerText = idx + 1;
+        document.getElementById('questionText').innerText = q.q;
+        
+        updateSidebarStatus();
+        updateProgress();
+        
+        document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
+        
+        const btnNext = document.getElementById('nextBtn');
+        btnNext.style.display = 'block'; 
+
+        if (!isReviewMode && idx === currentQuestions.length - 1) {
+            if (window.innerWidth > 768) {
+                btnNext.style.display = 'none';
+            } else {
+                btnNext.innerHTML = "Selesai ✅";
+                btnNext.className = "btn btn-finish"; 
+                btnNext.onclick = confirmFinish; 
+            }
+        } else {
+            btnNext.innerHTML = "Selanjutnya ❯";
+            btnNext.className = "btn btn-next"; 
+            btnNext.onclick = () => changeQuestion(1);
+        }
+        
+        if (isReviewMode) {
+             btnNext.style.display = 'block';
+             btnNext.innerHTML = "Lanjut (Salah) ❯";
+             btnNext.className = "btn btn-next";
+             btnNext.onclick = () => changeQuestion(1);
+        }
+
+        const fb = document.getElementById('feedbackBox');
+        if (isSubmitted) {
+            fb.style.display = 'block';
+            fb.classList.add('show');
+            document.getElementById('feedbackText').innerText = q.explanation;
+            document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
+        } else { 
+            fb.style.display = 'none';
+            fb.classList.remove('show'); 
+        }
+
+        const cont = document.getElementById('optionsContainer');
+        cont.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option-label';
+            if(isSubmitted) {
+                div.style.cursor = 'default';
+                if(userAnswers[idx] === i) {
+                    div.innerHTML = i === q.answer ? opt + ' ✅' : opt + ' ❌';
+                    div.classList.add(i === q.answer ? 'review-correct' : 'review-wrong');
+                }
+                else if(i === q.answer) {
+                    div.innerHTML = opt + ' ⬅️ (Jawaban Benar)';
+                    div.classList.add('review-correct');
+                } else {
+                    div.innerHTML = opt;
+                }
+            } else {
+                div.innerHTML = opt;
+                div.onclick = () => { 
+                    if(!isSubmitted) { 
+                        userAnswers[idx] = i; 
+                        raguStatus[idx] = false; 
+                        loadQuestion(idx); 
+                    } 
+                };
+                if(userAnswers[idx] === i) div.classList.add('selected');
+            }
+            cont.appendChild(div);
+        });
+
+        const chk = document.getElementById('checkRagu');
+        if(chk) {
+            chk.checked = raguStatus[idx] || false;
+            chk.disabled = isSubmitted;
+        }
+    }
+
+    window.submitQuiz = function() {
+        if(timerInterval) clearInterval(timerInterval);
+        isSubmitted = true;
+        
+        // FIX 1: Matikan Timer
+        document.getElementById('floatingTimer').style.display = 'none';
+        
+        // FIX 1.5: Matikan Mode Fokus
+        document.body.classList.remove('mode-focus');
+
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        wrongIndices = []; // Reset ulang
+
+        userAnswers.forEach((a, i) => {
+            if(a === currentQuestions[i].answer) {
+                score++; correctCount++;
+            } else {
+                wrongCount++;
+                wrongIndices.push(i);
+            }
+        });
+        
+        const final = Math.round((score/currentQuestions.length)*100);
+        if (typeof window.saveScoreToCloud === 'function') {
+            window.saveScoreToCloud(currentModulKey, final);
+        }
+        
+        document.getElementById('resultOverlay').style.display = 'flex';
+        const scoreCircle = document.getElementById('finalScore');
+        const passStatus = document.getElementById('passStatus');
+        const msg = document.getElementById('resultMsg');
+        
+        scoreCircle.innerText = final;
+        if (final >= 70) {
+            scoreCircle.style.background = "var(--pass)";
+            passStatus.innerText = "LULUS";
+            passStatus.style.color = "var(--pass)";
+            msg.innerText = "Selamat! Anda memenuhi standar Cakim.";
+        } else {
+            scoreCircle.style.background = "var(--fail)";
+            passStatus.innerText = "TIDAK LULUS";
+            passStatus.style.color = "var(--fail)";
+            msg.innerText = "Perbaiki lagi, target minimal 70.";
+        }
+        
+        const btnReview = document.getElementById('btnReviewWrong');
+        if (wrongCount > 0) {
+            btnReview.style.display = 'block';
+            btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
+        } else {
+            btnReview.style.display = 'none';
+        }
+
+        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
+        document.getElementById('modeIndicator').style.color = "var(--success)";
+        document.querySelector('.finish-container').style.display = 'none';
+        document.getElementById('btnShowScore').style.display = 'flex';
+
+        saveAndShowChart(final, correctCount, wrongCount);
+        loadQuestion(currentIdx);
+    }
+
+    window.confirmFinish = function() {
+        const emptyCount = userAnswers.filter(a => a === null).length;
+        const raguCount = raguStatus.filter(r => r === true).length;
+        let msg = "Yakin mau menyelesaikan ujian?";
+        if(emptyCount > 0 || raguCount > 0) {
+            msg = `⚠️ PERHATIAN!\n\n`;
+            if (raguCount > 0) msg += `- Ada ${raguCount} soal RAGU-RAGU\n`;
+            if (emptyCount > 0) msg += `- Ada ${emptyCount} soal BELUM DIJAWAB\n`;
+            msg += `\nYakin mau dikumpulkan sekarang?`;
+        }
+        if(confirm(msg)) submitQuiz();
+    }
+
+    window.closeResult = function() {
+        if (window.innerWidth <= 768) {
+            const sb = document.querySelector('.sidebar-right');
+            if (sb && sb.classList.contains('show-mobile')) {
+                window.toggleMobileSidebar();
+            }
+        }
+        document.getElementById('resultOverlay').style.display = 'none';
+        isReviewMode = false; 
+        const ind = document.getElementById('modeIndicator');
+        if (ind) {
+            ind.innerText = "PEMBAHASAN";
+            ind.style.background = "#e8f5e9";
+            ind.style.color = "#2e7d32";
+            ind.style.border = "1px solid #c8e6c9";
+        }
+        document.getElementById('prevBtn').disabled = false;
+        document.getElementById('nextBtn').style.display = 'block';
+        const mainContent = document.querySelector('.main-content');
+        if(mainContent) mainContent.scrollTop = 0;
+        loadQuestion(currentIdx);
+    };
+
+    window.startReviewWrong = function() {
+        if (!wrongIndices || wrongIndices.length === 0) {
+            alert("Tidak ada jawaban salah untuk direview.");
+            return;
+        }
+        if (window.innerWidth <= 768) {
+            const sb = document.querySelector('.sidebar-right');
+            if (sb && sb.classList.contains('show-mobile')) {
+                window.toggleMobileSidebar();
+            }
+        }
+        
+        isReviewMode = true;
+        const overlay = document.getElementById('resultOverlay');
+        if(overlay) overlay.style.setProperty('display', 'none', 'important');
+        
+        const ind = document.getElementById('modeIndicator');
+        ind.innerText = "MODE: REVIEW SALAH";
+        ind.style.background = "#ffebee";
+        ind.style.color = "#c62828";
+        ind.style.border = "1px solid #ffcdd2";
+        
+        loadQuestion(wrongIndices[0]);
+    };
+
+    window.changeQuestion = function(step) {
+        if (isReviewMode) {
+            let currentWrongPos = wrongIndices.indexOf(currentIdx);
+            if (currentWrongPos !== -1) {
+                let nextWrongPos = currentWrongPos + step;
+                if (nextWrongPos >= wrongIndices.length) nextWrongPos = 0;
+                if (nextWrongPos < 0) nextWrongPos = wrongIndices.length - 1;
+                loadQuestion(wrongIndices[nextWrongPos]);
+            } else {
+                if (step > 0) {
+                    let nextVal = wrongIndices.find(idx => idx > currentIdx);
+                    loadQuestion(nextVal !== undefined ? nextVal : wrongIndices[0]);
+                } else {
+                    let prevVal = [...wrongIndices].reverse().find(idx => idx < currentIdx);
+                    loadQuestion(prevVal !== undefined ? prevVal : wrongIndices[wrongIndices.length - 1]);
+                }
+            }
+        } else {
+            const next = currentIdx + step;
+            if (next >= 0 && next < currentQuestions.length) loadQuestion(next);
+        }
+    };
+
+   window.backToMenu = function() {
+        if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
+            if(window.timerInterval) clearInterval(window.timerInterval);
+            
+            // FIX 2: Pastikan Mode Fokus Hilang
+            document.body.classList.remove('mode-focus');
+
+            const btnMobile = document.getElementById('btnMobileNav');
+            const btnModul = document.getElementById('btnMobileModul');
+            if(btnMobile) btnMobile.style.display = 'none';
+            if(btnModul) btnModul.style.display = 'none'; 
+            document.getElementById('resultOverlay').style.display = 'none';
+            document.getElementById('statsOverlay').style.display = 'none';
+            document.getElementById('leaderboardOverlay').style.display = 'none';
+            const sbLeft = document.querySelector('.sidebar-left');
+            if(sbLeft) sbLeft.style.display = ''; 
+            const sbRight = document.querySelector('.sidebar-right');
+            if(sbRight) {
+                sbRight.classList.remove('show-mobile'); 
+                sbRight.style.display = ''; 
+            }
+            document.body.classList.remove('ujian-berjalan');
+            const timer = document.getElementById('floatingTimer');
+            if(timer) timer.style.display = 'none';
+            const modulTitle = document.getElementById('modulTitle');
+            if(modulTitle) modulTitle.innerText = "Menu Utama";
+            document.getElementById('qNum').innerText = "-";
+            tampilkanLobby();
+
+            // Sembunyikan Footer Mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobileFooter').style.display = 'none';
+            }
+        }
+    };
+    
+    window.showResult = function() {
+        if(isSubmitted) {
+            document.getElementById('resultOverlay').style.display = 'flex';
+        } else {
+            alert("Belum ada nilai! Silahkan kerjakan dulu soalnya");
+        }
+    };
+
+    window.toggleRagu = function() {
+        if(isSubmitted) return;
+        const chk = document.getElementById('checkRagu');
+        raguStatus[currentIdx] = chk.checked;
+        if (chk.checked) userAnswers[currentIdx] = null;
+        updateSidebarStatus();
+        loadQuestion(currentIdx);
+    };
+
+    window.toggleFocusMode = function() { document.body.classList.toggle('mode-focus'); };
+
+    function updateProgress() {
+        let answered = userAnswers.filter(a => a !== null).length;
+        let total = currentQuestions.length;
+        let txt = document.getElementById('progressText');
+        if(txt) txt.innerText = `Menjawab: ${answered} / ${total}`;
+    }
+
+    window.saveAndShowChart = async function(finalScore, correct, wrong) {
+        const usedSeconds = totalExamTime - timeRemaining; 
+        const resultData = {
+            uid: currentUser.uid, nama: currentUser.displayName, modul: currentModulKey,            
+            score: finalScore, correct: correct, wrong: wrong, date: new Date().toLocaleString('id-ID'), 
+            timestamp: new Date(), duration: usedSeconds
+        };
+        try { await addDoc(collection(db, "riwayat_belajar"), resultData); } 
+        catch (e) { console.error("Gagal simpan history:", e); }
+    };
+
+    window.resetStats = async function() {
+        if(!confirm("⚠️ Yakin mau menghapus SEMUA riwayat nilai untuk modul ini? Data di Cloud akan hilang permanen.")) return;
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), where("modul", "==", window.currentDatabaseId));
+            const querySnapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
+            await batch.commit();
+            alert("Data berhasil direset!");
+            window.openStats(); 
+        } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
+    };
+
+    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
+    window.openStats = async function() {
+        if(!currentUser) { alert("Login dulu bro!"); return; }
+        if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
+
+        document.getElementById('statsOverlay').style.display = 'flex';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'none';
+        
+        document.getElementById('statsTitle').innerText = "Memuat Data Cloud...";
+        document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Sedang mengambil data dari server...</td></tr>';
+
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
+            const querySnapshot = await getDocs(q);
+            let allHistory = [];
+            querySnapshot.forEach((doc) => {
+                let data = doc.data(); data.id = doc.id; allHistory.push(data);
+            });
+
+            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
+            const judulModul = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : window.currentDatabaseId;
+            document.getElementById('statsTitle').innerText = "Data Modul: " + judulModul;
+
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+            if (currentModulHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Belum ada riwayat pengerjaan di modul ini.</td></tr>';
+            } else {
+                [...currentModulHistory].reverse().forEach((d, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                            borderWidth: 2, tension: 0.3, fill: true
+                        }, {
+                            label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
+                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
+                        }]
+                    },
+                    options: { 
+                        animation: { duration: 1500, easing: 'easeOutQuart' }, 
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } } 
+                    }
+                });
+
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
+
+                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                    const numA = parseFloat(a.replace(/[^\d.]/g, ''));
+                    const numB = parseFloat(b.replace(/[^\d.]/g, ''));
+                    return numA - numB;
+                });
+
+                const labels = [];
+                const dataScores = [];
+                const backgroundColors = [];
+                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+
+                sortedKeys.forEach((key, index) => {
+                    let niceName = key;
+                    let btn = document.getElementById('btn-'+key);
+                    if(btn) niceName = btn.innerText.split(':')[0]; 
+                    labels.push(niceName);
+                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
+                    backgroundColors.push(colors[index % colors.length]);
+                });
+
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
+                    },
+                    options: { 
+                        // ANIMASI FIX: DARI BAWAH KE ATAS
+                        animation: { 
+                            duration: 1500, 
+                            easing: 'easeOutBounce',
+                            y: { from: 0 } // Paksa mulai tumbuh dari 0
+                        },
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } }, 
+                        plugins: { legend: { display: false } } 
+                    }
+                });
+            }, 300); // INI JEDA WAKTUNYA (300ms)
+
+        } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
+    };
+
+    window.closeStats = function() {
+        document.getElementById('statsOverlay').style.display = 'none';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'block';
+    };
+
+    function tampilkanLobby() {
+        document.querySelector('.question-header').style.visibility = 'hidden';
+        document.querySelector('.footer-nav').style.visibility = 'hidden';
+        const qText = document.getElementById('questionText');
+        qText.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
+                <p style="font-size: 1.2rem; color: #555;">
+                    Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
+                </p>
+            </div>
+        `;
+        document.getElementById('optionsContainer').innerHTML = '';
+        document.getElementById('feedbackBox').style.display = 'none';
+        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
+    }
+
+    // ==========================================
+    // LOGIKA ADMIN PANEL (INJECTED)
+    // ==========================================
+
+    window.openAdminPanel = () => {
+        document.getElementById('adminOverlay').style.display = 'flex';
+    };
+
+    window.switchAdminTab = (tab) => {
+        if(tab === 'tambah') {
+            document.getElementById('tabTambah').style.display = 'block';
+            document.getElementById('tabEdit').style.display = 'none';
+        } else {
+            document.getElementById('tabTambah').style.display = 'none';
+            document.getElementById('tabEdit').style.display = 'block';
+        }
+    };
+
+    // --- FITUR 1: UPLOAD JSON ---
+    window.eksekusiUpload = async () => {
+        const modulId = document.getElementById('adminModulTarget').value.trim();
+        const jsonRaw = document.getElementById('jsonUploadArea').value;
+        
+        if(!modulId || !jsonRaw) return alert("Modul ID dan JSON harus diisi!");
+        
+        try {
+            const dataSoal = JSON.parse(jsonRaw);
+            if(!Array.isArray(dataSoal)) return alert("Format JSON harus Array [ ... ]");
+
+            if(!confirm(`Siap upload ${dataSoal.length} soal ke ${modulId}?`)) return;
+
+            const batch = writeBatch(db);
+            let count = 0;
+            
+            // Chunking batch (max 500 per batch) - Sederhananya loop manual
+            for (const item of dataSoal) {
+                // Standarisasi field sesuai aplikasi lo
+                const docData = {
+                    q: item.q || item.pertanyaan,
+                    options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
+                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
+                    explanation: item.explanation || item.pembahasan || "-",
+                    cite: item.cite || "Modul Hakim",
+                    createdAt: new Date()
+                };
+
+                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
+                count++;
+            }
+            
+            alert(`✅ Sukses Upload ${count} Soal!`);
+            document.getElementById('jsonUploadArea').value = ""; // Reset
+        } catch (e) {
+            alert("Error: " + e.message);
+            console.error(e);
+        }
+    };
+
+    // --- FITUR 2: LOAD & EDIT ---
+    let currentAdminModul = "";
+
+    window.loadSoalAdmin = async () => {
+        const modulId = document.getElementById('editModulTarget').value.trim();
+        if(!modulId) return alert("Isi nama modul!");
+        currentAdminModul = modulId;
+
+        const listDiv = document.getElementById('listSoalAdmin');
+        listDiv.innerHTML = "Loading...";
+
+        try {
+            const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
+            // Urutkan biar gampang nyarinya
+            const q = query(qRef, orderBy("createdAt", "desc")); 
+            const snapshot = await getDocs(q); 
+
+            listDiv.innerHTML = "";
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const div = document.createElement('div');
+                div.style.borderBottom = "1px solid #ddd";
+                div.style.padding = "8px";
+                div.style.cursor = "pointer";
+                div.style.fontSize = "0.85rem";
+                div.innerText = (data.q || "").substring(0, 60) + "...";
+                div.onclick = () => populateEditForm(docSnap.id, data);
+                listDiv.appendChild(div);
+            });
+        } catch (e) {
+            alert("Gagal load (mungkin salah nama modul): " + e.message);
+        }
+    };
+
+    function populateEditForm(id, data) {
+        document.getElementById('editDocId').value = id;
+        document.getElementById('editQ').value = data.q;
+        document.getElementById('editOpt').value = data.options.join(","); // Array jadi string koma
+        document.getElementById('editAns').value = data.answer;
+        document.getElementById('editExp').value = data.explanation;
+        document.getElementById('editCite').value = data.cite || "";
+    }
+
+    window.simpanPerubahan = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("Pilih soal dulu!");
+
+        const optionsArray = document.getElementById('editOpt').value.split(",").map(s => s.trim()); 
+
+        const newData = {
+            q: document.getElementById('editQ').value,
+            options: optionsArray,
+            answer: parseInt(document.getElementById('editAns').value),
+            explanation: document.getElementById('editExp').value,
+            cite: document.getElementById('editCite').value
+        };
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await updateDoc(docRef, newData);
+            alert("✅ Data terupdate!");
+            loadSoalAdmin(); 
+        } catch (e) {
+            alert("Gagal update: " + e.message);
+        }
+    };
+
+    window.hapusSoal = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("Pilih soal dulu!");
+        if(!confirm("Yakin mau hapus soal ini permanen?")) return;
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await deleteDoc(docRef);
+            alert("🗑️ Soal dihapus.");
+            loadSoalAdmin(); 
+            document.getElementById('editDocId').value = "";
+            document.getElementById('editQ').value = "";
+        } catch (e) {
+            alert("Gagal hapus: " + e.message);
+        }
+    };
 
 </script>
 
 <script>
-    // 1. Matikan Klik Kanan
-    document.addEventListener('contextmenu', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-
-    // 2. Matikan Blok/Select Teks
-    document.addEventListener('selectstart', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-    
-    document.addEventListener('dragstart', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-
-    // 3. Matikan Shortcut Keyboard
-    document.addEventListener('keydown', function(e) {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-
-        // Cegah F12, Inspect, Copy Paste
-        if (
-            e.key === 'F12' || 
-            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-            (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-            (e.ctrlKey && e.key === 'u') || 
-            (e.ctrlKey && e.key === 'U') || 
-            (e.ctrlKey && e.key === 's') || 
-            (e.ctrlKey && e.key === 'p') || 
-            (e.ctrlKey && e.key === 'a') || 
-            (e.ctrlKey && e.key === 'c')
-        ) {
-            e.preventDefault();
-            e.stopPropagation();
-            alert("⚠️ Eits! Fitur ini dikunci demi keamanan ujian.");
-            return false;
-        }
-    });
-
-    // --- LOGIC UTAMA APLIKASI (LOAD QUESTION DLL) ---
-    let currentModulKey = 'modul1';
-    let currentQuestions = [];
-    let currentIdx = 0;
-    let userAnswers = [];
-    let raguStatus = [];
-    let isSubmitted = false;
-    let timerInterval;
-    let timeRemaining;
-    let totalExamTime = 0;
-    let isReviewMode = false;
-    let wrongIndices = [];
-
-    window.currentDatabaseId = 'modul1';
-
-    // --- FIX TOGGLE SIDEBAR HP (AUTO HIDE BUTTONS) ---
-    window.toggleMobileSidebar = function() {
-        const sidebar = document.querySelector('.sidebar-right');
-        const floatingTimer = document.getElementById('floatingTimer');
-        const mobileFooter = document.getElementById('mobileFooter');
-
-        sidebar.classList.toggle('show-mobile');
-
-        if (sidebar.classList.contains('show-mobile')) {
-            if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
-            mobileFooter.style.display = 'none'; 
-        } else {
-            if (document.body.classList.contains('ujian-berjalan')) {
-                if(floatingTimer) floatingTimer.style.display = 'block';
-                mobileFooter.style.display = 'flex'; 
-            }
-        }
-
-        if (!document.getElementById('btnCloseMobile')) {
-            const btnClose = document.createElement('button');
-            btnClose.id = 'btnCloseMobile';
-            btnClose.className = 'close-sidebar-btn';
-            btnClose.innerHTML = 'Tutup Daftar Soal ✖️';
-            btnClose.onclick = window.toggleMobileSidebar;
-            sidebar.insertBefore(btnClose, sidebar.firstChild);
-        }
-    }
-
-    // --- FIX TOGGLE MODUL HP (AUTO HIDE BUTTONS) ---
-    window.toggleMobileModul = function() {
-        const sidebar = document.querySelector('.sidebar-left');
-        const timer = document.getElementById('floatingTimer');
-        const mobileFooter = document.getElementById('mobileFooter');
-
-        if (sidebar.style.display === 'flex') {
-            sidebar.style.display = ''; 
-            if(timer && document.body.classList.contains('ujian-berjalan')) timer.style.display = 'block';
-            if(mobileFooter) mobileFooter.style.display = 'flex';
-        } else {
-            sidebar.style.display = 'flex'; 
-            if(timer) timer.style.display = 'none';
-            if(mobileFooter) mobileFooter.style.display = 'none';
-        }
-    }
-
-    document.addEventListener('keydown', function(event) {
-        if(document.getElementById('appSection').style.display === 'none') return;
-        switch(event.key) {
-            case "ArrowRight": changeQuestion(1); break;
-            case "ArrowLeft": changeQuestion(-1); break;
-            case "a": case "A": selectKey(0); break;
-            case "b": case "B": selectKey(1); break;
-            case "c": case "C": selectKey(2); break;
-            case "d": case "D": selectKey(3); break;
-            case "e": case "E":
-                if(!isSubmitted) {
-                    const chk = document.getElementById('checkRagu');
-                    if(chk) { chk.checked = !chk.checked; toggleRagu(); }
-                }
-                break;
-        }
-    });
-
-    function selectKey(idx) {
-        if(!isSubmitted && !isReviewMode) {
-            let labels = document.getElementsByClassName('option-label');
-            if(labels[idx]) labels[idx].click();
-        }
-    }
-
-    window.switchDatabase = async function(key) {
-        if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
-        currentModulKey = key;
-        window.currentDatabaseId = key;
-        
-        const qText = document.getElementById('questionText');
-        const optCont = document.getElementById('optionsContainer');
-        const footer = document.querySelector('.footer-nav');
-        
-        if(qText) qText.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;">
-                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-                <p style="font-weight: 600; color: #555; animation: blink 1s infinite;">Sedang menyiapkan soal...</p>
-            </div>
-            <style>@keyframes blink { 50% { opacity: 0.5; } }</style>
-        `;
-        if(optCont) optCont.innerHTML = '';
-        if(footer) footer.style.visibility = 'hidden';
-
-        try {
-            const docRef = doc(db, "bank_soal", key);
-            const docSnap = await getDoc(docRef);
-            let judulModul = "Modul Latihan";
-            if (docSnap.exists()) {
-                judulModul = docSnap.data().title;
-            }
-
-            const qRef = collection(db, "bank_soal", key, "daftar_soal");
-            const qSnap = await getDocs(qRef);
-
-            if (qSnap.empty) {
-                alert("⚠️ Soal untuk modul ini belum di-upload ke server!");
-                if(qText) qText.innerText = "Belum ada soal.";
-                return;
-            }
-
-            let rawQuestions = [];
-            qSnap.forEach((doc) => {
-                rawQuestions.push(doc.data());
-            });
-
-            shuffleArray(rawQuestions); 
-            rawQuestions.forEach(q => {
-                if(q.options && q.answer < q.options.length) {
-                    let correctText = q.options[q.answer]; 
-                    shuffleArray(q.options); 
-                    q.answer = q.options.indexOf(correctText); 
-                }
-            });
-
-            currentQuestions = rawQuestions;
-            userAnswers = new Array(currentQuestions.length).fill(null);
-            raguStatus = new Array(currentQuestions.length).fill(false);
-            isSubmitted = false;
-            isReviewMode = false;
-            currentIdx = 0;
-
-            document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active-modul'));
-            const activeBtn = document.getElementById('btn-'+key);
-            if(activeBtn) activeBtn.classList.add('active-modul');
-
-            const titleEl = document.getElementById('modulTitle');
-            if(titleEl) titleEl.innerText = judulModul;
-            
-            const modeInd = document.getElementById('modeIndicator');
-            if(modeInd) {
-                modeInd.innerText = "Mode: Ujian";
-                modeInd.style = "color: var(--warning); font-weight: bold; background:#fff3e0; padding:5px 15px; border-radius:20px; border:1px solid #ffe0b2; display:block;";
-            }
-            
-            const finishCont = document.querySelector('.finish-container');
-            if(finishCont) finishCont.style.display = 'block';
-            
-            document.getElementById('resultOverlay').style.display = 'none';
-            document.getElementById('statsOverlay').style.display = 'none';
-            document.getElementById('leaderboardOverlay').style.display = 'none';
-            const btnScore = document.getElementById('btnShowScore');
-            if(btnScore) btnScore.style.display = 'none';
-            
-            if(footer) {
-                footer.style.visibility = 'visible';
-                footer.style.display = 'flex';
-            }
-            if(qText) qText.style.display = 'block';
-            
-            totalExamTime = currentQuestions.length * 25; 
-            timeRemaining = totalExamTime;
-            
-            updateTimerDisplay();
-            startTimer();
-            renderSidebarGrid();
-            loadQuestion(0);
-            
-            if(window.innerWidth <= 768) {
-                document.body.classList.add('ujian-berjalan'); 
-                const mobileFooter = document.getElementById('mobileFooter');
-                if(mobileFooter) mobileFooter.style.display = 'flex';
-                
-                const timer = document.getElementById('floatingTimer');
-                if(timer) timer.style.display = 'block';
-                const sbLeft = document.querySelector('.sidebar-left');
-                if(sbLeft) sbLeft.style.display = ''; 
-            }
-
-        } catch (e) {
-            console.error("Error ambil data:", e);
-            alert("Gagal memuat soal: " + e.message);
-        }
-    };
-
-    window.downloadSoal = async function(modulKey) {
-        console.log(`Sedang mendownload soal ${modulKey}...`);
-        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
-        const snapshot = await getDocs(qRef);
-        let dataSoal = [];
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            dataSoal.push({
-                q: d.q, options: d.options, answer: d.answer, explanation: d.explanation, cite: d.cite
-            });
-        });
-        console.log("✅ COPY TEKS DI BAWAH INI KE NOTEPAD:");
-        console.log(JSON.stringify(dataSoal, null, 2)); 
-        return dataSoal;
-    };
-
-    window.timpaModul = async function(modulKey, dataBaruJson) {
-        if(!confirm(`⚠️ BAHAYA: Ini akan MENGHAPUS semua soal lama di ${modulKey} dan menggantinya dengan data baru. Yakin?`)) return;
-        const qRef = collection(db, "bank_soal", modulKey, "daftar_soal");
-        const snapshot = await getDocs(qRef);
-        const batchDelete = writeBatch(db);
-        snapshot.forEach(doc => { batchDelete.delete(doc.ref); });
-        await batchDelete.commit();
-        const chunks = [];
-        let currentBatch = writeBatch(db);
-        let count = 0;
-        for (const soal of dataBaruJson) {
-            const newDocRef = doc(collection(db, "bank_soal", modulKey, "daftar_soal"));
-            currentBatch.set(newDocRef, soal);
-            count++;
-            if (count >= 490) {
-                chunks.push(currentBatch);
-                currentBatch = writeBatch(db);
-                count = 0;
-            }
-        }
-        if (count > 0) chunks.push(currentBatch);
-        for (let batch of chunks) await batch.commit();
-        alert("✅ SUKSES! Modul berhasil direvisi total.");
-        location.reload(); 
-    };
-    
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            if(timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
-            else { clearInterval(timerInterval); finishTime(); }
-        }, 1000);
-    }
-
-    function updateTimerDisplay() {
-        const m = Math.floor(timeRemaining / 60);
-        const s = timeRemaining % 60;
-        const textWaktu = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        const t1 = document.getElementById('timerDisplay');
-        const t2 = document.getElementById('floatingTimer');
-        if(t1) t1.innerText = textWaktu;
-        if(t2) t2.innerText = textWaktu;
-        let persentase = (timeRemaining / totalExamTime) * 100;
-        let colorClass = 'timer-green';
-        if (persentase <= 10) colorClass = 'timer-panic';
-        else if (persentase <= 30) colorClass = 'timer-yellow';
-        if(t1) t1.className = 'timer-container ' + colorClass;
-        if(t2) t2.className = colorClass;
-    }
-
-    function finishTime() { alert("Waktu Habis!"); submitQuiz(); }
-
-    function renderSidebarGrid() {
-        const grid = document.getElementById('navGrid');
-        grid.innerHTML = '';
-        currentQuestions.forEach((_, idx) => {
-            const btn = document.createElement('div');
-            btn.className = 'nav-btn';
-            btn.id = `nav-${idx}`;
-            btn.innerText = idx + 1;
-            btn.onclick = () => {
-                loadQuestion(idx);
-                if (window.innerWidth <= 768) {
-                      const sb = document.querySelector('.sidebar-right');
-                      if (sb && sb.classList.contains('show-mobile')) {
-                          window.toggleMobileSidebar(); 
-                      }
-                }
-            };
-            grid.appendChild(btn);
-        });
-        updateSidebarStatus();
-    }
-
-    function updateSidebarStatus() {
-        currentQuestions.forEach((q, idx) => {
-            const btn = document.getElementById(`nav-${idx}`);
-            if(!btn) return;
-            btn.classList.remove('active', 'filled', 'correct', 'wrong', 'ragu');
-            if (idx === currentIdx) btn.classList.add('active');
-            if (isSubmitted) {
-                if (userAnswers[idx] === q.answer) btn.classList.add('correct');
-                else btn.classList.add('wrong');
-            } else {
-                if (raguStatus[idx]) btn.classList.add('ragu');
-                else if (userAnswers[idx] !== null) btn.classList.add('filled');
-            }
-        });
-    }
-
-    function loadQuestion(idx) {
-        document.querySelector('.question-header').style.visibility = 'visible';
-        document.querySelector('.footer-nav').style.visibility = 'visible';
-        currentIdx = idx;
-        const q = currentQuestions[idx];
-        if (!q) return;
-
-        // FIX: Auto scroll ke atas saat ganti soal
-        const mainContent = document.querySelector('.main-content');
-        if(mainContent) mainContent.scrollTop = 0;
-
-        document.getElementById('qNum').innerText = idx + 1;
-        document.getElementById('questionText').innerText = q.q;
-        
-        updateSidebarStatus();
-        updateProgress();
-        
-        document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
-        
-        const btnNext = document.getElementById('nextBtn');
-        btnNext.style.display = 'block'; 
-
-        if (!isReviewMode && idx === currentQuestions.length - 1) {
-            if (window.innerWidth > 768) {
-                btnNext.style.display = 'none';
-            } else {
-                btnNext.innerHTML = "Selesai ✅";
-                btnNext.className = "btn btn-finish"; 
-                btnNext.onclick = confirmFinish; 
-            }
-        } else {
-            btnNext.innerHTML = "Selanjutnya ❯";
-            btnNext.className = "btn btn-next"; 
-            btnNext.onclick = () => changeQuestion(1);
-        }
-        
-        if (isReviewMode) {
-             btnNext.style.display = 'block';
-             btnNext.innerHTML = "Lanjut (Salah) ❯";
-             btnNext.className = "btn btn-next";
-             btnNext.onclick = () => changeQuestion(1);
-        }
-
-        const fb = document.getElementById('feedbackBox');
-        if (isSubmitted) {
-            fb.style.display = 'block';
-            fb.classList.add('show');
-            document.getElementById('feedbackText').innerText = q.explanation;
-            document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
-        } else { 
-            fb.style.display = 'none';
-            fb.classList.remove('show'); 
-        }
-
-        const cont = document.getElementById('optionsContainer');
-        cont.innerHTML = '';
-        q.options.forEach((opt, i) => {
-            const div = document.createElement('div');
-            div.className = 'option-label';
-            if(isSubmitted) {
-                div.style.cursor = 'default';
-                if(userAnswers[idx] === i) {
-                    div.innerHTML = i === q.answer ? opt + ' ✅' : opt + ' ❌';
-                    div.classList.add(i === q.answer ? 'review-correct' : 'review-wrong');
-                }
-                else if(i === q.answer) {
-                    div.innerHTML = opt + ' ⬅️ (Jawaban Benar)';
-                    div.classList.add('review-correct');
-                } else {
-                    div.innerHTML = opt;
-                }
-            } else {
-                div.innerHTML = opt;
-                div.onclick = () => { 
-                    if(!isSubmitted) { 
-                        userAnswers[idx] = i; 
-                        raguStatus[idx] = false; 
-                        loadQuestion(idx); 
-                    } 
-                };
-                if(userAnswers[idx] === i) div.classList.add('selected');
-            }
-            cont.appendChild(div);
-        });
-
-        const chk = document.getElementById('checkRagu');
-        if(chk) {
-            chk.checked = raguStatus[idx] || false;
-            chk.disabled = isSubmitted;
-        }
-    }
-
-    window.submitQuiz = function() {
-        if(timerInterval) clearInterval(timerInterval);
-        isSubmitted = true;
-        
-        // FIX 1: Matikan Timer
-        document.getElementById('floatingTimer').style.display = 'none';
-        
-        // FIX 1.5: Matikan Mode Fokus
-        document.body.classList.remove('mode-focus');
-
-        let score = 0;
-        let correctCount = 0;
-        let wrongCount = 0;
-        wrongIndices = []; // Reset ulang
-
-        userAnswers.forEach((a, i) => {
-            if(a === currentQuestions[i].answer) {
-                score++; correctCount++;
-            } else {
-                wrongCount++;
-                wrongIndices.push(i);
-            }
-        });
-        
-        const final = Math.round((score/currentQuestions.length)*100);
-        if (typeof window.saveScoreToCloud === 'function') {
-            window.saveScoreToCloud(currentModulKey, final);
-        }
-        
-        document.getElementById('resultOverlay').style.display = 'flex';
-        const scoreCircle = document.getElementById('finalScore');
-        const passStatus = document.getElementById('passStatus');
-        const msg = document.getElementById('resultMsg');
-        
-        scoreCircle.innerText = final;
-        if (final >= 70) {
-            scoreCircle.style.background = "var(--pass)";
-            passStatus.innerText = "LULUS";
-            passStatus.style.color = "var(--pass)";
-            msg.innerText = "Selamat! Anda memenuhi standar Cakim.";
-        } else {
-            scoreCircle.style.background = "var(--fail)";
-            passStatus.innerText = "TIDAK LULUS";
-            passStatus.style.color = "var(--fail)";
-            msg.innerText = "Perbaiki lagi, target minimal 70.";
-        }
-        
-        const btnReview = document.getElementById('btnReviewWrong');
-        if (wrongCount > 0) {
-            btnReview.style.display = 'block';
-            btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
-        } else {
-            btnReview.style.display = 'none';
-        }
-
-        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
-        document.getElementById('modeIndicator').style.color = "var(--success)";
-        document.querySelector('.finish-container').style.display = 'none';
-        document.getElementById('btnShowScore').style.display = 'flex';
-
-        saveAndShowChart(final, correctCount, wrongCount);
-        loadQuestion(currentIdx);
-    }
-
-    window.confirmFinish = function() {
-        const emptyCount = userAnswers.filter(a => a === null).length;
-        const raguCount = raguStatus.filter(r => r === true).length;
-        let msg = "Yakin mau menyelesaikan ujian?";
-        if(emptyCount > 0 || raguCount > 0) {
-            msg = `⚠️ PERHATIAN!\n\n`;
-            if (raguCount > 0) msg += `- Ada ${raguCount} soal RAGU-RAGU\n`;
-            if (emptyCount > 0) msg += `- Ada ${emptyCount} soal BELUM DIJAWAB\n`;
-            msg += `\nYakin mau dikumpulkan sekarang?`;
-        }
-        if(confirm(msg)) submitQuiz();
-    }
-
-    window.closeResult = function() {
-        if (window.innerWidth <= 768) {
-            const sb = document.querySelector('.sidebar-right');
-            if (sb && sb.classList.contains('show-mobile')) {
-                window.toggleMobileSidebar();
-            }
-        }
-        document.getElementById('resultOverlay').style.display = 'none';
-        isReviewMode = false; 
-        const ind = document.getElementById('modeIndicator');
-        if (ind) {
-            ind.innerText = "PEMBAHASAN";
-            ind.style.background = "#e8f5e9";
-            ind.style.color = "#2e7d32";
-            ind.style.border = "1px solid #c8e6c9";
-        }
-        document.getElementById('prevBtn').disabled = false;
-        document.getElementById('nextBtn').style.display = 'block';
-        const mainContent = document.querySelector('.main-content');
-        if(mainContent) mainContent.scrollTop = 0;
-        loadQuestion(currentIdx);
-    };
-
-    window.startReviewWrong = function() {
-        if (!wrongIndices || wrongIndices.length === 0) {
-            alert("Tidak ada jawaban salah untuk direview.");
-            return;
-        }
-        if (window.innerWidth <= 768) {
-            const sb = document.querySelector('.sidebar-right');
-            if (sb && sb.classList.contains('show-mobile')) {
-                window.toggleMobileSidebar();
-            }
-        }
-        
-        isReviewMode = true;
-        const overlay = document.getElementById('resultOverlay');
-        if(overlay) overlay.style.setProperty('display', 'none', 'important');
-        
-        const ind = document.getElementById('modeIndicator');
-        ind.innerText = "MODE: REVIEW SALAH";
-        ind.style.background = "#ffebee";
-        ind.style.color = "#c62828";
-        ind.style.border = "1px solid #ffcdd2";
-        
-        loadQuestion(wrongIndices[0]);
-    };
-
-    window.changeQuestion = function(step) {
-        if (isReviewMode) {
-            let currentWrongPos = wrongIndices.indexOf(currentIdx);
-            if (currentWrongPos !== -1) {
-                let nextWrongPos = currentWrongPos + step;
-                if (nextWrongPos >= wrongIndices.length) nextWrongPos = 0;
-                if (nextWrongPos < 0) nextWrongPos = wrongIndices.length - 1;
-                loadQuestion(wrongIndices[nextWrongPos]);
-            } else {
-                if (step > 0) {
-                    let nextVal = wrongIndices.find(idx => idx > currentIdx);
-                    loadQuestion(nextVal !== undefined ? nextVal : wrongIndices[0]);
-                } else {
-                    let prevVal = [...wrongIndices].reverse().find(idx => idx < currentIdx);
-                    loadQuestion(prevVal !== undefined ? prevVal : wrongIndices[wrongIndices.length - 1]);
-                }
-            }
-        } else {
-            const next = currentIdx + step;
-            if (next >= 0 && next < currentQuestions.length) loadQuestion(next);
-        }
-    };
-
-   window.backToMenu = function() {
-        if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
-            if(window.timerInterval) clearInterval(window.timerInterval);
-            
-            // FIX 2: Pastikan Mode Fokus Hilang
-            document.body.classList.remove('mode-focus');
-
-            const btnMobile = document.getElementById('btnMobileNav');
-            const btnModul = document.getElementById('btnMobileModul');
-            if(btnMobile) btnMobile.style.display = 'none';
-            if(btnModul) btnModul.style.display = 'none'; 
-            document.getElementById('resultOverlay').style.display = 'none';
-            document.getElementById('statsOverlay').style.display = 'none';
-            document.getElementById('leaderboardOverlay').style.display = 'none';
-            const sbLeft = document.querySelector('.sidebar-left');
-            if(sbLeft) sbLeft.style.display = ''; 
-            const sbRight = document.querySelector('.sidebar-right');
-            if(sbRight) {
-                sbRight.classList.remove('show-mobile'); 
-                sbRight.style.display = ''; 
-            }
-            document.body.classList.remove('ujian-berjalan');
-            const timer = document.getElementById('floatingTimer');
-            if(timer) timer.style.display = 'none';
-            const modulTitle = document.getElementById('modulTitle');
-            if(modulTitle) modulTitle.innerText = "Menu Utama";
-            document.getElementById('qNum').innerText = "-";
-            tampilkanLobby();
-
-            // Sembunyikan Footer Mobile
-            if (window.innerWidth <= 768) {
-                document.getElementById('mobileFooter').style.display = 'none';
-            }
-        }
-    };
-    
-    window.showResult = function() {
-        if(isSubmitted) {
-            document.getElementById('resultOverlay').style.display = 'flex';
-        } else {
-            alert("Belum ada nilai! Silahkan kerjakan dulu soalnya");
-        }
-    };
-
-    window.toggleRagu = function() {
-        if(isSubmitted) return;
-        const chk = document.getElementById('checkRagu');
-        raguStatus[currentIdx] = chk.checked;
-        if (chk.checked) userAnswers[currentIdx] = null;
-        updateSidebarStatus();
-        loadQuestion(currentIdx);
-    };
-
-    window.toggleFocusMode = function() { document.body.classList.toggle('mode-focus'); };
-
-    function updateProgress() {
-        let answered = userAnswers.filter(a => a !== null).length;
-        let total = currentQuestions.length;
-        let txt = document.getElementById('progressText');
-        if(txt) txt.innerText = `Menjawab: ${answered} / ${total}`;
-    }
-
-    window.saveAndShowChart = async function(finalScore, correct, wrong) {
-        const usedSeconds = totalExamTime - timeRemaining; 
-        const resultData = {
-            uid: currentUser.uid, nama: currentUser.displayName, modul: currentModulKey,            
-            score: finalScore, correct: correct, wrong: wrong, date: new Date().toLocaleString('id-ID'), 
-            timestamp: new Date(), duration: usedSeconds
-        };
-        try { await addDoc(collection(db, "riwayat_belajar"), resultData); } 
-        catch (e) { console.error("Gagal simpan history:", e); }
-    };
-
-    window.resetStats = async function() {
-        if(!confirm("⚠️ Yakin mau menghapus SEMUA riwayat nilai untuk modul ini? Data di Cloud akan hilang permanen.")) return;
-        try {
-            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), where("modul", "==", window.currentDatabaseId));
-            const querySnapshot = await getDocs(q);
-            const batch = writeBatch(db);
-            querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
-            await batch.commit();
-            alert("Data berhasil direset!");
-            window.openStats(); 
-        } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
-    };
-
-    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
-    window.openStats = async function() {
-        if(!currentUser) { alert("Login dulu bro!"); return; }
-        if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
-
-        document.getElementById('statsOverlay').style.display = 'flex';
-        const wm = document.getElementById('watermark');
-        if(wm) wm.style.display = 'none';
-        
-        document.getElementById('statsTitle').innerText = "Memuat Data Cloud...";
-        document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Sedang mengambil data dari server...</td></tr>';
-
-        try {
-            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
-            const querySnapshot = await getDocs(q);
-            let allHistory = [];
-            querySnapshot.forEach((doc) => {
-                let data = doc.data(); data.id = doc.id; allHistory.push(data);
-            });
-
-            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
-            const judulModul = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : window.currentDatabaseId;
-            document.getElementById('statsTitle').innerText = "Data Modul: " + judulModul;
-
-            const tbody = document.getElementById('statsTableBody');
-            tbody.innerHTML = '';
-            if (currentModulHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">Belum ada riwayat pengerjaan di modul ini.</td></tr>';
-            } else {
-                [...currentModulHistory].reverse().forEach((d, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
-            setTimeout(() => {
-                const ctx = document.getElementById('statsChart').getContext('2d');
-                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
-                window.statsChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
-                        datasets: [{
-                            label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
-                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                            borderWidth: 2, tension: 0.3, fill: true
-                        }, {
-                            label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
-                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
-                        }]
-                    },
-                    options: { 
-                        animation: { duration: 1500, easing: 'easeOutQuart' }, 
-                        responsive: true, maintainAspectRatio: false, 
-                        scales: { y: { beginAtZero: true, max: 100 } } 
-                    }
-                });
-
-                let modulStats = {};
-                allHistory.forEach(h => {
-                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
-                    modulStats[h.modul].total += h.score;
-                    modulStats[h.modul].count++;
-                });
-
-                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
-                    const numA = parseFloat(a.replace(/[^\d.]/g, ''));
-                    const numB = parseFloat(b.replace(/[^\d.]/g, ''));
-                    return numA - numB;
-                });
-
-                const labels = [];
-                const dataScores = [];
-                const backgroundColors = [];
-                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
-
-                sortedKeys.forEach((key, index) => {
-                    let niceName = key;
-                    let btn = document.getElementById('btn-'+key);
-                    if(btn) niceName = btn.innerText.split(':')[0]; 
-                    labels.push(niceName);
-                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
-                    backgroundColors.push(colors[index % colors.length]);
-                });
-
-                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
-                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
-                window.allModulesChartInstance = new Chart(ctxAll, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
-                    },
-                    options: { 
-                        // ANIMASI FIX: DARI BAWAH KE ATAS
-                        animation: { 
-                            duration: 1500, 
-                            easing: 'easeOutBounce',
-                            y: { from: 0 } // Paksa mulai tumbuh dari 0
-                        },
-                        responsive: true, maintainAspectRatio: false, 
-                        scales: { y: { beginAtZero: true, max: 100 } }, 
-                        plugins: { legend: { display: false } } 
-                    }
-                });
-            }, 300); // INI JEDA WAKTUNYA (300ms)
-
-        } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
-    };
-
-    window.closeStats = function() {
-        document.getElementById('statsOverlay').style.display = 'none';
-        const wm = document.getElementById('watermark');
-        if(wm) wm.style.display = 'block';
-    };
-
-    function tampilkanLobby() {
-        document.querySelector('.question-header').style.visibility = 'hidden';
-        document.querySelector('.footer-nav').style.visibility = 'hidden';
-        const qText = document.getElementById('questionText');
-        qText.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
-                <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
-                <p style="font-size: 1.2rem; color: #555;">
-                    Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
-                </p>
-            </div>
-        `;
-        document.getElementById('optionsContainer').innerHTML = '';
-        document.getElementById('feedbackBox').style.display = 'none';
-        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
-    }
-
-</script>
-
-<script>
-    // 1. Matikan Klik Kanan
-    document.addEventListener('contextmenu', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-
-    // 2. Matikan Blok/Select Teks
-    document.addEventListener('selectstart', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-    
-    document.addEventListener('dragstart', event => {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-        event.preventDefault();
-    });
-
-    // 3. Matikan Shortcut Keyboard
-    document.addEventListener('keydown', function(e) {
-        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
-
-        // Cegah F12, Inspect, Copy Paste
-        if (
-            e.key === 'F12' || 
-            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-            (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-            (e.ctrlKey && e.key === 'u') || 
-            (e.ctrlKey && e.key === 'U') || 
-            (e.ctrlKey && e.key === 's') || 
-            (e.ctrlKey && e.key === 'p') || 
-            (e.ctrlKey && e.key === 'a') || 
-            (e.ctrlKey && e.key === 'c')
-        ) {
-            e.preventDefault();
-            e.stopPropagation();
-            alert("⚠️ Eits! Fitur ini dikunci demi keamanan ujian.");
-            return false;
-        }
-    });
+    // 1. Matikan Klik Kanan
+    document.addEventListener('contextmenu', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+
+    // 2. Matikan Blok/Select Teks
+    document.addEventListener('selectstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+    
+    document.addEventListener('dragstart', event => {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+        event.preventDefault();
+    });
+
+    // 3. Matikan Shortcut Keyboard
+    document.addEventListener('keydown', function(e) {
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
+
+        // Cegah F12, Inspect, Copy Paste
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+            (e.ctrlKey && e.key === 'u') || 
+            (e.ctrlKey && e.key === 'U') || 
+            (e.ctrlKey && e.key === 's') || 
+            (e.ctrlKey && e.key === 'p') || 
+            (e.ctrlKey && e.key === 'a') || 
+            (e.ctrlKey && e.key === 'c')
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert("⚠️ Eits! Fitur ini dikunci demi keamanan ujian.");
+            return false;
+        }
+    });
 </script>
 
 </body>
