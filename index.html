@@ -419,10 +419,10 @@
                 padding-bottom: 100px !important;
             }
 
-            /* MAIN CONTENT: PADDING BAWAH GEDE BIAR GAK KETUTUP FOOTER */
+            /* MAIN CONTENT: PADDING BAWAH GEDE (200px) BIAR GAK KETUTUP FOOTER */
             .main-content { 
                 width: 100% !important; margin: 0 !important; 
-                padding: 15px 15px 100px 15px !important; 
+                padding: 15px 15px 200px 15px !important; 
                 flex: 1; height: 100vh; overflow-y: auto; 
             }
 
@@ -445,12 +445,12 @@
             
             /* STICKY FOOTER NAVIGATION */
             #mobileFooter {
-                display: none; /* Default Hidden, ditampilkan lewat JS */
+                display: none; /* Default Hidden (Lobby) */
                 position: fixed;
                 bottom: 0; left: 0; width: 100%;
                 background: white;
                 box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-                padding: 10px;
+                padding: 8px;
                 z-index: 1000;
                 justify-content: space-around;
             }
@@ -480,12 +480,13 @@
 
         #mobileFooter { display: none; }
 
+        /* TOMBOL FOOTER FIX ELEGAN */
         .mobile-nav-btn {
             background: var(--primary); color: white; border: none;
-            padding: 12px 15px; border-radius: 8px; font-weight: bold;
-            flex: 1; margin: 0 5px; border: 2px solid var(--gold);
+            padding: 8px 12px; border-radius: 6px; font-weight: 600;
+            flex: 1; margin: 0 5px; border: 1px solid var(--gold);
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .close-sidebar-btn {
@@ -510,8 +511,8 @@
     <div id="floatingTimer">00:00:00</div>
     
     <div id="mobileFooter">
-        <button class="mobile-nav-btn" onclick="toggleMobileModul()"><i class="fas fa-book"></i> Modul</button>
-        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()"><i class="fas fa-th"></i> No. Soal</button>
+        <button class="mobile-nav-btn" onclick="toggleMobileModul()"><i class="fas fa-book"></i> Daftar Modul</button>
+        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()"><i class="fas fa-th"></i> Daftar Soal</button>
     </div>
 
 <div id="loginOverlay">
@@ -545,7 +546,7 @@
 </div>
     
     <div id="appSection" style="display:none;">
-        <div class="watermark" id="watermark">By: Ilham Nur Pratama - APP 23 - PA Serang</div>
+        <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
         <div class="sidebar-left">
             <div class="sidebar-header">
                 <h3>CBT CAKIM 2026</h3>
@@ -822,19 +823,14 @@
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
                 
-                // RESTORED: TAMPILKAN LOBBY AWAL
+                // FIX: Tampilkan LOBBY AWAL & Foto Profil
                 tampilkanLobby();
-                
-                // RESTORED: SET GOOGLE PHOTO
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
                 
+                // FIX: SEMBUNYIKAN TIMER & FOOTER HP DI LOBBY
                 document.getElementById('floatingTimer').style.display = 'none';
-                
-                // FIX HP: Set Footer Mobile Awal
-                if (window.innerWidth <= 768) {
-                    document.getElementById('mobileFooter').style.display = 'flex';
-                }
+                document.getElementById('mobileFooter').style.display = 'none'; 
 
             } else {
                 document.body.classList.remove('is-admin');
@@ -922,12 +918,12 @@
         // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
         if (sidebar.classList.contains('show-mobile')) {
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
-            if(mobileFooter) mobileFooter.style.display = 'none'; // FIX: PAKE STYLE LANGSUNG BIAR KUAT
+            mobileFooter.style.display = 'none'; // FIX: Display None langsung
         } else {
             // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
             if (document.body.classList.contains('ujian-berjalan')) {
                 if(floatingTimer) floatingTimer.style.display = 'block';
-                if(mobileFooter) mobileFooter.style.display = 'flex';
+                mobileFooter.style.display = 'flex'; // FIX: Flex balik
             }
         }
 
@@ -955,7 +951,6 @@
         } else {
             // BUKA SIDEBAR
             sidebar.style.display = 'flex'; 
-            // Umpetin tombol
             if(timer) timer.style.display = 'none';
             if(mobileFooter) mobileFooter.style.display = 'none';
         }
@@ -1081,6 +1076,7 @@
             
             if(window.innerWidth <= 768) {
                 document.body.classList.add('ujian-berjalan'); 
+                // FIX: Munculkan Footer HP HANYA saat ujian dimulai
                 const mobileFooter = document.getElementById('mobileFooter');
                 if(mobileFooter) mobileFooter.style.display = 'flex';
                 
