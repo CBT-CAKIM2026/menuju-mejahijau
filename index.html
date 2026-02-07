@@ -319,7 +319,13 @@
             background: #f9f9f9; border-bottom: 1px solid #eee;
         }
 
-        .nav-container { flex: 1; overflow-y: auto; padding: 15px; background: white; }
+        .nav-container { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            background: white; 
+            min-height: 0; /* KUNCI: Supaya flexbox tahu dia bisa mengecil */
+        }
         .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
         .nav-btn {
@@ -1287,7 +1293,7 @@
             if (window.innerWidth > 768) {
                 btnNext.style.display = 'none';
             } else {
-                btnNext.innerHTML = "Selesai ✅";
+                btnNext.innerHTML = "Selesai";
                 btnNext.className = "btn btn-finish"; 
                 btnNext.onclick = confirmFinish; 
             }
@@ -1931,3 +1937,4 @@
 
 </body>
 </html>
+
