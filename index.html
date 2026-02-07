@@ -68,7 +68,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 9999;
+            z-index: 99999; /* Paling Atas */
             overflow-y: auto;
             overflow-x: hidden;
             font-family: 'Poppins', sans-serif;
@@ -371,7 +371,7 @@
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: rgba(0,0,0,0.85); display: none; 
             justify-content: center; align-items: center; 
-            z-index: 21000 !important; /* Di atas sidebar HP */
+            z-index: 100000 !important; /* WAJIB TINGGI BIAR DI ATAS SEMUA */
             backdrop-filter: blur(5px); 
         }
         
@@ -401,7 +401,7 @@
             color: #ffeb3b; background: rgba(0, 77, 0, 0.9);
         }
         
-        /* === TAMPILAN HP FIXED === */
+        /* === TAMPILAN HP FIXED & ELEGAN === */
         @media (max-width: 768px) {
             body { padding-bottom: 0 !important; flex-direction: column; overflow: hidden; }
 
@@ -411,18 +411,18 @@
             }
             .sidebar-left .timer-container { display: none !important; }
             
-            /* SCROLL MODUL AMAN - KASIH RUANG BAWAH */
+            /* FIX 1: SCROLL MODUL AMAN - KASIH RUANG BAWAH */
             .modul-selector { 
                 max-height: none !important; 
                 height: calc(100% - 100px); 
                 overflow-y: auto; 
-                padding-bottom: 200px !important; /* FIX KETUTUP TOMBOL */
+                padding-bottom: 200px !important;
             }
 
-            /* MAIN CONTENT: PADDING BAWAH SUPER GEDE (300px) BIAR SCROLL AMAN */
+            /* FIX 2: MAIN CONTENT PADDING BAWAH SUPER GEDE (200px) BIAR NAVIGASI GAK KETUTUP */
             .main-content { 
                 width: 100% !important; margin: 0 !important; 
-                padding: 15px 15px 300px 15px !important; 
+                padding: 15px 15px 250px 15px !important; 
                 flex: 1; height: 100vh; overflow-y: auto; 
             }
 
@@ -443,17 +443,19 @@
 
             .footer-nav .btn { padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px; }
             
-            /* STICKY FOOTER NAVIGATION - AUTO HIDE */
+            /* FIX 3: STICKY FOOTER NAVIGASI KAPSUL */
             #mobileFooter {
                 display: none; /* Default Hidden (Lobby) */
                 position: fixed;
-                bottom: 0; left: 0; width: 100%;
-                background: white;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-                padding: 8px;
+                bottom: 20px; left: 50%; transform: translateX(-50%); /* Posisi Tengah */
+                width: 90%; max-width: 400px; /* Lebar Terbatas (Kapsul) */
+                background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
+                border-radius: 50px; /* Bentuk Kapsul */
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                padding: 10px;
                 z-index: 1000;
                 justify-content: space-around;
-                /* PENTING: JANGAN PAKE !IMPORTANT DISINI BIAR BISA DI HIDE LEWAT JS */
+                border: 1px solid #eee;
             }
             
             .close-sidebar-btn { display: block !important; }
@@ -466,29 +468,31 @@
                 flex-direction: column; align-items: flex-start; gap: 5px; 
                 margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
             }
-            #modulTitle { font-size: 0.95rem !important; line-height: 1.3; }
-            #qNum { font-size: 0.85rem !important; }
+            #modulTitle { font-size: 1rem !important; line-height: 1.3; font-weight:700; color:var(--primary); }
+            #qNum { font-size: 0.9rem !important; font-weight:600; }
             #modeIndicator { 
-                font-size: 0.7rem; padding: 2px 8px; 
+                font-size: 0.7rem; padding: 4px 10px; 
                 align-self: flex-start; margin-top: 5px;
             }
             
             body.ujian-berjalan .sidebar-left { display: none; }
 
             /* SCROLL DAFTAR SOAL AMAN - KASIH RUANG BAWAH */
-            .nav-container { padding-bottom: 200px !important; /* FIX KETUTUP TOMBOL */ }
+            .nav-container { padding-bottom: 200px !important; }
         }
 
         #mobileFooter { display: none; }
 
-        /* TOMBOL FOOTER FIX ELEGAN */
+        /* TOMBOL FOOTER KAPSUL ELEGAN */
         .mobile-nav-btn {
             background: var(--primary); color: white; border: none;
-            padding: 8px 12px; border-radius: 6px; font-weight: 600;
+            padding: 10px 20px; border-radius: 30px; font-weight: 600;
             flex: 1; margin: 0 5px; border: 1px solid var(--gold);
             display: flex; align-items: center; justify-content: center; gap: 8px;
             font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
         }
+        .mobile-nav-btn:active { transform: scale(0.95); }
 
         .close-sidebar-btn {
             display: none; width: 100%; padding: 15px; background: var(--danger);
@@ -547,7 +551,7 @@
 </div>
     
     <div id="appSection" style="display:none;">
-        <div class="watermark" id="watermark">By: Ilham Nur Pratama - APP 23 - PA Serang</div>
+        <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
         <div class="sidebar-left">
             <div class="sidebar-header">
                 <h3>CBT CAKIM 2026</h3>
@@ -824,19 +828,14 @@
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
                 
-                // RESTORED: TAMPILKAN LOBBY AWAL
+                // FIX: Tampilkan LOBBY AWAL & Foto Profil
                 tampilkanLobby();
-                
-                // RESTORED: SET GOOGLE PHOTO
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
                 
+                // FIX: SEMBUNYIKAN TIMER & FOOTER HP DI LOBBY
                 document.getElementById('floatingTimer').style.display = 'none';
-                
-                // FIX HP: Set Footer Mobile Awal
-                if (window.innerWidth <= 768) {
-                    document.getElementById('mobileFooter').style.display = 'none'; // DEFAULT HIDE DI LOBBY
-                }
+                document.getElementById('mobileFooter').style.display = 'none'; 
 
             } else {
                 document.body.classList.remove('is-admin');
@@ -924,12 +923,12 @@
         // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
         if (sidebar.classList.contains('show-mobile')) {
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
-            if(mobileFooter) mobileFooter.style.display = 'none'; // FIX: PAKE STYLE LANGSUNG BIAR KUAT
+            mobileFooter.style.display = 'none'; // FIX: Display None langsung
         } else {
             // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
             if (document.body.classList.contains('ujian-berjalan')) {
                 if(floatingTimer) floatingTimer.style.display = 'block';
-                if(mobileFooter) mobileFooter.style.display = 'flex';
+                mobileFooter.style.display = 'flex'; // FIX: Flex balik
             }
         }
 
@@ -1525,7 +1524,146 @@
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
-    // --- LOGIKA ADMIN PANEL (INJECTED) ---
+    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
+    window.openStats = async function() {
+        if(!currentUser) { alert("Login dulu bro!"); return; }
+        if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
+
+        document.getElementById('statsOverlay').style.display = 'flex';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'none';
+        
+        document.getElementById('statsTitle').innerText = "Memuat Data Cloud...";
+        document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Sedang mengambil data dari server...</td></tr>';
+
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
+            const querySnapshot = await getDocs(q);
+            let allHistory = [];
+            querySnapshot.forEach((doc) => {
+                let data = doc.data(); data.id = doc.id; allHistory.push(data);
+            });
+
+            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
+            const judulModul = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : window.currentDatabaseId;
+            document.getElementById('statsTitle').innerText = "Data Modul: " + judulModul;
+
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+            if (currentModulHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Belum ada riwayat pengerjaan di modul ini.</td></tr>';
+            } else {
+                [...currentModulHistory].reverse().forEach((d, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                            borderWidth: 2, tension: 0.3, fill: true
+                        }, {
+                            label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
+                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
+                        }]
+                    },
+                    options: { 
+                        animation: { duration: 1500, easing: 'easeOutQuart' }, 
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } } 
+                    }
+                });
+
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
+
+                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                    const numA = parseFloat(a.replace(/[^\d.]/g, ''));
+                    const numB = parseFloat(b.replace(/[^\d.]/g, ''));
+                    return numA - numB;
+                });
+
+                const labels = [];
+                const dataScores = [];
+                const backgroundColors = [];
+                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+
+                sortedKeys.forEach((key, index) => {
+                    let niceName = key;
+                    let btn = document.getElementById('btn-'+key);
+                    if(btn) niceName = btn.innerText.split(':')[0]; 
+                    labels.push(niceName);
+                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
+                    backgroundColors.push(colors[index % colors.length]);
+                });
+
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
+                    },
+                    options: { 
+                        // ANIMASI FIX: DARI BAWAH KE ATAS
+                        animation: { 
+                            duration: 1500, 
+                            easing: 'easeOutBounce',
+                            y: { from: 0 } // Paksa mulai tumbuh dari 0
+                        },
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } }, 
+                        plugins: { legend: { display: false } } 
+                    }
+                });
+            }, 300); // INI JEDA WAKTUNYA (300ms)
+
+        } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
+    };
+
+    window.closeStats = function() {
+        document.getElementById('statsOverlay').style.display = 'none';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'block';
+    };
+
+    function tampilkanLobby() {
+        document.querySelector('.question-header').style.visibility = 'hidden';
+        document.querySelector('.footer-nav').style.visibility = 'hidden';
+        const qText = document.getElementById('questionText');
+        qText.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
+                <p style="font-size: 1.2rem; color: #555;">
+                    Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
+                </p>
+            </div>
+        `;
+        document.getElementById('optionsContainer').innerHTML = '';
+        document.getElementById('feedbackBox').style.display = 'none';
+        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
+    }
+
+    // ==========================================
+    // LOGIKA ADMIN PANEL (INJECTED)
+    // ==========================================
+
     window.openAdminPanel = () => {
         document.getElementById('adminOverlay').style.display = 'flex';
     };
@@ -1540,6 +1678,7 @@
         }
     };
 
+    // --- FITUR 1: UPLOAD JSON ---
     window.eksekusiUpload = async () => {
         const modulId = document.getElementById('adminModulTarget').value.trim();
         const jsonRaw = document.getElementById('jsonUploadArea').value;
@@ -1555,7 +1694,9 @@
             const batch = writeBatch(db);
             let count = 0;
             
+            // Chunking batch (max 500 per batch) - Sederhananya loop manual
             for (const item of dataSoal) {
+                // Standarisasi field sesuai aplikasi lo
                 const docData = {
                     q: item.q || item.pertanyaan,
                     options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
@@ -1570,13 +1711,14 @@
             }
             
             alert(`✅ Sukses Upload ${count} Soal!`);
-            document.getElementById('jsonUploadArea').value = ""; 
+            document.getElementById('jsonUploadArea').value = ""; // Reset
         } catch (e) {
             alert("Error: " + e.message);
             console.error(e);
         }
     };
 
+    // --- FITUR 2: LOAD & EDIT ---
     let currentAdminModul = "";
 
     window.loadSoalAdmin = async () => {
@@ -1589,6 +1731,7 @@
 
         try {
             const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
+            // Urutkan biar gampang nyarinya
             const q = query(qRef, orderBy("createdAt", "desc")); 
             const snapshot = await getDocs(q); 
 
@@ -1612,7 +1755,7 @@
     function populateEditForm(id, data) {
         document.getElementById('editDocId').value = id;
         document.getElementById('editQ').value = data.q;
-        document.getElementById('editOpt').value = data.options.join(","); 
+        document.getElementById('editOpt').value = data.options.join(","); // Array jadi string koma
         document.getElementById('editAns').value = data.answer;
         document.getElementById('editExp').value = data.explanation;
         document.getElementById('editCite').value = data.cite || "";
@@ -1659,49 +1802,31 @@
         }
     };
 
-    // RESTORED: FUNGSI TAMPILAN LOBBY YANG HILANG
-    function tampilkanLobby() {
-        document.querySelector('.question-header').style.visibility = 'hidden';
-        document.querySelector('.footer-nav').style.visibility = 'hidden';
-        const qText = document.getElementById('questionText');
-        qText.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
-                <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
-                <p style="font-size: 1.2rem; color: #555;">
-                    Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
-                </p>
-            </div>
-        `;
-        document.getElementById('optionsContainer').innerHTML = '';
-        document.getElementById('feedbackBox').style.display = 'none';
-        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
-    }
-
 </script>
 
 <script>
     // 1. Matikan Klik Kanan
     document.addEventListener('contextmenu', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
 
     // 2. Matikan Blok/Select Teks
     document.addEventListener('selectstart', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
     
     document.addEventListener('dragstart', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
 
     // 3. Matikan Shortcut Keyboard
     document.addEventListener('keydown', function(e) {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
 
+        // Cegah F12, Inspect, Copy Paste
         if (
             e.key === 'F12' || 
             (e.ctrlKey && e.shiftKey && e.key === 'I') || 
