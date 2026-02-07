@@ -844,7 +844,7 @@
         measurementId: "G-NDNKMSMWV2"
     };
 
-    // --- EMAIL ADMIN (GANTI DENGAN EMAIL LO) ---
+    // --- EMAIL ADMIN (PASTIKAN SAMA PERSIS DENGAN RULES FIREBASE) ---
     const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
 
     let db, auth, provider, currentUser;
@@ -881,12 +881,9 @@
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
                 
-                // FIX: Tampilkan LOBBY AWAL & Foto Profil
                 tampilkanLobby();
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
-                
-                // FIX: SEMBUNYIKAN TIMER & FOOTER HP DI LOBBY
                 document.getElementById('floatingTimer').style.display = 'none';
                 document.getElementById('mobileFooter').style.display = 'none'; 
 
@@ -900,6 +897,182 @@
         });
     }
 
+    // --- FUNGSI ADMIN EDIT/REVISI (FIXED) ---
+    let currentAdminModul = "";
+
+    window.loadSoalAdmin = async () => {
+        const modulId = document.getElementById('editModulTarget').value.trim();
+        if(!modulId) return alert("Isi nama modul dulu! (cth: modul1)");
+        currentAdminModul = modulId;
+
+        const listDiv = document.getElementById('listSoalAdmin');
+        listDiv.innerHTML = "Loading data dari server...";
+
+        try {
+            const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
+            
+            // COBA LOAD DENGAN ORDERBY DULU
+            let q;
+            try {
+                q = query(qRef, orderBy("createdAt", "desc"));
+            } catch(err) {
+                console.warn("Mungkin index belum dibuat, load default...", err);
+                q = qRef; // Fallback kalau index error
+            }
+            
+            const snapshot = await getDocs(q); 
+
+            listDiv.innerHTML = "";
+            if (snapshot.empty) {
+                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal di modul ini.</p>";
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const div = document.createElement('div');
+                div.style.borderBottom = "1px solid #ddd";
+                div.style.padding = "10px";
+                div.style.cursor = "pointer";
+                div.style.fontSize = "0.85rem";
+                div.className = "admin-soal-item"; // Class buat styling
+                
+                // Tampilkan sedikit teks soal
+                const shortQ = (data.q || "").substring(0, 50) + "...";
+                div.innerText = shortQ;
+                
+                div.onclick = () => {
+                    // Visual feedback: Highlight yang dipilih
+                    document.querySelectorAll('.admin-soal-item').forEach(el => el.style.background = 'transparent');
+                    div.style.background = '#d1e7dd'; 
+                    populateEditForm(docSnap.id, data);
+                };
+                listDiv.appendChild(div);
+            });
+        } catch (e) {
+            console.error(e);
+            let msg = e.message;
+            if (msg.includes("requires an index")) {
+                msg = "🔥 ERROR INDEX FIREBASE: Buka Console Firebase > Firestore > Indexes untuk buat index 'createdAt'.";
+                console.log("LINK BUAT INDEX: ", e.message); // Link biasanya ada di error log console browser
+            }
+            alert("Gagal load: " + msg);
+        }
+    };
+
+    function populateEditForm(id, data) {
+        document.getElementById('editDocId').value = id;
+        document.getElementById('editQ').value = data.q || "";
+        
+        // SAFE CHECK: Pastikan options adalah Array sebelum di-join
+        let opts = data.options;
+        if (Array.isArray(opts)) {
+            document.getElementById('editOpt').value = opts.join(","); 
+        } else {
+            document.getElementById('editOpt').value = ""; // Kosongin kalau error
+        }
+
+        document.getElementById('editAns').value = data.answer;
+        document.getElementById('editExp').value = data.explanation || "";
+        document.getElementById('editCite').value = data.cite || "";
+    }
+
+    window.simpanPerubahan = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("⚠️ Pilih (klik) dulu salah satu soal di daftar kiri!");
+
+        // Validasi input
+        const rawOpt = document.getElementById('editOpt').value;
+        if(!rawOpt) return alert("Opsi jawaban tidak boleh kosong!");
+
+        const optionsArray = rawOpt.split(",").map(s => s.trim()); 
+
+        const newData = {
+            q: document.getElementById('editQ').value,
+            options: optionsArray,
+            answer: parseInt(document.getElementById('editAns').value),
+            explanation: document.getElementById('editExp').value,
+            cite: document.getElementById('editCite').value
+            // KITA GAK UPDATE createdAt BIAR GAK GESER POSISINYA
+        };
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await updateDoc(docRef, newData);
+            alert("✅ BERHASIL! Soal sudah direvisi.");
+            
+            // Refresh list biar kelihatan updatenya
+            loadSoalAdmin(); 
+            
+            // Bersihkan form
+            document.getElementById('editDocId').value = "";
+            document.getElementById('editQ').value = "";
+            document.getElementById('editOpt').value = "";
+            document.getElementById('editExp').value = "";
+        } catch (e) {
+            console.error(e);
+            alert("Gagal update: " + e.message + "\n(Cek apakah email lo 'ilhamnp22@gmail.com' di Rules Firebase?)");
+        }
+    };
+
+    window.hapusSoal = async () => {
+        const id = document.getElementById('editDocId').value;
+        if(!id) return alert("Pilih soal dulu yang mau dihapus!");
+        if(!confirm("Yakin mau hapus soal ini permanen?")) return;
+
+        try {
+            const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
+            await deleteDoc(docRef);
+            alert("🗑️ Soal dihapus.");
+            loadSoalAdmin(); 
+            document.getElementById('editDocId').value = "";
+            document.getElementById('editQ').value = "";
+        } catch (e) {
+            alert("Gagal hapus: " + e.message);
+        }
+    };
+
+    // --- FITUR UPLOAD JSON (TETAP SAMA) ---
+    window.eksekusiUpload = async () => {
+        const modulId = document.getElementById('adminModulTarget').value.trim();
+        const jsonRaw = document.getElementById('jsonUploadArea').value;
+        
+        if(!modulId || !jsonRaw) return alert("Modul ID dan JSON harus diisi!");
+        
+        try {
+            const dataSoal = JSON.parse(jsonRaw);
+            if(!Array.isArray(dataSoal)) return alert("Format JSON harus Array [ ... ]");
+
+            if(!confirm(`Siap upload ${dataSoal.length} soal ke ${modulId}?`)) return;
+
+            const batch = writeBatch(db);
+            let count = 0;
+            
+            // Chunking batch (max 500 per batch) - Sederhananya loop manual
+            for (const item of dataSoal) {
+                // Standarisasi field sesuai aplikasi lo
+                const docData = {
+                    q: item.q || item.pertanyaan,
+                    options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
+                    answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
+                    explanation: item.explanation || item.pembahasan || "-",
+                    cite: item.cite || "Modul Hakim",
+                    createdAt: new Date()
+                };
+
+                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
+                count++;
+            }
+            
+            alert(`✅ Sukses Upload ${count} Soal!`);
+            document.getElementById('jsonUploadArea').value = ""; // Reset
+        } catch (e) {
+            alert("Error: " + e.message);
+            console.error(e);
+        }
+    };
+
+    // --- FUNGSI APLIKASI UTAMA (LEADERBOARD, STATS, DLL) ---
     window.saveScoreToCloud = async (modulId, skor) => {
         if (!currentUser || !db) return;
         try {
@@ -1780,49 +1953,90 @@
 
     window.loadSoalAdmin = async () => {
         const modulId = document.getElementById('editModulTarget').value.trim();
-        if(!modulId) return alert("Isi nama modul!");
+        if(!modulId) return alert("Isi nama modul dulu! (cth: modul1)");
         currentAdminModul = modulId;
 
         const listDiv = document.getElementById('listSoalAdmin');
-        listDiv.innerHTML = "Loading...";
+        listDiv.innerHTML = "Loading data dari server...";
 
         try {
             const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
-            // Urutkan biar gampang nyarinya
-            const q = query(qRef, orderBy("createdAt", "desc")); 
+            
+            // COBA LOAD DENGAN ORDERBY DULU
+            let q;
+            try {
+                q = query(qRef, orderBy("createdAt", "desc"));
+            } catch(err) {
+                console.warn("Mungkin index belum dibuat, load default...", err);
+                q = qRef; // Fallback kalau index error
+            }
+            
             const snapshot = await getDocs(q); 
 
             listDiv.innerHTML = "";
+            if (snapshot.empty) {
+                listDiv.innerHTML = "<p style='padding:10px;'>Belum ada soal di modul ini.</p>";
+                return;
+            }
+
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 const div = document.createElement('div');
                 div.style.borderBottom = "1px solid #ddd";
-                div.style.padding = "8px";
+                div.style.padding = "10px";
                 div.style.cursor = "pointer";
                 div.style.fontSize = "0.85rem";
-                div.innerText = (data.q || "").substring(0, 60) + "...";
-                div.onclick = () => populateEditForm(docSnap.id, data);
+                div.className = "admin-soal-item"; // Class buat styling
+                
+                // Tampilkan sedikit teks soal
+                const shortQ = (data.q || "").substring(0, 50) + "...";
+                div.innerText = shortQ;
+                
+                div.onclick = () => {
+                    // Visual feedback: Highlight yang dipilih
+                    document.querySelectorAll('.admin-soal-item').forEach(el => el.style.background = 'transparent');
+                    div.style.background = '#d1e7dd'; 
+                    populateEditForm(docSnap.id, data);
+                };
                 listDiv.appendChild(div);
             });
         } catch (e) {
-            alert("Gagal load (mungkin salah nama modul): " + e.message);
+            console.error(e);
+            let msg = e.message;
+            if (msg.includes("requires an index")) {
+                msg = "🔥 ERROR INDEX FIREBASE: Buka Console Firebase > Firestore > Indexes untuk buat index 'createdAt'.";
+                console.log("LINK BUAT INDEX: ", e.message); // Link biasanya ada di error log console browser
+            }
+            alert("Gagal load: " + msg);
         }
     };
 
     function populateEditForm(id, data) {
         document.getElementById('editDocId').value = id;
-        document.getElementById('editQ').value = data.q;
-        document.getElementById('editOpt').value = data.options.join(","); // Array jadi string koma
+        document.getElementById('editQ').value = data.q || "";
+        
+        // SAFE CHECK: Pastikan options adalah Array sebelum di-join
+        let opts = data.options;
+        if (Array.isArray(opts)) {
+            document.getElementById('editOpt').value = opts.join(","); 
+        } else {
+            document.getElementById('editOpt').value = ""; // Kosongin kalau error
+        }
+
         document.getElementById('editAns').value = data.answer;
-        document.getElementById('editExp').value = data.explanation;
+        document.getElementById('editExp').value = data.explanation || "";
         document.getElementById('editCite').value = data.cite || "";
     }
 
     window.simpanPerubahan = async () => {
         const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu!");
+        if(!id) return alert("⚠️ Pilih (klik) dulu salah satu soal di daftar kiri!");
 
-        const optionsArray = document.getElementById('editOpt').value.split(",").map(s => s.trim()); 
+        // Validasi input
+        const rawOpt = document.getElementById('editOpt').value;
+        if(!rawOpt) return alert("Opsi jawaban tidak boleh kosong!");
+
+        const optionsArray = rawOpt.split(",").map(s => s.trim()); 
 
         const newData = {
             q: document.getElementById('editQ').value,
@@ -1830,21 +2044,31 @@
             answer: parseInt(document.getElementById('editAns').value),
             explanation: document.getElementById('editExp').value,
             cite: document.getElementById('editCite').value
+            // KITA GAK UPDATE createdAt BIAR GAK GESER POSISINYA
         };
 
         try {
             const docRef = doc(db, "bank_soal", currentAdminModul, "daftar_soal", id);
             await updateDoc(docRef, newData);
-            alert("✅ Data terupdate!");
+            alert("✅ BERHASIL! Soal sudah direvisi.");
+            
+            // Refresh list biar kelihatan updatenya
             loadSoalAdmin(); 
+            
+            // Bersihkan form
+            document.getElementById('editDocId').value = "";
+            document.getElementById('editQ').value = "";
+            document.getElementById('editOpt').value = "";
+            document.getElementById('editExp').value = "";
         } catch (e) {
-            alert("Gagal update: " + e.message);
+            console.error(e);
+            alert("Gagal update: " + e.message + "\n(Cek apakah email lo 'ilhamnp22@gmail.com' di Rules Firebase?)");
         }
     };
 
     window.hapusSoal = async () => {
         const id = document.getElementById('editDocId').value;
-        if(!id) return alert("Pilih soal dulu!");
+        if(!id) return alert("Pilih soal dulu yang mau dihapus!");
         if(!confirm("Yakin mau hapus soal ini permanen?")) return;
 
         try {
