@@ -58,8 +58,8 @@
         }
 
         /* =========================================
-           LOGIN SCREEN
-           ========================================= */
+            LOGIN SCREEN
+            ========================================= */
         #loginOverlay {
             background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), 
                         url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mahkamah_Agung_Republic_of_Indonesia.jpg/1200px-Mahkamah_Agung_Republic_of_Indonesia.jpg');
@@ -207,8 +207,8 @@
         }
 
         /* =========================================
-           APP STYLES
-           ========================================= */
+            APP STYLES
+            ========================================= */
         #appSection { 
             display: none; 
             width: 100%; 
@@ -260,7 +260,13 @@
         .timer-panic { background-color: var(--danger) !important; color: white !important; border-color: var(--fail) !important; animation: panicPulse 0.5s infinite alternate; }
         @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
 
-        .modul-selector { flex: 1; padding: 10px; background: #fff; overflow-y: auto; }
+        .modul-selector { 
+            flex: 1; 
+            padding: 10px; 
+            background: #fff; 
+            overflow-y: auto; 
+            padding-bottom: 50px; /* Buffer supaya item terakhir gak nempel watermark */
+        }
 
         .modul-btn {
             display: block; width: 100%; padding: 12px 15px; margin-bottom: 8px;
@@ -351,7 +357,7 @@
 
         .btn { padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; color: white; transition: 0.3s; }
         .btn-prev { background-color: var(--secondary); } 
-        .btn-next { background-color: var(--primary); }   
+        .btn-next { background-color: var(--primary); }    
         .btn-finish { background-color: var(--success); width: 100%; }
         .btn-purple { background-color: #8e44ad !important; color: white !important; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -609,8 +615,8 @@
             <div class="sidebar-header">
                 <h3>CBT CAKIM 2026</h3>
                 <div class="user-profile">
-                   <img id="userAvatar" src="" class="user-avatar" alt="">
-                   <span id="roleDisplay">Peserta</span>
+                    <img id="userAvatar" src="" class="user-avatar" alt="">
+                    <span id="roleDisplay">Peserta</span>
                 </div>
                 <div class="timer-container" id="timerDisplay">00:00:00</div>
             </div>
@@ -1925,4 +1931,3 @@
 
 </body>
 </html>
-
