@@ -16,7 +16,7 @@
             --secondary: #1a1a1a; /* Hitam Elegan */
             --accent: #2e7d32;    /* Hijau Daun */
             --gold: #d4af37;      /* Emas Mewah */
-            --purple: #8e44ad;    /* Ungu (Request Khusus Grafik) */
+            --purple: #8e44ad;    /* Ungu (Grafik) */
             --light: #f1f8e9;     
             --filled: #7f8c8d;    
             --success: #2e7d32;   
@@ -213,7 +213,7 @@
             width: 100%; 
             height: 100%; 
             display: flex;
-            background-color: #f4f7f6; /* Warna solid penutup background gedung */
+            background-color: #f4f7f6; /* FIX BACKGROUND HP BOCOR */
             position: fixed;
             top: 0; left: 0;
             z-index: 10;
@@ -411,16 +411,18 @@
             }
             .sidebar-left .timer-container { display: none !important; }
             
+            /* SCROLL MODUL AMAN */
             .modul-selector { 
                 max-height: none !important; 
-                height: calc(100% - 80px); 
+                height: calc(100% - 100px); /* Kurangi tinggi header/footer */
                 overflow-y: auto; 
-                padding-bottom: 150px !important;
+                padding-bottom: 100px !important;
             }
 
+            /* MAIN CONTENT: PADDING BAWAH GEDE BIAR GAK KETUTUP FOOTER */
             .main-content { 
                 width: 100% !important; margin: 0 !important; 
-                padding: 15px 15px 100px 15px !important; /* PADDING BAWAH GEDE BIAR GAK KETUTUP TOMBOL */
+                padding: 15px 15px 100px 15px !important; 
                 flex: 1; height: 100vh; overflow-y: auto; 
             }
 
@@ -441,7 +443,7 @@
 
             .footer-nav .btn { padding: 10px 15px !important; font-size: 0.85rem !important; width: 48%; border-radius: 8px; }
             
-            /* TOMBOL MODUL & SOAL PINDAH KE STICKY FOOTER */
+            /* STICKY FOOTER NAVIGATION */
             #mobileFooter {
                 display: flex !important;
                 position: fixed;
@@ -458,19 +460,21 @@
             .option-label { padding: 12px; margin-bottom: 10px; font-size: 0.95rem; }
             .question-header .focus-btn { display: none; } 
             
-            /* PERBAIKAN HEADER HP */
+            /* PERBAIKAN HEADER HP (ELEGAN & KECIL) */
             .question-header { 
-                flex-direction: column; align-items: flex-start; gap: 10px; 
+                flex-direction: column; align-items: flex-start; gap: 5px; 
+                margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
             }
-            #modulTitle { font-size: 1rem !important; }
-            #qNum { font-size: 0.9rem !important; }
+            #modulTitle { font-size: 0.95rem !important; line-height: 1.3; }
+            #qNum { font-size: 0.85rem !important; }
             #modeIndicator { 
-                font-size: 0.8rem; padding: 3px 10px; 
+                font-size: 0.7rem; padding: 2px 8px; 
                 align-self: flex-start; margin-top: 5px;
             }
             
             body.ujian-berjalan .sidebar-left { display: none; }
 
+            /* SCROLL DAFTAR SOAL AMAN */
             .nav-container { padding-bottom: 150px !important; }
         }
 
@@ -481,7 +485,7 @@
             padding: 12px 15px; border-radius: 8px; font-weight: bold;
             flex: 1; margin: 0 5px; border: 2px solid var(--gold);
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .close-sidebar-btn {
@@ -506,8 +510,8 @@
     <div id="floatingTimer">00:00:00</div>
     
     <div id="mobileFooter">
-        <button class="mobile-nav-btn" onclick="toggleMobileModul()">📚 Daftar Modul</button>
-        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()">📱 Daftar Soal</button>
+        <button class="mobile-nav-btn" onclick="toggleMobileModul()"><i class="fas fa-book"></i> Modul</button>
+        <button class="mobile-nav-btn" onclick="toggleMobileSidebar()"><i class="fas fa-th"></i> No. Soal</button>
     </div>
 
 <div id="loginOverlay">
@@ -817,15 +821,19 @@
 
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
+                
+                // RESTORED: TAMPILKAN LOBBY AWAL
                 tampilkanLobby();
+                
+                // RESTORED: SET GOOGLE PHOTO
                 document.getElementById('roleDisplay').innerText = user.displayName;
                 document.getElementById('userAvatar').src = user.photoURL;
+                
                 document.getElementById('floatingTimer').style.display = 'none';
                 
+                // FIX HP: Set Footer Mobile Awal
                 if (window.innerWidth <= 768) {
                     document.getElementById('mobileFooter').style.display = 'flex';
-                    document.getElementById('btnMobileNav').style.display = 'none';
-                    document.getElementById('btnMobileModul').style.display = 'none';
                 }
 
             } else {
@@ -903,6 +911,7 @@
 
     window.currentDatabaseId = 'modul1';
 
+    // --- FIX TOGGLE SIDEBAR HP (AUTO HIDE BUTTONS) ---
     window.toggleMobileSidebar = function() {
         const sidebar = document.querySelector('.sidebar-right');
         const floatingTimer = document.getElementById('floatingTimer');
@@ -910,12 +919,12 @@
 
         sidebar.classList.toggle('show-mobile');
 
+        // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
         if (sidebar.classList.contains('show-mobile')) {
-            // Kalau Sidebar KEBUEKA -> Umpetin Tombol Navigasi & Timer
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
             if(mobileFooter) mobileFooter.style.display = 'none';
         } else {
-            // Kalau Sidebar DITUTUP -> Munculin lagi
+            // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
             if (document.body.classList.contains('ujian-berjalan')) {
                 if(floatingTimer) floatingTimer.style.display = 'block';
                 if(mobileFooter) mobileFooter.style.display = 'flex';
@@ -932,6 +941,7 @@
         }
     }
 
+    // --- FIX TOGGLE MODUL HP (AUTO HIDE BUTTONS) ---
     window.toggleMobileModul = function() {
         const sidebar = document.querySelector('.sidebar-left');
         const timer = document.getElementById('floatingTimer');
@@ -941,7 +951,7 @@
             // TUTUP SIDEBAR
             sidebar.style.display = ''; 
             // Munculin tombol lagi
-             if(timer) timer.style.display = 'block';
+            if(timer && document.body.classList.contains('ujian-berjalan')) timer.style.display = 'block';
             if(mobileFooter) mobileFooter.style.display = 'flex';
         } else {
             // BUKA SIDEBAR
@@ -1072,8 +1082,10 @@
             
             if(window.innerWidth <= 768) {
                 document.body.classList.add('ujian-berjalan'); 
+                // Tampilkan Footer Navigasi
                 const mobileFooter = document.getElementById('mobileFooter');
                 if(mobileFooter) mobileFooter.style.display = 'flex';
+                
                 const timer = document.getElementById('floatingTimer');
                 if(timer) timer.style.display = 'block';
                 const sbLeft = document.querySelector('.sidebar-left');
