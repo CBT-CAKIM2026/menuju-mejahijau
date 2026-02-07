@@ -26,6 +26,14 @@
             --fail: #e74c3c;
         }
 
+        /* --- FLASHCARD MODE (ACTIVE RECALL) --- */
+        .mode-hafalan {
+            filter: blur(12px);
+            pointer-events: none;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
         /* --- ANTI CURANG (CSS LEVEL) --- */
         body:not(.is-admin) * {
             -webkit-user-select: none;
@@ -673,6 +681,9 @@
                 <div class="question-header">
                     <div style="display:flex; align-items:center;">
                         <button class="focus-btn" onclick="toggleFocusMode()" title="Mode Fokus">☰</button>
+                        <button onclick="toggleHafalan()" id="btnFlashHafalan" style="background:none; border:none; color: var(--secondary); margin-right:15px; cursor:pointer; font-size:1.3rem; transition:0.3s;" title="Mode Hafalan">
+                            <i class="fas fa-brain"></i>
+                        </button>
                         <div>
                             <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary); display:block;" id="modulTitle">Modul 1</span>
                             <span style="font-size: 1rem; color: #7f8c8d;">Soal No. <span id="qNum" style="font-weight:bold; color:var(--primary);">1</span></span>
@@ -1325,7 +1336,17 @@
         if (isSubmitted) {
             fb.style.display = 'block';
             fb.classList.add('show');
-            document.getElementById('feedbackText').innerText = q.explanation;
+            const teksPembahasan = q.explanation || "";
+            const jawabanBenar = q.options[q.answer]; 
+            
+            // --- LOGIKA HIGHLIGHT JAWABAN (KEY ANSWER BRIDGE) ---
+            const highlightTeks = (teks, keyword) => {
+                if (!keyword) return teks;
+                const regex = new RegExp(`(${keyword})`, 'gi');
+                return teks.replace(regex, `<span style="background-color: #fff9c4; color: #004d00; font-weight: bold; padding: 0 2px; border-bottom: 2px solid #d4af37;">$1</span>`);
+            };
+
+            document.getElementById('feedbackText').innerHTML = highlightTeks(teksPembahasan, jawabanBenar);
             document.getElementById('feedbackCite').innerText = "Sumber: " + q.cite;
         } else { 
             fb.style.display = 'none';
@@ -1572,6 +1593,20 @@
     };
 
     window.toggleFocusMode = function() { document.body.classList.toggle('mode-focus'); };
+
+    // --- LOGIKA FLASHCARD MODE (ACTIVE RECALL) ---
+    window.toggleHafalan = function() {
+        const tempatOpsi = document.getElementById('optionsContainer');
+        tempatOpsi.classList.toggle('mode-hafalan');
+        
+        // Logika Ganti Ikon & Warna (Brain Icon)
+        const btnFlash = document.getElementById('btnFlashHafalan');
+        if (tempatOpsi.classList.contains('mode-hafalan')) {
+            btnFlash.style.color = 'var(--gold)'; // Aktif (Warna Emas)
+        } else {
+            btnFlash.style.color = 'var(--secondary)'; // Mati (Warna Hitam)
+        }
+    };
 
     function updateProgress() {
         let answered = userAnswers.filter(a => a !== null).length;
@@ -1948,5 +1983,3 @@
 
 </body>
 </html>
-
-
