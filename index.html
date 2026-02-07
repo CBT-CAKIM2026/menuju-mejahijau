@@ -696,7 +696,12 @@
                 <div id="optionsContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
 
                 <div id="feedbackBox" class="feedback-box">
-                    <h3 style="margin-top:0;">Pembahasan</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="margin-top:0;">Pembahasan</h3>
+                        <button onclick="toggleSpeech()" id="btnSpeak" style="background:none; border:none; cursor:pointer; font-size:1.3rem; color:var(--primary);" title="Dengarkan Pembahasan">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
                     <p id="feedbackText"></p>
                     <span id="feedbackCite" style="display:block; margin-top:10px; font-style:italic; font-weight:bold; color:#555;"></span>
                 </div>
@@ -1075,6 +1080,8 @@
 
     window.switchDatabase = async function(key) {
         if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
+        // Reset Audio saat ganti modul
+        window.speechSynthesis.cancel();
         currentModulKey = key;
         window.currentDatabaseId = key;
         
@@ -1290,6 +1297,11 @@
     }
 
     function loadQuestion(idx) {
+        // Matikan audio saat ganti soal
+        window.speechSynthesis.cancel();
+        const btnSpeakIcon = document.querySelector('#btnSpeak i');
+        if(btnSpeakIcon) btnSpeakIcon.className = 'fas fa-volume-up';
+
         document.querySelector('.question-header').style.visibility = 'visible';
         document.querySelector('.footer-nav').style.visibility = 'visible';
         currentIdx = idx;
@@ -1393,6 +1405,8 @@
 
     window.submitQuiz = function() {
         if(timerInterval) clearInterval(timerInterval);
+        // Matikan audio saat submit
+        window.speechSynthesis.cancel();
         isSubmitted = true;
         
         // FIX 1: Matikan Timer
@@ -1542,6 +1556,8 @@
    window.backToMenu = function() {
         if(confirm("Yakin mau kembali ke menu utama? Progres saat ini akan di-reset.")) {
             if(window.timerInterval) clearInterval(window.timerInterval);
+            // Matikan audio
+            window.speechSynthesis.cancel();
             
             // FIX 2: Pastikan Mode Fokus Hilang
             document.body.classList.remove('mode-focus');
@@ -1605,6 +1621,34 @@
             btnFlash.style.color = 'var(--gold)'; // Aktif (Warna Emas)
         } else {
             btnFlash.style.color = 'var(--secondary)'; // Mati (Warna Hitam)
+        }
+    };
+
+    // --- FITUR AUDIO PEMBAHASAN (TEXT TO SPEECH) ---
+    let utterance = null;
+    window.toggleSpeech = function() {
+        const synth = window.speechSynthesis;
+        const text = document.getElementById('feedbackText').innerText;
+        const btnIcon = document.querySelector('#btnSpeak i');
+
+        // Jika sedang bersuara, klik akan mematikan (Stop)
+        if (synth.speaking) {
+            synth.cancel();
+            btnIcon.className = 'fas fa-volume-up';
+            return;
+        }
+
+        if (text !== "") {
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID'; // Set Bahasa Indonesia
+            utterance.rate = 1.0; 
+
+            utterance.onend = () => { 
+                btnIcon.className = 'fas fa-volume-up'; 
+            };
+            
+            btnIcon.className = 'fas fa-stop-circle'; // Ganti ikon jadi STOP saat bersuara
+            synth.speak(utterance);
         }
     };
 
