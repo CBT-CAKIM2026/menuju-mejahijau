@@ -213,7 +213,7 @@
             width: 100%; 
             height: 100%; 
             display: flex;
-            background-color: #f4f7f6; /* FIX BACKGROUND HP BOCOR */
+            background-color: #f4f7f6; 
             position: fixed;
             top: 0; left: 0;
             z-index: 10;
@@ -371,7 +371,7 @@
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: rgba(0,0,0,0.85); display: none; 
             justify-content: center; align-items: center; 
-            z-index: 20000 !important; 
+            z-index: 21000 !important; /* Di atas sidebar HP */
             backdrop-filter: blur(5px); 
         }
         
@@ -445,7 +445,7 @@
             
             /* STICKY FOOTER NAVIGATION */
             #mobileFooter {
-                display: flex !important;
+                display: none; /* Default Hidden, ditampilkan lewat JS */
                 position: fixed;
                 bottom: 0; left: 0; width: 100%;
                 background: white;
@@ -814,7 +814,7 @@
                     document.body.classList.add('is-admin'); 
                     console.log("Welcome Admin! Anti-Cheat Disabled.");
                     const btnAdmin = document.getElementById('btnAdminPanel');
-                    if(btnAdmin) btnAdmin.style.display = 'flex'; // Tampilkan tombol admin
+                    if(btnAdmin) btnAdmin.style.display = 'flex'; 
                 } else {
                     document.body.classList.remove('is-admin');
                 }
@@ -922,7 +922,7 @@
         // LOGIKA BARU: Kalau sidebar kebuka, UMPETIN tombol navigasi
         if (sidebar.classList.contains('show-mobile')) {
             if(floatingTimer) floatingTimer.style.setProperty('display', 'none', 'important');
-            if(mobileFooter) mobileFooter.style.display = 'none';
+            if(mobileFooter) mobileFooter.style.display = 'none'; // FIX: PAKE STYLE LANGSUNG BIAR KUAT
         } else {
             // Kalau sidebar ketutup, MUNCULIN lagi (hanya pas ujian)
             if (document.body.classList.contains('ujian-berjalan')) {
@@ -950,7 +950,6 @@
         if (sidebar.style.display === 'flex') {
             // TUTUP SIDEBAR
             sidebar.style.display = ''; 
-            // Munculin tombol lagi
             if(timer && document.body.classList.contains('ujian-berjalan')) timer.style.display = 'block';
             if(mobileFooter) mobileFooter.style.display = 'flex';
         } else {
@@ -1082,7 +1081,6 @@
             
             if(window.innerWidth <= 768) {
                 document.body.classList.add('ujian-berjalan'); 
-                // Tampilkan Footer Navigasi
                 const mobileFooter = document.getElementById('mobileFooter');
                 if(mobileFooter) mobileFooter.style.display = 'flex';
                 
@@ -1525,7 +1523,146 @@
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
-    // --- LOGIKA ADMIN PANEL (INJECTED) ---
+    // FUNGSI INI SUDAH DITAMBAHKAN JEDA (DELAY) AGAR ANIMASI GRAFIK JALAN SEMPURNA
+    window.openStats = async function() {
+        if(!currentUser) { alert("Login dulu bro!"); return; }
+        if(!window.currentDatabaseId) { alert("Pilih modul dulu di samping kiri!"); return; }
+
+        document.getElementById('statsOverlay').style.display = 'flex';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'none';
+        
+        document.getElementById('statsTitle').innerText = "Memuat Data Cloud...";
+        document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Sedang mengambil data dari server...</td></tr>';
+
+        try {
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
+            const querySnapshot = await getDocs(q);
+            let allHistory = [];
+            querySnapshot.forEach((doc) => {
+                let data = doc.data(); data.id = doc.id; allHistory.push(data);
+            });
+
+            const currentModulHistory = allHistory.filter(h => h.modul === window.currentDatabaseId);
+            const judulModul = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : window.currentDatabaseId;
+            document.getElementById('statsTitle').innerText = "Data Modul: " + judulModul;
+
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+            if (currentModulHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Belum ada riwayat pengerjaan di modul ini.</td></tr>';
+            } else {
+                [...currentModulHistory].reverse().forEach((d, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // KITA KASIH JEDA DIKIT (300ms) BIAR MODAL KEBACA DULUAN OLEH BROWSER, BARU GAMBAR GRAFIK
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance instanceof Chart) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai Kamu', data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)',
+                            borderWidth: 2, tension: 0.3, fill: true
+                        }, {
+                            label: 'Batas Lulus (70)', data: currentModulHistory.map(() => 70),
+                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
+                        }]
+                    },
+                    options: { 
+                        animation: { duration: 1500, easing: 'easeOutQuart' }, 
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } } 
+                    }
+                });
+
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
+
+                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                    const numA = parseFloat(a.replace(/[^\d.]/g, ''));
+                    const numB = parseFloat(b.replace(/[^\d.]/g, ''));
+                    return numA - numB;
+                });
+
+                const labels = [];
+                const dataScores = [];
+                const backgroundColors = [];
+                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+
+                sortedKeys.forEach((key, index) => {
+                    let niceName = key;
+                    let btn = document.getElementById('btn-'+key);
+                    if(btn) niceName = btn.innerText.split(':')[0]; 
+                    labels.push(niceName);
+                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
+                    backgroundColors.push(colors[index % colors.length]);
+                });
+
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance instanceof Chart) window.allModulesChartInstance.destroy();
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: backgroundColors, borderWidth: 1 }]
+                    },
+                    options: { 
+                        // ANIMASI FIX: DARI BAWAH KE ATAS
+                        animation: { 
+                            duration: 1500, 
+                            easing: 'easeOutBounce',
+                            y: { from: 0 } // Paksa mulai tumbuh dari 0
+                        },
+                        responsive: true, maintainAspectRatio: false, 
+                        scales: { y: { beginAtZero: true, max: 100 } }, 
+                        plugins: { legend: { display: false } } 
+                    }
+                });
+            }, 300); // INI JEDA WAKTUNYA (300ms)
+
+        } catch (e) { console.error("Gagal ambil data:", e); document.getElementById('statsTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data. Cek koneksi internet.</td></tr>'; }
+    };
+
+    window.closeStats = function() {
+        document.getElementById('statsOverlay').style.display = 'none';
+        const wm = document.getElementById('watermark');
+        if(wm) wm.style.display = 'block';
+    };
+
+    function tampilkanLobby() {
+        document.querySelector('.question-header').style.visibility = 'hidden';
+        document.querySelector('.footer-nav').style.visibility = 'hidden';
+        const qText = document.getElementById('questionText');
+        qText.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">👈</div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">Siap Latihan?</h3>
+                <p style="font-size: 1.2rem; color: #555;">
+                    Silahkan <b>klik salah satu modul</b> di menu samping kiri<br>untuk memulai simulasi ujian.
+                </p>
+            </div>
+        `;
+        document.getElementById('optionsContainer').innerHTML = '';
+        document.getElementById('feedbackBox').style.display = 'none';
+        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
+    }
+
+    // ==========================================
+    // LOGIKA ADMIN PANEL (INJECTED)
+    // ==========================================
+
     window.openAdminPanel = () => {
         document.getElementById('adminOverlay').style.display = 'flex';
     };
@@ -1540,6 +1677,7 @@
         }
     };
 
+    // --- FITUR 1: UPLOAD JSON ---
     window.eksekusiUpload = async () => {
         const modulId = document.getElementById('adminModulTarget').value.trim();
         const jsonRaw = document.getElementById('jsonUploadArea').value;
@@ -1555,7 +1693,9 @@
             const batch = writeBatch(db);
             let count = 0;
             
+            // Chunking batch (max 500 per batch) - Sederhananya loop manual
             for (const item of dataSoal) {
+                // Standarisasi field sesuai aplikasi lo
                 const docData = {
                     q: item.q || item.pertanyaan,
                     options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
@@ -1570,13 +1710,14 @@
             }
             
             alert(`✅ Sukses Upload ${count} Soal!`);
-            document.getElementById('jsonUploadArea').value = ""; 
+            document.getElementById('jsonUploadArea').value = ""; // Reset
         } catch (e) {
             alert("Error: " + e.message);
             console.error(e);
         }
     };
 
+    // --- FITUR 2: LOAD & EDIT ---
     let currentAdminModul = "";
 
     window.loadSoalAdmin = async () => {
@@ -1589,6 +1730,7 @@
 
         try {
             const qRef = collection(db, "bank_soal", modulId, "daftar_soal");
+            // Urutkan biar gampang nyarinya
             const q = query(qRef, orderBy("createdAt", "desc")); 
             const snapshot = await getDocs(q); 
 
@@ -1612,7 +1754,7 @@
     function populateEditForm(id, data) {
         document.getElementById('editDocId').value = id;
         document.getElementById('editQ').value = data.q;
-        document.getElementById('editOpt').value = data.options.join(","); 
+        document.getElementById('editOpt').value = data.options.join(","); // Array jadi string koma
         document.getElementById('editAns').value = data.answer;
         document.getElementById('editExp').value = data.explanation;
         document.getElementById('editCite').value = data.cite || "";
@@ -1664,25 +1806,26 @@
 <script>
     // 1. Matikan Klik Kanan
     document.addEventListener('contextmenu', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
 
     // 2. Matikan Blok/Select Teks
     document.addEventListener('selectstart', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
     
     document.addEventListener('dragstart', event => {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
         event.preventDefault();
     });
 
     // 3. Matikan Shortcut Keyboard
     document.addEventListener('keydown', function(e) {
-        if (document.body.classList.contains('is-admin')) return; 
+        if (document.body.classList.contains('is-admin')) return; // ADMIN BEBAS
 
+        // Cegah F12, Inspect, Copy Paste
         if (
             e.key === 'F12' || 
             (e.ctrlKey && e.shiftKey && e.key === 'I') || 
