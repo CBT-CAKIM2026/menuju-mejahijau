@@ -18,11 +18,11 @@
             --accent: #2e7d32;    /* Hijau Daun */
             --gold: #d4af37;      /* Emas Mewah */
             --purple: #8e44ad;    /* Ungu (Grafik) */
-            --light: #f1f8e9;     
+            --light: #f1f8e9;      
             --filled: #7f8c8d;    
-            --success: #2e7d32;   
+            --success: #2e7d32;    
             --danger: #c0392b;    
-            --warning: #f39c12;   
+            --warning: #f39c12;    
             --pass: #2ecc71;
             --fail: #e74c3c;
         }
@@ -598,6 +598,13 @@
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
+    <div id="maintenanceOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:1000000; text-align:center; padding-top:100px; font-family:'Poppins', sans-serif;">
+        <i class="fas fa-tools" style="font-size:5rem; color:var(--gold); margin-bottom:20px;"></i>
+        <h1 style="color:var(--primary);">Sistem Sedang Maintenance</h1>
+        <p style="font-size:1.2rem; color:#666;">Mohon maaf, Bro Ilham lagi update database soal.<br>Sabar ya, bakal balik lagi secepatnya!</p>
+        <div style="margin-top:30px; font-weight:bold; color:var(--gold);">CBT CAKIM PA 2026 - PRO-TAMA</div>
+    </div>
+
     <div id="floatingTimer">00:00:00</div>
     
     <div id="mobileFooter">
@@ -818,9 +825,20 @@
                 <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
             </div>
 
+            <div style="background: #fff3e0; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #e67e22;"><i class="fas fa-exclamation-triangle"></i> Kontrol Akses Pengguna</strong>
+                    <p style="margin: 0; font-size: 0.8rem; color: #666;">Aktifkan untuk mengunci aplikasi bagi pengguna umum.</p>
+                </div>
+                <button id="btnToggleMaintenance" onclick="toggleMaintenanceStatus()" class="btn-small" style="background: var(--secondary); min-width: 150px;">
+                    Memuat Status...
+                </button>
+            </div>
+
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button onclick="switchAdminTab('tambah')" class="btn-small" style="background:var(--primary); font-size:1rem;">➕ Tambah Baru (JSON)</button>
                 <button onclick="switchAdminTab('edit')" class="btn-small" style="background:var(--warning); color:black; font-size:1rem;">✏️ Edit / Revisi</button>
+                <button onclick="switchAdminTab('review')" class="btn-small" style="background:#8e44ad; font-size:1rem;">📖 Review Pembahasan</button>
             </div>
 
             <div id="tabTambah">
@@ -872,13 +890,24 @@
                     </div>
                 </div>
             </div>
+
+            <div id="tabReview" style="display:none;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="reviewModulTarget" placeholder="ID Modul (cth: modul1)" style="flex:1; padding:8px;">
+                    <button onclick="loadReviewPembahasan()" class="btn-small" style="background:var(--primary);">Cek Semua Pembahasan</button>
+                </div>
+                <div id="containerReview" style="max-height:500px; overflow-y:auto; border:1px solid #ddd; padding:10px; background:#fff;">
+                    <p style="color:gray;">Pilih modul untuk review pembahasan...</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // --- CONFIG FIREBASE ---
     const firebaseConfig = {
@@ -924,6 +953,9 @@
                 } else {
                     document.body.classList.remove('is-admin');
                 }
+                
+                // UPDATE: Panggil Watcher Maintenance Setelah Login
+                watchMaintenance();
 
                 document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
                 document.getElementById('appSection').style.display = 'flex';
@@ -946,6 +978,61 @@
             }
         });
     }
+
+    // --- UPDATE: Fungsi Watcher Maintenance Realtime ---
+    function watchMaintenance() {
+        if (!db) return;
+        const statusRef = doc(db, "settings", "app_status");
+        
+        onSnapshot(statusRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const isMaintenance = docSnap.data().maintenance;
+                const btn = document.getElementById('btnToggleMaintenance');
+                const overlay = document.getElementById('maintenanceOverlay');
+
+                // 1. Update Tombol Admin
+                if (btn) {
+                    if (isMaintenance) {
+                        btn.innerHTML = '<i class="fas fa-lock"></i> Maintenance: ON';
+                        btn.style.background = "#c0392b"; 
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-lock-open"></i> Maintenance: OFF';
+                        btn.style.background = "#2e7d32"; 
+                    }
+                }
+
+                // 2. Kunci Layar untuk User Biasa
+                if (isMaintenance && currentUser?.email !== ADMIN_EMAIL) {
+                    if (overlay) overlay.style.display = 'block';
+                } else {
+                    if (overlay) overlay.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // --- UPDATE: Fungsi Toggle Maintenance (Admin Only) ---
+    window.toggleMaintenanceStatus = async () => {
+        const statusRef = doc(db, "settings", "app_status");
+        try {
+            const docSnap = await getDoc(statusRef);
+            if (docSnap.exists()) {
+                const currentStatus = docSnap.data().maintenance;
+                await updateDoc(statusRef, {
+                    maintenance: !currentStatus,
+                    lastUpdated: new Date(),
+                    updatedBy: currentUser.displayName
+                });
+                // alert dimatikan biar smooth, tombol akan berubah sendiri via watcher
+            } else {
+                // Inisialisasi jika belum ada
+                await setDoc(statusRef, { maintenance: true });
+                alert("Status Maintenance dibuat: AKTIF");
+            }
+        } catch (e) {
+            alert("Gagal mengubah status: " + e.message);
+        }
+    };
 
     window.saveScoreToCloud = async (modulId, skor) => {
         if (!currentUser || !db) return;
@@ -1835,14 +1922,40 @@
         document.getElementById('adminOverlay').style.display = 'flex';
     };
 
+    // UPDATE: Handler Tab Review
     window.switchAdminTab = (tab) => {
-        if(tab === 'tambah') {
-            document.getElementById('tabTambah').style.display = 'block';
-            document.getElementById('tabEdit').style.display = 'none';
-        } else {
-            document.getElementById('tabTambah').style.display = 'none';
-            document.getElementById('tabEdit').style.display = 'block';
-        }
+        document.getElementById('tabTambah').style.display = (tab === 'tambah' ? 'block' : 'none');
+        document.getElementById('tabEdit').style.display = (tab === 'edit' ? 'block' : 'none');
+        document.getElementById('tabReview').style.display = (tab === 'review' ? 'block' : 'none');
+    };
+    
+    // UPDATE: Fungsi Load Review Pembahasan
+    window.loadReviewPembahasan = async () => {
+        const modulId = document.getElementById('reviewModulTarget').value.trim();
+        if(!modulId) return alert("Isi ID Modul!");
+        
+        const container = document.getElementById('containerReview');
+        container.innerHTML = "Sabar, lagi narik data...";
+        
+        try {
+            const qSnap = await getDocs(collection(db, "bank_soal", modulId, "daftar_soal"));
+            container.innerHTML = "";
+            
+            qSnap.forEach((docSnap, index) => {
+                const data = docSnap.data();
+                const item = document.createElement('div');
+                item.style = "margin-bottom:20px; border-bottom:2px solid #eee; padding-bottom:10px;";
+                item.innerHTML = `
+                    <div style="font-weight:bold;">Soal ${index + 1}:</div>
+                    <p>${data.q}</p>
+                    <div style="background:#e8f5e9; padding:10px; border-left:4px solid green;">
+                        <strong>Pembahasan:</strong><br>${data.explanation || "BELUM ADA PEMBAHASAN"}
+                        <br><small>Source: ${data.cite || "-"}</small>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        } catch(e) { alert("Gagal: " + e.message); }
     };
 
     // --- FITUR 1: UPLOAD JSON ---
@@ -2035,9 +2148,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
