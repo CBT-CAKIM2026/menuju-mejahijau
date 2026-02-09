@@ -2311,7 +2311,7 @@
         }
     };
     
-    // --- FITUR 1: UPLOAD JSON ---
+// --- FITUR 1: UPLOAD JSON (VERSI FIX PAPI KEYS) ---
     window.eksekusiUpload = async () => {
         const modulId = document.getElementById('adminModulTarget').value.trim();
         const jsonRaw = document.getElementById('jsonUploadArea').value;
@@ -2326,25 +2326,43 @@
 
             const batch = writeBatch(db);
             let count = 0;
+            let chunks = [];
+            let currentBatch = writeBatch(db);
             
-            // Chunking batch (max 500 per batch) - Sederhananya loop manual
+            // Loop data soal
             for (const item of dataSoal) {
-                // Standarisasi field sesuai aplikasi lo
+                // Standarisasi field (JANGAN LUPA field papi_keys!)
                 const docData = {
                     q: item.q || item.pertanyaan,
                     options: item.options || [item.opsiA, item.opsiB, item.opsiC, item.opsiD],
                     answer: item.answer !== undefined ? item.answer : parseInt(item.kunci), 
                     explanation: item.explanation || item.pembahasan || "-",
                     cite: item.cite || "Modul Hakim",
+                    // --- INI BARIS PENTINGNYA ---
+                    papi_keys: item.papi_keys || [], 
+                    // ----------------------------
                     createdAt: new Date()
                 };
 
-                await addDoc(collection(db, "bank_soal", modulId, "daftar_soal"), docData);
+                const newDocRef = doc(collection(db, "bank_soal", modulId, "daftar_soal"));
+                currentBatch.set(newDocRef, docData);
                 count++;
+
+                // Batching limit Firestore (500 ops)
+                if (count % 450 === 0) {
+                    chunks.push(currentBatch);
+                    currentBatch = writeBatch(db);
+                }
             }
             
-            alert(`✅ Sukses Upload ${count} Soal!`);
+            if (count % 450 !== 0) chunks.push(currentBatch);
+            
+            // Eksekusi semua batch
+            for (let b of chunks) await b.commit();
+            
+            alert(`✅ Sukses Upload ${count} Soal (PAPI Keys Tersimpan)!`);
             document.getElementById('jsonUploadArea').value = ""; // Reset
+            
         } catch (e) {
             alert("Error: " + e.message);
             console.error(e);
@@ -2501,4 +2519,5 @@
 
 </body>
 </html>
+
 
