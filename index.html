@@ -1969,31 +1969,45 @@
             if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
 
             try {
-                const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid), orderBy("tanggal", "desc"));
+                // VERSI AMAN: Tanpa orderBy dulu biar gak kena error Index
+                const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
                 const querySnapshot = await getDocs(q);
                 
                 tableBody.innerHTML = '';
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5">Data kosong. Coba kerjakan tes dulu.</td></tr>';
                 } else {
-                    let no = 1;
-                    querySnapshot.forEach((doc) => {
-                        const d = doc.data();
-                        const colorStatus = d.hasil_status === 'DISARANKAN' ? 'green' : '#d35400';
+                    let dataList = [];
+                    querySnapshot.forEach(doc => dataList.push(doc.data()));
+                    
+                    // Kita urutkan manual di sini (Client Side Sorting)
+                    // Supaya gak perlu ribet setting Index di Firebase
+                    dataList.sort((a, b) => {
+                        let dateA = a.tanggal ? a.tanggal.seconds : 0;
+                        let dateB = b.tanggal ? b.tanggal.seconds : 0;
+                        return dateB - dateA; // Descending (Terbaru di atas)
+                    });
+
+                    dataList.forEach((d, idx) => {
+                        const statusTeks = d.hasil_status || d.status || "Selesai"; // Jaga-jaga nama field beda
+                        const colorStatus = (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') ? 'green' : '#d35400';
+                        const tgl = d.waktu_lokal || d.date || '-';
+                        const redFlag = d.jumlah_redflag !== undefined ? d.jumlah_redflag : '-';
+                        
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${no++}</td>
-                            <td>${d.waktu_lokal || d.date || '-'}</td>
-                            <td style="font-weight:bold; color:${colorStatus}">${d.hasil_status}</td>
-                            <td style="color:${d.jumlah_redflag > 0 ? 'red' : 'green'}">${d.jumlah_redflag} Indikator</td>
-                            <td><button onclick="alert('Rincian Skor Mentah (JSON):\\n${d.detail_skor}')" style="font-size:0.7rem; cursor:pointer;">Cek Data</button></td>
+                            <td>${idx+1}</td>
+                            <td>${tgl}</td>
+                            <td style="font-weight:bold; color:${colorStatus}">${statusTeks}</td>
+                            <td style="color:${redFlag > 0 ? 'red' : 'green'}">${redFlag} Indikator</td>
+                            <td><button onclick="alert('Rincian Skor:\\n${d.detail_skor}')" style="font-size:0.7rem; cursor:pointer;">Cek Data</button></td>
                         `;
                         tableBody.appendChild(tr);
                     });
                 }
             } catch (e) {
-                console.error(e);
-                tableBody.innerHTML = '<tr><td colspan="5">Gagal memuat data psikotes.</td></tr>';
+                console.error("ERROR PSIKOTES:", e); // Cek Console (F12) untuk lihat errornya apa
+                tableBody.innerHTML = `<tr><td colspan="5" style="color:red;">Gagal memuat: ${e.message}</td></tr>`;
             }
 
         } else {
@@ -2390,6 +2404,7 @@
 
 </body>
 </html>
+
 
 
 
