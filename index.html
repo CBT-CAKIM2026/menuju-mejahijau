@@ -1969,45 +1969,57 @@
             if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
 
             try {
-                // VERSI AMAN: Tanpa orderBy dulu biar gak kena error Index
+                // 1. QUERY SEDERHANA (Hapus orderBy biar Firebase gak ngambek)
                 const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
                 const querySnapshot = await getDocs(q);
                 
                 tableBody.innerHTML = '';
+                
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5">Data kosong. Coba kerjakan tes dulu.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
                 } else {
+                    // 2. KITA URUTKAN SENDIRI SECARA MANUAL (Terbaru di Atas)
                     let dataList = [];
-                    querySnapshot.forEach(doc => dataList.push(doc.data()));
-                    
-                    // Kita urutkan manual di sini (Client Side Sorting)
-                    // Supaya gak perlu ribet setting Index di Firebase
-                    dataList.sort((a, b) => {
-                        let dateA = a.tanggal ? a.tanggal.seconds : 0;
-                        let dateB = b.tanggal ? b.tanggal.seconds : 0;
-                        return dateB - dateA; // Descending (Terbaru di atas)
+                    querySnapshot.forEach(doc => {
+                        let d = doc.data();
+                        // Pastikan field tanggal ada, kalau gak pake waktu sekarang biar aman
+                        if (!d.tanggal) d.tanggal = { seconds: 0 }; 
+                        dataList.push(d);
                     });
 
+                    // Logic Sorting: Tanggal Besar (Baru) - Tanggal Kecil (Lama)
+                    dataList.sort((a, b) => b.tanggal.seconds - a.tanggal.seconds);
+
+                    // 3. TAMPILKAN KE TABEL
                     dataList.forEach((d, idx) => {
-                        const statusTeks = d.hasil_status || d.status || "Selesai"; // Jaga-jaga nama field beda
-                        const colorStatus = (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') ? 'green' : '#d35400';
-                        const tgl = d.waktu_lokal || d.date || '-';
-                        const redFlag = d.jumlah_redflag !== undefined ? d.jumlah_redflag : '-';
+                        // Deteksi nama field (jaga-jaga beda nama)
+                        const statusTeks = d.hasil_status || d.status || "Selesai";
+                        const redFlagCount = d.jumlah_redflag !== undefined ? d.jumlah_redflag : 0;
+                        const tglTampil = d.waktu_lokal || d.date || '-';
                         
+                        // Warna Status
+                        let colorStatus = '#d35400'; // Default Merah/Orange
+                        if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${idx+1}</td>
-                            <td>${tgl}</td>
+                            <td>${tglTampil}</td>
                             <td style="font-weight:bold; color:${colorStatus}">${statusTeks}</td>
-                            <td style="color:${redFlag > 0 ? 'red' : 'green'}">${redFlag} Indikator</td>
-                            <td><button onclick="alert('Rincian Skor:\\n${d.detail_skor}')" style="font-size:0.7rem; cursor:pointer;">Cek Data</button></td>
+                            <td style="color:${redFlagCount > 0 ? 'red' : 'green'}">${redFlagCount} Indikator</td>
+                            <td>
+                                <button onclick="alert('Detail Skor (JSON):\\n' + JSON.stringify(${d.detail_skor}).substring(0, 500) + '...')" 
+                                style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
+                                Cek Data
+                                </button>
+                            </td>
                         `;
                         tableBody.appendChild(tr);
                     });
                 }
             } catch (e) {
-                console.error("ERROR PSIKOTES:", e); // Cek Console (F12) untuk lihat errornya apa
-                tableBody.innerHTML = `<tr><td colspan="5" style="color:red;">Gagal memuat: ${e.message}</td></tr>`;
+                console.error("ERROR LOAD PSIKOTES:", e);
+                tableBody.innerHTML = `<tr><td colspan="5" style="color:red; font-size:0.8rem;">Gagal memuat: ${e.message}</td></tr>`;
             }
 
         } else {
@@ -2404,6 +2416,7 @@
 
 </body>
 </html>
+
 
 
 
