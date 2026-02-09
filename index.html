@@ -1499,22 +1499,105 @@
         }
     }
 
+    // ==========================================
+    // FUNGSI SUBMIT CERDAS (HUKUM + PSIKOLOGI)
+    // ==========================================
     window.submitQuiz = function() {
         if(timerInterval) clearInterval(timerInterval);
-        // Matikan audio saat submit
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Matikan audio
+        
+        // ------------------------------------------------
+        // CABANG 1: LOGIKA PAPI KOSTICK (PSIKOLOG)
+        // ------------------------------------------------
+        if (window.currentDatabaseId && window.currentDatabaseId.toLowerCase().includes('papi')) {
+            console.log("🧠 Mode Psikolog Aktif");
+            
+            // Matikan elemen visual ujian biasa
+            document.getElementById('floatingTimer').style.display = 'none';
+            document.body.classList.remove('mode-focus');
+            isSubmitted = true;
+
+            // Variabel Hitung Skor PAPI
+            let papiScores = {}; 
+            let redFlags = [];
+            const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
+            traits.forEach(t => papiScores[t] = 0);
+
+            // Analisis Jawaban User
+            userAnswers.forEach((choiceIndex, qIndex) => {
+                if (choiceIndex !== null) {
+                    const qData = currentQuestions[qIndex];
+                    
+                    // Cek apakah soal punya kunci PAPI (papi_keys)
+                    if (qData.papi_keys && qData.papi_keys.length === 2) {
+                        const aspect = qData.papi_keys[choiceIndex]; // Ambil aspek (misal G)
+                        papiScores[aspect]++; 
+                    }
+                    
+                    // Deteksi Jebakan "Ragu" via Teks (Backup jika JSON tidak lengkap)
+                    const textPilihan = qData.options[choiceIndex].toLowerCase();
+                    if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
+                        redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Anda memilih 'Lambat Mengambil Keputusan'. Ini FATAL!`);
+                    }
+                }
+            });
+
+            // Analisis Profil Global
+            let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
+            
+            // Cek Indecisive (I)
+            if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
+            // Cek Impulsif
+            if (papiScores['I'] > 8 && papiScores['D'] < 4) redFlags.push("⚠️ BAHAYA: Cepat memutus tapi Ceroboh (Detail Rendah).");
+            // Cek Narsistik (X)
+            if (papiScores['X'] > 5) redFlags.push("⚠️ SKOR 'X' TINGGI: Terlalu ingin tampil.");
+
+            // Cek Kekuatan (Positif)
+            if (papiScores['G'] > 4) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Kuat. Tahan banting.</li>";
+            if (papiScores['F'] > 4) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus untuk integritas.</li>";
+            if (redFlags.length === 0) analisisText += "<li>✨ Profil Mental Seimbang.</li>";
+            analisisText += "</ul>";
+
+            // Tampilkan Hasil Psikogram
+            document.getElementById('resultOverlay').style.display = 'flex';
+            const scoreCircle = document.getElementById('finalScore');
+            const passStatus = document.getElementById('passStatus');
+            const msg = document.getElementById('resultMsg');
+
+            if (redFlags.length > 0) {
+                scoreCircle.innerText = "⚠️";
+                scoreCircle.style.background = "#f39c12"; // Kuning/Oranye
+                passStatus.innerText = "PERLU PERBAIKAN";
+                passStatus.style.color = "#d35400";
+                msg.innerHTML = "<b>Ditemukan Potensi 'Red Flag':</b><br>" + 
+                                redFlags.map(r => `<div style='color:#c0392b; font-weight:bold; margin-bottom:4px;'>${r}</div>`).join("");
+            } else {
+                scoreCircle.innerText = "⚖️";
+                scoreCircle.style.background = "#2ecc71"; // Hijau
+                passStatus.innerText = "DISARANKAN";
+                passStatus.style.color = "#27ae60";
+                msg.innerHTML = "<b>Profil Mental Stabil & Cocok.</b><br>" + analisisText;
+            }
+
+            // Sembunyikan tombol yang tidak relevan
+            const btnReview = document.getElementById('btnReviewWrong');
+            if(btnReview) btnReview.style.display = 'none';
+            document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
+            
+            return; // STOP DI SINI (Jangan jalankan logika hukum di bawah)
+        }
+
+        // ------------------------------------------------
+        // CABANG 2: LOGIKA STANDAR (HUKUM/TIU) - ASLI KAMU
+        // ------------------------------------------------
         isSubmitted = true;
-        
-        // FIX 1: Matikan Timer
         document.getElementById('floatingTimer').style.display = 'none';
-        
-        // FIX 1.5: Matikan Mode Fokus
         document.body.classList.remove('mode-focus');
 
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
-        wrongIndices = []; // Reset ulang
+        wrongIndices = []; 
 
         userAnswers.forEach((a, i) => {
             if(a === currentQuestions[i].answer) {
@@ -1563,7 +1646,7 @@
 
         saveAndShowChart(final, correctCount, wrongCount);
         loadQuestion(currentIdx);
-    }
+    };
 
     window.confirmFinish = function() {
         const emptyCount = userAnswers.filter(a => a === null).length;
@@ -2161,126 +2244,11 @@
             return false;
         }
     });
-
-    // ============================================================
-    // 🧠 PAPI KOSTICK INTELLIGENCE MODULE (INTEGRATED)
-    // Code by: Ibu Psikolog (AI) for Calon Hakim Indonesia
-    // ============================================================
-
-    // 1. Simpan fungsi submit asli
-    // KITA PAKAI 'window.submitQuiz' LANGSUNG AGAR AMAN DI DALAM MODULE
-    const originalSubmit = window.submitQuiz; 
-
-    // 2. Override fungsi submitQuiz
-    window.submitQuiz = function() {
-        // Cek ID Database (Pastikan variable currentDatabaseId bisa diakses)
-        // Kita akses via window.currentDatabaseId karena scope module
-        const dbId = window.currentDatabaseId || ""; 
-        
-        if (dbId.toLowerCase().includes('papi')) {
-            console.log("🔥 Mode PAPI Kostick Terdeteksi!");
-            handlePapiAnalysis(); 
-        } else {
-            console.log("✅ Mode Ujian Biasa");
-            if(originalSubmit) originalSubmit(); 
-        }
-    };
-
-    // 3. Logika Analisis PAPI Kostick
-    function handlePapiAnalysis() {
-        // Matikan Timer & Mode Fokus
-        if(window.timerInterval) clearInterval(window.timerInterval);
-        document.body.classList.remove('mode-focus');
-        const timerFloat = document.getElementById('floatingTimer');
-        if(timerFloat) timerFloat.style.display = 'none';
-
-        let papiScores = {}; 
-        let redFlags = [];
-        let totalAnswered = 0;
-
-        // Inisialisasi skor
-        const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
-        traits.forEach(t => papiScores[t] = 0);
-
-        // --- ALGORITMA HITUNG SKOR ---
-        // Kita ambil variable 'userAnswers' dan 'currentQuestions' dari window jika perlu, 
-        // atau dari scope module jika variable-nya global di file ini.
-        // Asumsi: userAnswers & currentQuestions ada di scope yang sama.
-        
-        if (typeof userAnswers === 'undefined' || typeof currentQuestions === 'undefined') {
-            alert("Error: Variable userAnswers tidak terbaca. Pastikan script ini satu file.");
-            return;
-        }
-
-        userAnswers.forEach((choiceIndex, qIndex) => {
-            if (choiceIndex !== null) {
-                totalAnswered++;
-                const questionData = currentQuestions[qIndex];
-                
-                // Cek JSON Format Baru (papi_keys)
-                if (questionData.papi_keys && questionData.papi_keys.length === 2) {
-                    const aspect = questionData.papi_keys[choiceIndex]; 
-                    papiScores[aspect]++; 
-
-                    // Audit Real-time: Jebakan "Lambat Memutus"
-                    const textPilihan = questionData.options[choiceIndex].toLowerCase();
-                    if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
-                         redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Memilih 'Lambat Mengambil Keputusan' (FATAL).`);
-                    }
-                }
-            }
-        });
-
-        // --- ANALISIS PROFIL GLOBAL ---
-        let analisisText = "<ul style='text-align:left; margin-top:10px;'>";
-        
-        // Cek Decision Making (I)
-        if (papiScores['I'] < 3) {
-            redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu peragu. Hakim harus tegas.");
-        } 
-        
-        // Cek Narsisme (X)
-        if (papiScores['X'] > 5) {
-             redFlags.push("⚠️ SKOR 'X' TINGGI: Terlalu ingin tampil/dipuji.");
-        }
-
-        // Cek Poin Positif
-        if (papiScores['G'] > 4) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Bagus.</li>";
-        if (papiScores['F'] > 4) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus.</li>";
-        if (papiScores['A'] > 4) analisisText += "<li style='color:green'>✅ <b>Berprestasi (A):</b> Bagus.</li>";
-
-        analisisText += "</ul>";
-
-        // --- TAMPILKAN HASIL ---
-        const resultOverlay = document.getElementById('resultOverlay');
-        const scoreCircle = document.getElementById('finalScore');
-        const passStatus = document.getElementById('passStatus');
-        const msg = document.getElementById('resultMsg');
-
-        if(resultOverlay) resultOverlay.style.display = 'flex';
-        
-        if (redFlags.length > 0) {
-            if(scoreCircle) { scoreCircle.innerText = "⚠️"; scoreCircle.style.background = "#f39c12"; }
-            if(passStatus) { passStatus.innerText = "PERLU PERBAIKAN"; passStatus.style.color = "#e67e22"; }
-            if(msg) msg.innerHTML = "<b>Ditemukan Potensi 'Red Flag':</b><br>" + 
-                            redFlags.map(r => `<div style='color:#c0392b; font-weight:bold;'>${r}</div>`).join("");
-        } else {
-            if(scoreCircle) { scoreCircle.innerText = "⚖️"; scoreCircle.style.background = "#2ecc71"; }
-            if(passStatus) { passStatus.innerText = "DISARANKAN"; passStatus.style.color = "#27ae60"; }
-            if(msg) msg.innerHTML = "<b>Profil Mental Stabil untuk Hakim.</b><br>" + analisisText;
-        }
-
-        // Sembunyikan tombol yang tidak perlu
-        const btnReview = document.getElementById('btnReviewWrong');
-        if(btnReview) btnReview.style.display = 'none';
-        
-        const modeInd = document.getElementById('modeIndicator');
-        if(modeInd) modeInd.innerText = "HASIL PSIKOGRAM";
-    }
 </script>
 
 </body>
 </html>
+
 
 
 
