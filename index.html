@@ -2570,17 +2570,32 @@
             const mapping = dataObj.mapping || {};
 
             const strategi = {
-                'R': { label: "Role Consistency", target: "6-9", saran: "Pertahankan cara berpikir berbasis fakta." },
-                'D': { label: "Decision Making", target: "5-7", saran: "Jangan ragu memutus, tapi hindari impulsif." },
-                'E': { label: "Emotional Restraint", target: "6-9", saran: "Hakim harus tenang, tidak boleh emosional." },
-                'M': { label: "Discipline (Hukum Acara)", target: "6-9", saran: "Kepatuhan aturan adalah harga mati." },
-                'N': { label: "Need to Finish (Tuntas)", target: "6-9", saran: "Selesaikan perkara tepat waktu." },
-                'C': { label: "Conformity (Teratur)", target: "6-9", saran: "Logika rapi berawal dari berkas rapi." },
-                'A': { label: "Attention to Detail", target: "6-9", saran: "Detail kecil menentukan kebenaran." },
-                'W': { label: "Need for Rules (Etik)", target: "7-9", saran: "Utamakan kode etik di atas segalanya." },
-                'K': { label: "Aggression (Agresi)", target: "0-3", saran: "Kurangi sifat agresif atau defensif." },
-                'X': { label: "Need to be Noticed", target: "0-4", saran: "Bekerja untuk keadilan, bukan panggung." }
-            };
+            // --- KELOMPOK UTAMAKAN (WAJIB TINGGI: 6-9)  ---
+            'R': { label: "Role Consistency (Rasional)", target: "6-9", saran: "Pertahankan cara berpikir berbasis fakta dan aturan." },
+            'D': { label: "Decision Making (Tegas)", target: "6-9", saran: "Bagus, hakim harus berani mengambil keputusan hukum." },
+            'E': { label: "Emotional Restraint (Tenang)", target: "6-9", saran: "Stabilitas emosi adalah kunci kematangan hakim." },
+            'M': { label: "Mental Activity (Waspada)", target: "6-9", saran: "Tetap waspada dan teliti dalam membedah perkara." },
+            'B': { label: "Belonging to Group (Perseverance)", target: "6-9", saran: "Ketekunan dalam bekerja secara sistematis." },
+            'N': { label: "Need to Finish (Tuntas)", target: "6-9", saran: "Selesaikan perkara tepat waktu, jangan ditunda." },
+            'C': { label: "Conformity (Teratur/Rapi)", target: "6-9", saran: "Kerapian berkas mencerminkan kerapian logika putusan." },
+            'A': { label: "Attention to Detail (Teliti)", target: "6-9", saran: "Ketelitian mencegah putusan yang rawan cacat." },
+            'Z': { label: "Need for Change (Adaptif)", target: "6-9", saran: "Adaptif pada aturan baru, tapi tidak eksperimental." },
+            'W': { label: "Need for Rules (Patuh Etik)", target: "7-9", saran: "Wajib patuh pada Kode Etik dan Pedoman Perilaku Hakim." },
+        
+            // --- KELOMPOK MODERAT (SEDANG: 4-6)  ---
+            'L': { label: "Leadership (Kepemimpinan)", target: "4-6", saran: "Pimpin persidangan secara fungsional, bukan dominan." },
+            'T': { label: "Pace (Kecepatan)", target: "4-6", saran: "Bekerja dengan ritme stabil, utamakan ketelitian." },
+            'V': { label: "Vigor (Energi Vitalitas)", target: "4-6", saran: "Jaga stamina kerja untuk menghadapi sidang yang panjang." },
+            'P': { label: "Control Others (Mengatur)", target: "4-6", saran: "Atur jalannya sidang sesuai hukum acara." },
+        
+            // --- KELOMPOK HINDARI (RENDAH: 0-4)  ---
+            'X': { label: "Need to be Noticed (Populer)", target: "0-4", saran: "Hakim bekerja untuk keadilan, bukan untuk panggung." },
+            'S': { label: "Social Extension (Bergaul)", target: "0-4", saran: "Batasi pergaulan untuk menjaga independensi hakim." },
+            'I': { label: "Theoretical Type (Inisiatif)", target: "0-4", saran: "Patuhi hukum positif, jangan membuat eksperimen hukum." },
+            'G': { label: "Hard Intense Worker (Ambisi)", target: "0-4", saran: "Hindari ambisi berlebihan yang merusak objektivitas." },
+            'K': { label: "Aggression (Emosional/Agresif)", target: "0-3", saran: "Hindari sikap defensif atau mudah marah di persidangan." },
+            'O': { label: "Need for Closeness (Kedekatan)", target: "0-4", saran: "Jangan terlalu bergantung pada instruksi orang lain." }
+        };
 
             let report = `⚖️ ANALISIS PROFIL HAKIM (PRO-TAMA)\n${"=".repeat(35)}\n\n`;
 
@@ -2617,6 +2632,7 @@
 
 </body>
 </html>
+
 
 
 
