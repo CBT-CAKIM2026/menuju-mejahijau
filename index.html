@@ -688,7 +688,7 @@
                 <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA C</button>
                 <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Prodeo & Posbakum</button>
                 <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: E-Court, E-Litigasi & Surat Tercatat</button>
-                <button class="modul-btn" id="btn-modul_papi" onclick="switchDatabase('modul_papi')">Modul 18: PAPI KOSTIK</button>
+                <button class="modul-btn" id="btn-modul18" onclick="switchDatabase('modul18')">Modul 18: PAPI KOSTIK</button>
            </div>
         </div>
 
@@ -1506,14 +1506,27 @@
         if(timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel(); // Matikan audio
         
+// ==========================================
+    // FUNGSI SUBMIT CERDAS (HUKUM + PSIKOLOGI)
+    // REVISI: Trigger via 'modul18'
+    // ==========================================
+    window.submitQuiz = function() {
+        if(timerInterval) clearInterval(timerInterval);
+        window.speechSynthesis.cancel(); // Matikan audio
+        
+        // Ambil ID Modul yang sedang aktif
+        const dbId = window.currentDatabaseId || "";
+
         // ------------------------------------------------
-        // CABANG 1: LOGIKA PAPI KOSTICK (PSIKOLOG)
+        // CABANG 1: LOGIKA PAPI KOSTICK (MODUL 18)
         // ------------------------------------------------
-        if (window.currentDatabaseId && window.currentDatabaseId.toLowerCase().includes('papi')) {
-            console.log("🧠 Mode Psikolog Aktif");
+        // KITA DETEKSI JIKA ID-NYA ADALAH 'modul18'
+        if (dbId === 'modul18' || dbId.toLowerCase().includes('papi')) {
+            console.log("🧠 Mode Psikolog Aktif (Modul 18 Terdeteksi)");
             
             // Matikan elemen visual ujian biasa
-            document.getElementById('floatingTimer').style.display = 'none';
+            const floatTimer = document.getElementById('floatingTimer');
+            if(floatTimer) floatTimer.style.display = 'none';
             document.body.classList.remove('mode-focus');
             isSubmitted = true;
 
@@ -1530,14 +1543,16 @@
                     
                     // Cek apakah soal punya kunci PAPI (papi_keys)
                     if (qData.papi_keys && qData.papi_keys.length === 2) {
-                        const aspect = qData.papi_keys[choiceIndex]; // Ambil aspek (misal G)
+                        const aspect = qData.papi_keys[choiceIndex]; 
                         papiScores[aspect]++; 
                     }
                     
-                    // Deteksi Jebakan "Ragu" via Teks (Backup jika JSON tidak lengkap)
-                    const textPilihan = qData.options[choiceIndex].toLowerCase();
-                    if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
-                        redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Anda memilih 'Lambat Mengambil Keputusan'. Ini FATAL!`);
+                    // Deteksi Jebakan "Ragu" via Teks (Backup)
+                    if (qData.options && qData.options[choiceIndex]) {
+                        const textPilihan = qData.options[choiceIndex].toLowerCase();
+                        if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
+                            redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Anda memilih 'Lambat Mengambil Keputusan'. Ini FATAL!`);
+                        }
                     }
                 }
             });
@@ -1545,10 +1560,12 @@
             // Analisis Profil Global
             let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
             
-            // Cek Indecisive (I)
+            // Cek Indecisive (I) - Decision Making
             if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
+            
             // Cek Impulsif
             if (papiScores['I'] > 8 && papiScores['D'] < 4) redFlags.push("⚠️ BAHAYA: Cepat memutus tapi Ceroboh (Detail Rendah).");
+            
             // Cek Narsistik (X)
             if (papiScores['X'] > 5) redFlags.push("⚠️ SKOR 'X' TINGGI: Terlalu ingin tampil.");
 
@@ -1566,14 +1583,14 @@
 
             if (redFlags.length > 0) {
                 scoreCircle.innerText = "⚠️";
-                scoreCircle.style.background = "#f39c12"; // Kuning/Oranye
+                scoreCircle.style.background = "#f39c12"; 
                 passStatus.innerText = "PERLU PERBAIKAN";
                 passStatus.style.color = "#d35400";
                 msg.innerHTML = "<b>Ditemukan Potensi 'Red Flag':</b><br>" + 
                                 redFlags.map(r => `<div style='color:#c0392b; font-weight:bold; margin-bottom:4px;'>${r}</div>`).join("");
             } else {
                 scoreCircle.innerText = "⚖️";
-                scoreCircle.style.background = "#2ecc71"; // Hijau
+                scoreCircle.style.background = "#2ecc71"; 
                 passStatus.innerText = "DISARANKAN";
                 passStatus.style.color = "#27ae60";
                 msg.innerHTML = "<b>Profil Mental Stabil & Cocok.</b><br>" + analisisText;
@@ -1582,13 +1599,15 @@
             // Sembunyikan tombol yang tidak relevan
             const btnReview = document.getElementById('btnReviewWrong');
             if(btnReview) btnReview.style.display = 'none';
-            document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
+            
+            const modeInd = document.getElementById('modeIndicator');
+            if(modeInd) modeInd.innerText = "PSIKOGRAM";
             
             return; // STOP DI SINI (Jangan jalankan logika hukum di bawah)
         }
 
         // ------------------------------------------------
-        // CABANG 2: LOGIKA STANDAR (HUKUM/TIU) - ASLI KAMU
+        // CABANG 2: LOGIKA STANDAR (HUKUM/TIU)
         // ------------------------------------------------
         isSubmitted = true;
         document.getElementById('floatingTimer').style.display = 'none';
@@ -1609,6 +1628,8 @@
         });
         
         const final = Math.round((score/currentQuestions.length)*100);
+        
+        // Simpan ke Cloud (hanya jika fungsi tersedia)
         if (typeof window.saveScoreToCloud === 'function') {
             window.saveScoreToCloud(currentModulKey, final);
         }
@@ -1644,7 +1665,9 @@
         document.querySelector('.finish-container').style.display = 'none';
         document.getElementById('btnShowScore').style.display = 'flex';
 
-        saveAndShowChart(final, correctCount, wrongCount);
+        if (typeof window.saveAndShowChart === 'function') {
+            window.saveAndShowChart(final, correctCount, wrongCount);
+        }
         loadQuestion(currentIdx);
     };
 
@@ -2248,6 +2271,7 @@
 
 </body>
 </html>
+
 
 
 
