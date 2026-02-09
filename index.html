@@ -1500,30 +1500,89 @@
     }
 
 // ==========================================
-    // FUNGSI SUBMIT FIX (FORCE DETECT MODUL 18)
+    // FUNGSI SUBMIT FINAL (FIX ICON NILAI)
     // ==========================================
     window.submitQuiz = function() {
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
-        // AMBIL ID DATABASE DENGAN PAKSA
         const currentDB = window.currentDatabaseId || "";
-        console.log("DEBUG: ID Modul saat ini adalah ->", currentDB);
+        console.log("DEBUG: ID Modul ->", currentDB);
 
-        // --- CEK APAKAH INI MODUL PAPI / MODUL 18 ---
-        // Kita pakai logika OR (||) supaya salah satu kena, dia langsung aktif
+        // ==========================================
+        // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI)
+        // ==========================================
         if (currentDB === 'modul18' || currentDB.includes('papi') || currentDB === 'modul_papi') {
             
-            // POP-UP DEBUG (Supaya kamu yakin scriptnya jalan)
-            // Nanti kalau sudah fix, baris alert ini bisa dihapus
-            // alert("✅ MODE PSIKOLOG AKTIF! Menganalisis Kepribadian..."); 
+            const floatTimer = document.getElementById('floatingTimer');
+            if(floatTimer) floatTimer.style.display = 'none';
+            document.body.classList.remove('mode-focus');
+            isSubmitted = true;
 
-            handlePapiAnalysis(); // LEMPAR KE FUNGSI PSIKOLOG
-            return; // STOP! JANGAN JALANKAN LOGIKA BAWAH
+            let papiScores = {}; 
+            let redFlags = [];
+            const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
+            traits.forEach(t => papiScores[t] = 0);
+
+            userAnswers.forEach((choiceIndex, qIndex) => {
+                if (choiceIndex !== null && currentQuestions[qIndex]) {
+                    const qData = currentQuestions[qIndex];
+                    if (qData.papi_keys && qData.papi_keys.length === 2) {
+                        const aspect = qData.papi_keys[choiceIndex];
+                        papiScores[aspect]++; 
+                    }
+                    if (qData.options && qData.options[choiceIndex]) {
+                        const textPilihan = qData.options[choiceIndex].toLowerCase();
+                        if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
+                            redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Memilih 'Lambat Mengambil Keputusan' (FATAL).`);
+                        }
+                    }
+                }
+            });
+
+            let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
+            if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
+            if (papiScores['G'] > 4) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Kuat.</li>";
+            if (papiScores['F'] > 4) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus.</li>";
+            analisisText += "</ul>";
+
+            document.getElementById('resultOverlay').style.display = 'flex';
+            const scoreCircle = document.getElementById('finalScore');
+            const passStatus = document.getElementById('passStatus');
+            const msg = document.getElementById('resultMsg');
+
+            if (redFlags.length > 0) {
+                scoreCircle.innerText = "⚠️";
+                scoreCircle.style.background = "#f39c12"; 
+                passStatus.innerText = "PERHATIAN";
+                passStatus.style.color = "#d35400";
+                msg.innerHTML = "<b>Ditemukan Indikator Merah:</b><br>" + redFlags.map(r => `<div style='color:#c0392b;'>${r}</div>`).join("");
+            } else {
+                scoreCircle.innerText = "⚖️";
+                scoreCircle.style.background = "#2ecc71"; 
+                passStatus.innerText = "DISARANKAN";
+                passStatus.style.color = "#27ae60";
+                msg.innerHTML = "<b>Profil Mental Stabil.</b><br>" + analisisText;
+            }
+
+            const btnReview = document.getElementById('btnReviewWrong');
+            if(btnReview) btnReview.style.display = 'none';
+            
+            // --- UPDATE ICON TOMBOL (PAPI) ---
+            const btnShowScore = document.getElementById('btnShowScore');
+            if(btnShowScore) {
+                btnShowScore.style.display = 'flex'; 
+                btnShowScore.innerHTML = "⚖️ Hasil"; // Icon Timbangan
+            }
+
+            const modeInd = document.getElementById('modeIndicator');
+            if(modeInd) modeInd.innerText = "PSIKOGRAM";
+            
+            return; 
         }
 
         // ==========================================
-        // JIKA BUKAN PAPI -> JALANKAN MODE NORMAL
+        // CABANG 2: MODE NORMAL (HUKUM)
         // ==========================================
         isSubmitted = true;
         document.getElementById('floatingTimer').style.display = 'none';
@@ -1535,7 +1594,7 @@
         wrongIndices = []; 
 
         userAnswers.forEach((a, i) => {
-            if (currentQuestions[i]) { // Cek safety
+            if (currentQuestions[i]) {
                 if(a === currentQuestions[i].answer) {
                     score++; correctCount++;
                 } else {
@@ -1547,7 +1606,6 @@
         
         const final = Math.round((score/currentQuestions.length)*100);
         
-        // TAMPILKAN HASIL NORMAL
         document.getElementById('resultOverlay').style.display = 'flex';
         const scoreCircle = document.getElementById('finalScore');
         const passStatus = document.getElementById('passStatus');
@@ -1557,7 +1615,7 @@
         scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
         passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
         passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
-        msg.innerText = "Nilai Murni (Bukan Tes Psikologi)";
+        msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
 
         const btnReview = document.getElementById('btnReviewWrong');
         if (wrongCount > 0) {
@@ -1567,85 +1625,24 @@
             btnReview.style.display = 'none';
         }
         
+        // --- UPDATE ICON TOMBOL (HUKUM) ---
+        // GANTI DI SINI: Dari 🏆 jadi 📝
+        const btnShowScore = document.getElementById('btnShowScore');
+        if(btnShowScore) {
+            btnShowScore.style.display = 'flex';
+            btnShowScore.innerHTML = "📝 Nilai"; // Icon Kertas/Memo
+        }
+
+        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
+        document.getElementById('modeIndicator').style.color = "var(--success)";
+        document.querySelector('.finish-container').style.display = 'none';
+
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
-    };
-
-    // ==========================================
-    // LOGIKA PSIKOLOG (Updated)
-    // ==========================================
-    function handlePapiAnalysis() {
-        document.body.classList.remove('mode-focus');
-        const floatTimer = document.getElementById('floatingTimer');
-        if(floatTimer) floatTimer.style.display = 'none';
-        isSubmitted = true; // Penting supaya sidebar terkunci
-
-        let papiScores = {}; 
-        let redFlags = [];
-        const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
-        traits.forEach(t => papiScores[t] = 0);
-
-        userAnswers.forEach((choiceIndex, qIndex) => {
-            if (choiceIndex !== null && currentQuestions[qIndex]) {
-                const qData = currentQuestions[qIndex];
-                
-                // 1. Hitung Skor dari JSON (papi_keys)
-                if (qData.papi_keys && qData.papi_keys.length === 2) {
-                    const aspect = qData.papi_keys[choiceIndex];
-                    papiScores[aspect]++; 
-                }
-                
-                // 2. Deteksi Text Manual (Jaga-jaga JSON tidak lengkap)
-                if (qData.options && qData.options[choiceIndex]) {
-                    const textPilihan = qData.options[choiceIndex].toLowerCase();
-                    if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
-                        redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Memilih 'Lambat Mengambil Keputusan' (FATAL).`);
-                    }
-                }
-            }
-        });
-
-        // Analisis Text
-        let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
-        if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
-        if (papiScores['G'] > 4) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Kuat.</li>";
-        if (papiScores['F'] > 4) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus.</li>";
-        analisisText += "</ul>";
-
-        // TAMPILKAN HASIL PSIKOLOG (OVERRIDE TAMPILAN)
-        const resultOverlay = document.getElementById('resultOverlay');
-        const scoreCircle = document.getElementById('finalScore');
-        const passStatus = document.getElementById('passStatus');
-        const msg = document.getElementById('resultMsg');
-
-        resultOverlay.style.display = 'flex';
-
-        if (redFlags.length > 0) {
-            scoreCircle.innerText = "⚠️";
-            scoreCircle.style.background = "#f39c12"; 
-            passStatus.innerText = "PERHATIAN";
-            passStatus.style.color = "#d35400";
-            msg.innerHTML = "<b>Ditemukan Indikator Merah:</b><br>" + redFlags.map(r => `<div style='color:#c0392b;'>${r}</div>`).join("");
-        } else {
-            scoreCircle.innerText = "⚖️";
-            scoreCircle.style.background = "#2ecc71"; 
-            passStatus.innerText = "DISARANKAN";
-            passStatus.style.color = "#27ae60";
-            msg.innerHTML = "<b>Profil Mental Stabil.</b><br>" + analisisText;
-        }
-
-        // HILANGKAN TOMBOL REVIEW SALAH (KARENA TIDAK ADA YANG SALAH)
-        const btnReview = document.getElementById('btnReviewWrong');
-        if(btnReview) btnReview.style.display = 'none';
         
-        // Ganti Indikator Mode di Pojok
-        const modeInd = document.getElementById('modeIndicator');
-        if(modeInd) {
-            modeInd.innerText = "HASIL PSIKOGRAM";
-            modeInd.style.color = "#8e44ad";
-        }
-    }
-
+        loadQuestion(currentIdx);
+    };
+    
     window.confirmFinish = function() {
         const emptyCount = userAnswers.filter(a => a === null).length;
         const raguCount = raguStatus.filter(r => r === true).length;
@@ -2246,6 +2243,7 @@
 
 </body>
 </html>
+
 
 
 
