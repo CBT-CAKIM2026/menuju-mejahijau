@@ -1706,12 +1706,28 @@
                 };
             }
             
-            // 🔥 SIMPAN KE DATABASE 🔥
+      // 🔥 1. CATAT MAPPING NOMOR SOAL KE ELEMEN 🔥
+            let elementMapping = {};
+            userAnswers.forEach((choiceIndex, qIndex) => {
+                if (choiceIndex !== null && currentQuestions[qIndex]) {
+                    const qData = currentQuestions[qIndex];
+                    if (qData.papi_keys) {
+                        const aspect = qData.papi_keys[choiceIndex];
+                        if (!elementMapping[aspect]) elementMapping[aspect] = [];
+                        elementMapping[aspect].push(qIndex + 1); // Simpan nomor soal (1, 2, 3...)
+                    }
+                }
+            });
+    
+            // 🔥 2. SIMPAN KE DATABASE (LENGKAP DENGAN MAPPING) 🔥
             if (typeof window.savePapiToCloud === 'function') {
                 const totalFail = riskCount + wajibFailCount;
-                window.savePapiToCloud(statusAkhir, totalFail, JSON.stringify(papiScores));
+                // Kita bungkus skor dan mapping soal dalam satu objek
+                window.savePapiToCloud(statusAkhir, totalFail, JSON.stringify({
+                    scores: papiScores,
+                    mapping: elementMapping
+                }));
             }
-            
             return;
         }
         
@@ -2538,70 +2554,70 @@
             return false;
         }
     });
-        // ==========================================
-        // ANALISIS STRATEGIS CEK DATA PAPI (FIXED DB)
-        // ==========================================
-        window.bukaDetailPapi = async (docId) => {
-            try {
-                // Gunakan window.db yang sudah kita ekspos tadi
-                if (!window.db) return alert("Error: Database belum siap!");
-        
-                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-                const docRef = doc(window.db, "riwayat_psikotes", docId);
-                const docSnap = await getDoc(docRef);
-        
-                if (docSnap.exists()) {
-                    const d = docSnap.data();
-                    const dataObj = typeof d.detail_skor === 'string' ? JSON.parse(d.detail_skor) : d.detail_skor;
-                    const mapping = dataObj.mapping || {};
-                    const scores = dataObj.scores || {};
-        
-                    const strategi = {
-                        'R': { label: "Role Consistency", target: "6-9", saran: "Pertahankan cara berpikir berbasis fakta." },
-                        'D': { label: "Decision Making", target: "5-7", saran: "Penting! Jangan ragu memutus, tapi hindari impulsif." },
-                        'E': { label: "Emotional Restraint", target: "6-9", saran: "Hakim harus tenang, tidak boleh emosional." },
-                        'F': { label: "Discipline (Hukum Acara)", target: "6-9", saran: "Bagus, kepatuhan aturan adalah harga mati." },
-                        'N': { label: "Need to Finish (Tuntas)", target: "6-9", saran: "Jangan biarkan perkara menumpuk." },
-                        'C': { label: "Conformity (Teratur)", target: "6-9", saran: "Logika putusan rapi berawal dari berkas rapi." },
-                        'A': { label: "Attention to Detail", target: "6-9", saran: "Hati-hati! Detail kecil menentukan kebenaran." },
-                        'W': { label: "Need for Rules (Etik)", target: "7-9", saran: "Utamakan kode etik di atas segalanya." },
-                        'K': { label: "Aggression (Agresi)", target: "0-3", saran: "Bahaya! Kurangi sifat agresif/defensif." },
-                        'X': { label: "Need to be Noticed", target: "0-4", saran: "Ingat: Bekerja untuk keadilan, bukan panggung." }
-                    };
-        
-                    let report = `⚖️ ANALISIS PROFIL HAKIM (PRO-TAMA)\n${"=".repeat(35)}\n\n`;
-        
-                    Object.keys(scores).forEach(el => {
-                        const info = strategi[el] || { label: "Elemen Pendukung", target: "-", saran: "Pertahankan keseimbangan profil." };
-                        const score = scores[el];
-                        const soalList = mapping[el] ? mapping[el].join(", ") : "Data lama";
-                        
-                        let evalMsg = "⚠️ CEK";
-                        if (strategi[el]) {
-                            const range = info.target.match(/\d+/g);
-                            const min = parseInt(range[0]);
-                            const max = parseInt(range[1] || range[0]);
-                            evalMsg = (score >= min && score <= max) ? "✅ IDEAL" : "❌ EVALUASI";
-                        }
-        
-                        report += `● [${el}] ${info.label}: ${score}\n`;
-                        report += `  Status: ${evalMsg} (Target: ${info.target})\n`;
-                        report += `  Nomor Soal: ${soalList}\n`;
-                        report += `  Saran: ${info.saran}\n\n`;
-                    });
-        
-                    alert(report);
-                } else {
-                    alert("Data tidak ditemukan!");
+    window.bukaDetailPapi = async (docId) => {
+    try {
+        if (!window.db) return alert("Error: Database belum siap!");
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const docRef = doc(window.db, "riwayat_psikotes", docId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const d = docSnap.data();
+            let dataObj = typeof d.detail_skor === 'string' ? JSON.parse(d.detail_skor) : d.detail_skor;
+            
+            // 🔥 LOGIKA SAKTI: Cek apakah format baru atau lama
+            const scores = dataObj.scores ? dataObj.scores : dataObj; 
+            const mapping = dataObj.mapping || {};
+
+            const strategi = {
+                'R': { label: "Role Consistency", target: "6-9", saran: "Pertahankan cara berpikir berbasis fakta." },
+                'D': { label: "Decision Making", target: "5-7", saran: "Jangan ragu memutus, tapi hindari impulsif." },
+                'E': { label: "Emotional Restraint", target: "6-9", saran: "Hakim harus tenang, tidak boleh emosional." },
+                'M': { label: "Discipline (Hukum Acara)", target: "6-9", saran: "Kepatuhan aturan adalah harga mati." },
+                'N': { label: "Need to Finish (Tuntas)", target: "6-9", saran: "Selesaikan perkara tepat waktu." },
+                'C': { label: "Conformity (Teratur)", target: "6-9", saran: "Logika rapi berawal dari berkas rapi." },
+                'A': { label: "Attention to Detail", target: "6-9", saran: "Detail kecil menentukan kebenaran." },
+                'W': { label: "Need for Rules (Etik)", target: "7-9", saran: "Utamakan kode etik di atas segalanya." },
+                'K': { label: "Aggression (Agresi)", target: "0-3", saran: "Kurangi sifat agresif atau defensif." },
+                'X': { label: "Need to be Noticed", target: "0-4", saran: "Bekerja untuk keadilan, bukan panggung." }
+            };
+
+            let report = `⚖️ ANALISIS PROFIL HAKIM (PRO-TAMA)\n${"=".repeat(35)}\n\n`;
+
+            // Ambil semua elemen yang ada skornya
+            const keys = Object.keys(scores);
+            if (keys.length === 0) report += "Data skor tidak ditemukan.";
+
+            keys.forEach(el => {
+                const info = strategi[el] || { label: "Elemen Pendukung", target: "-", saran: "Jaga keseimbangan profil." };
+                const score = scores[el];
+                const soalList = mapping[el] ? mapping[el].join(", ") : "Tersedia di tes berikutnya";
+                
+                let evalMsg = "⚠️ CEK";
+                if (strategi[el]) {
+                    const range = info.target.match(/\d+/g);
+                    const min = parseInt(range[0]);
+                    const max = parseInt(range[1] || range[0]);
+                    evalMsg = (score >= min && score <= max) ? "✅ IDEAL" : "❌ EVALUASI";
                 }
-            } catch (e) {
-                alert("Gagal membedah data: " + e.message);
-            }
-        };
+
+                report += `● [${el}] ${info.label}: ${score}\n`;
+                report += `  Status: ${evalMsg} (Target: ${info.target})\n`;
+                if(mapping[el]) report += `  Nomor Soal: ${soalList}\n`;
+                report += `  Saran: ${info.saran}\n\n`;
+            });
+
+            alert(report);
+        }
+    } catch (e) {
+        alert("Gagal membedah data: " + e.message);
+    }
+};
 </script>
 
 </body>
 </html>
+
 
 
 
