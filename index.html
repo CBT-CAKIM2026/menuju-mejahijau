@@ -1902,125 +1902,258 @@
     };
 
 // ==========================================
-    // FUNGSI STATISTIK V5.1 (FULL FEATURE + DUAL MODE)
-    // ==========================================
-    window.openStats = async function(mode = 'hukum') {
-        if(!currentUser) { alert("Login dulu bro!"); return; }
-        
-        document.getElementById('statsOverlay').style.display = 'flex';
-        const wm = document.getElementById('watermark');
-        if(wm) wm.style.display = 'none';
-        
-        const tableBody = document.getElementById('statsTableBody');
-        const statsTitle = document.getElementById('statsTitle');
-        const chartCanvas = document.getElementById('statsChart');
-        const chartContainer = chartCanvas.parentElement; // Container Grafik 1
-        
-        // Kita juga perlu handle Grafik 2 (Peta Kekuatan)
-        const chartCanvas2 = document.getElementById('allModulesChart');
-        let chartContainer2 = null;
-        if(chartCanvas2) chartContainer2 = chartCanvas2.parentElement;
+// FUNGSI STATISTIK V6.0 (SMART TABLE PSIKOTES)
+// ==========================================
+window.openStats = async function(mode = 'hukum') {
+    if(!currentUser) { alert("Login dulu bro!"); return; }
+    
+    document.getElementById('statsOverlay').style.display = 'flex';
+    const wm = document.getElementById('watermark');
+    if(wm) wm.style.display = 'none';
+    
+    const tableBody = document.getElementById('statsTableBody');
+    const statsTitle = document.getElementById('statsTitle');
+    const chartCanvas = document.getElementById('statsChart');
+    const chartContainer = chartCanvas.parentElement; 
+    
+    const chartCanvas2 = document.getElementById('allModulesChart');
+    let chartContainer2 = null;
+    if(chartCanvas2) chartContainer2 = chartCanvas2.parentElement;
 
-        // --- RESET TAMPILAN ---
-        tableBody.innerHTML = '<tr><td colspan="5">Sedang mengambil data...</td></tr>';
+    // --- RESET TABEL ---
+    tableBody.innerHTML = '<tr><td colspan="5">Sedang mengambil data...</td></tr>';
+    
+    // --- TOMBOL SWITCH MODE ---
+    let switchContainer = document.getElementById('switchContainer');
+    if (!switchContainer) {
+        switchContainer = document.createElement('div');
+        switchContainer.id = 'switchContainer';
+        switchContainer.style = "margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;";
+        switchContainer.innerHTML = `
+            <button id="btnModeHukum" onclick="openStats('hukum')" style="padding: 8px 15px; border:none; border-radius:20px; cursor:pointer; font-weight:bold;">📚 Data Hukum</button>
+            <button id="btnModePsikotes" onclick="openStats('psikotes')" style="padding: 8px 15px; border:none; border-radius:20px; cursor:pointer; font-weight:bold;">🧠 Data Psikotes</button>
+        `;
+        const headerDiv = document.querySelector('#statsOverlay .result-box > div:first-child');
+        if(headerDiv) headerDiv.parentNode.insertBefore(switchContainer, headerDiv.nextSibling);
+    }
+
+    // --- UPDATE STYLE TOMBOL ---
+    const btnHukum = document.getElementById('btnModeHukum');
+    const btnPsi = document.getElementById('btnModePsikotes');
+    if(btnHukum) {
+        btnHukum.style.background = mode === 'hukum' ? 'var(--primary)' : '#ddd';
+        btnHukum.style.color = mode === 'hukum' ? 'white' : '#333';
+    }
+    if(btnPsi) {
+        btnPsi.style.background = mode === 'psikotes' ? '#8e44ad' : '#ddd';
+        btnPsi.style.color = mode === 'psikotes' ? 'white' : '#333';
+    }
+
+    if (mode === 'psikotes') {
+        // ==========================================
+        // MODE 1: DATA PSIKOTES (HYBRID: PAPI + STANDAR)
+        // ==========================================
+        if(statsTitle) statsTitle.innerText = "Riwayat Tes Psikologi";
         
-        // --- BUAT TOMBOL SWITCH MODE (JIKA BELUM ADA) ---
-        let switchContainer = document.getElementById('switchContainer');
-        if (!switchContainer) {
-            switchContainer = document.createElement('div');
-            switchContainer.id = 'switchContainer';
-            switchContainer.style = "margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;";
-            switchContainer.innerHTML = `
-                <button id="btnModeHukum" onclick="openStats('hukum')" style="padding: 8px 15px; border:none; border-radius:20px; cursor:pointer; font-weight:bold;">📚 Data Hukum</button>
-                <button id="btnModePsikotes" onclick="openStats('psikotes')" style="padding: 8px 15px; border:none; border-radius:20px; cursor:pointer; font-weight:bold;">🧠 Data Psikotes</button>
-            `;
-            // Sisipkan tombol di bawah header
-            const headerDiv = document.querySelector('#statsOverlay .result-box > div:first-child');
-            if(headerDiv) headerDiv.parentNode.insertBefore(switchContainer, headerDiv.nextSibling);
-        }
+        // Sembunyikan Grafik Akademik
+        if(chartContainer) chartContainer.style.display = 'none'; 
+        if(chartContainer2) chartContainer2.style.display = 'none';
+        const title2 = document.querySelectorAll('.stats-section-title')[1];
+        if(title2) title2.style.display = 'none';
+        
+        // HEADER TABEL HYBRID (Mengcover PAPI & Standar)
+        const thead = document.querySelector('.stats-table thead tr');
+        // Kolom 4: Benar (Standar) / Temuan (PAPI)
+        // Kolom 5: Salah (Standar) / KET (PAPI)
+        if(thead) thead.innerHTML = '<th>No</th><th>Tanggal & Jam</th><th>Skor / Status</th><th>Benar / Temuan</th><th>Salah / KET</th>';
 
-        // --- ATUR WARNA TOMBOL ---
-        const btnHukum = document.getElementById('btnModeHukum');
-        const btnPsi = document.getElementById('btnModePsikotes');
-        if(btnHukum) {
-            btnHukum.style.background = mode === 'hukum' ? 'var(--primary)' : '#ddd';
-            btnHukum.style.color = mode === 'hukum' ? 'white' : '#333';
-        }
-        if(btnPsi) {
-            btnPsi.style.background = mode === 'psikotes' ? '#8e44ad' : '#ddd';
-            btnPsi.style.color = mode === 'psikotes' ? 'white' : '#333';
-        }
-
-        if (mode === 'psikotes') {
-            // ==========================================
-            // MODE 1: MENAMPILKAN DATA PSIKOTES
-            // ==========================================
-            if(statsTitle) statsTitle.innerText = "Riwayat Tes Kepribadian (PAPI)";
+        try {
+            const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
+            const querySnapshot = await getDocs(q);
             
-            // Sembunyikan SEMUA Grafik
-            if(chartContainer) chartContainer.style.display = 'none'; 
-            if(chartContainer2) chartContainer2.style.display = 'none';
+            tableBody.innerHTML = '';
             
-            // Sembunyikan Judul Grafik 2 jika ada
-            const title2 = document.querySelectorAll('.stats-section-title')[1];
-            if(title2) title2.style.display = 'none';
-            
-            const thead = document.querySelector('.stats-table thead tr');
-            if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
+            if (querySnapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes psikotes.</td></tr>';
+            } else {
+                let dataList = [];
+                querySnapshot.forEach(doc => {
+                    let d = doc.data();
+                    if (!d.tanggal) d.tanggal = { seconds: 0 }; 
+                    dataList.push(d);
+                });
 
-            try {
-                // 1. QUERY SEDERHANA (Hapus orderBy biar Firebase gak ngambek)
-                const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
-                const querySnapshot = await getDocs(q);
-                
-                tableBody.innerHTML = '';
-                
-                if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
-                } else {
-                    // 2. KITA URUTKAN SENDIRI SECARA MANUAL (Terbaru di Atas)
-                    let dataList = [];
-                    querySnapshot.forEach(doc => {
-                        let d = doc.data();
-                        // Pastikan field tanggal ada, kalau gak pake waktu sekarang biar aman
-                        if (!d.tanggal) d.tanggal = { seconds: 0 }; 
-                        dataList.push(d);
-                    });
+                // Urutkan dari yang terbaru
+                dataList.sort((a, b) => b.tanggal.seconds - a.tanggal.seconds);
 
-                    // Logic Sorting: Tanggal Besar (Baru) - Tanggal Kecil (Lama)
-                    dataList.sort((a, b) => b.tanggal.seconds - a.tanggal.seconds);
+                dataList.forEach((d, idx) => {
+                    // --- DETEKSI JENIS SOAL ---
+                    // Jika ada 'hasil_status' berarti PAPI, jika ada 'score' berarti Standar
+                    const isPapi = d.hasOwnProperty('hasil_status') || (d.modul && d.modul.toLowerCase().includes('papi'));
 
-                    // 3. TAMPILKAN KE TABEL
-                    dataList.forEach((d, idx) => {
-                        // Deteksi nama field (jaga-jaga beda nama)
-                        const statusTeks = d.hasil_status || d.status || "Selesai";
+                    // --- FORMAT TANGGAL JAM ---
+                    let tglTampil = '-';
+                    if (d.formatted_date) {
+                        tglTampil = d.formatted_date;
+                    } else if (d.tanggal && d.tanggal.seconds) {
+                        tglTampil = new Date(d.tanggal.seconds * 1000).toLocaleString('id-ID', {
+                            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                    }
+
+                    const tr = document.createElement('tr');
+
+                    if (isPapi) {
+                        // === TAMPILAN KHUSUS PAPI KOSTICK ===
+                        const statusTeks = d.hasil_status || "Selesai";
                         const redFlagCount = d.jumlah_redflag !== undefined ? d.jumlah_redflag : 0;
-                        const tglTampil = d.waktu_lokal || d.date || '-';
+                        let colorStatus = (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') ? 'green' : '#d35400';
                         
-                        // Warna Status
-                        let colorStatus = '#d35400'; // Default Merah/Orange
-                        if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
+                        // JSON skor untuk Alert
+                        const rawData = JSON.stringify(d.detail_skor || {}).replace(/"/g, "'");
 
-                        const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${idx+1}</td>
-                            <td>${tglTampil}</td>
+                            <td style="font-size:0.85rem;">${tglTampil}</td>
                             <td style="font-weight:bold; color:${colorStatus}">${statusTeks}</td>
-                            <td style="color:${redFlagCount > 0 ? 'red' : 'green'}">${redFlagCount} Indikator</td>
+                            <td style="color:${redFlagCount > 0 ? 'red' : 'green'}; font-weight:bold;">
+                                ${redFlagCount} Indikator
+                            </td>
                             <td>
-                                <button onclick="alert('Detail Skor (JSON):\\n' + JSON.stringify(${d.detail_skor}).substring(0, 500) + '...')" 
-                                style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                Cek Data
+                                <button onclick="alert('📊 DETAIL SKOR PAPI:\\n' + JSON.stringify(${rawData}, null, 2))" 
+                                style="font-size:0.75rem; cursor:pointer; background:#3498db; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <i class="fas fa-search"></i> Cek Data
                                 </button>
                             </td>
                         `;
-                        tableBody.appendChild(tr);
-                    });
-                }
-            } catch (e) {
-                console.error("ERROR LOAD PSIKOTES:", e);
-                tableBody.innerHTML = `<tr><td colspan="5" style="color:red; font-size:0.8rem;">Gagal memuat: ${e.message}</td></tr>`;
+                    } else {
+                        // === TAMPILAN PSIKOTES STANDAR (BENAR/SALAH) ===
+                        const score = d.score || 0;
+                        const correct = d.correct || 0;
+                        const wrong = d.wrong || 0;
+                        let colorScore = score >= 70 ? 'green' : 'red';
+
+                        tr.innerHTML = `
+                            <td>${idx+1}</td>
+                            <td style="font-size:0.85rem;">${tglTampil}</td>
+                            <td style="font-weight:bold; color:${colorScore}">${score}</td>
+                            <td style="color:green;">${correct} ✅</td>
+                            <td style="color:red;">${wrong} ❌</td>
+                        `;
+                    }
+                    tableBody.appendChild(tr);
+                });
             }
+        } catch (e) {
+            console.error("ERROR LOAD PSIKOTES:", e);
+            tableBody.innerHTML = `<tr><td colspan="5" style="color:red; font-size:0.8rem;">Gagal memuat: ${e.message}</td></tr>`;
+        }
+
+    } else {
+        // ==========================================
+        // MODE 2: DATA HUKUM (DEFAULT)
+        // ==========================================
+        if(statsTitle) statsTitle.innerText = "Riwayat Latihan Akademis";
+        
+        if(chartContainer) chartContainer.style.display = 'block'; 
+        if(chartContainer2) chartContainer2.style.display = 'block';
+        const title2 = document.querySelectorAll('.stats-section-title')[1];
+        if(title2) title2.style.display = 'block';
+        
+        const thead = document.querySelector('.stats-table thead tr');
+        if(thead) thead.innerHTML = '<th>No</th><th>Tanggal & Jam</th><th>Skor</th><th>Benar</th><th>Salah</th>';
+
+        try {
+            let targetModul = window.currentDatabaseId;
+            // Jika user klik 'data hukum' saat sedang di modul papi, alihkan ke modul 1 default
+            if (!targetModul || targetModul === 'modul18' || targetModul.includes('papi')) {
+                targetModul = 'modul1'; 
+            }
+            if(statsTitle) statsTitle.innerText = "Data Modul: " + targetModul;
+
+            const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
+            const querySnapshot = await getDocs(q);
+            
+            let allHistory = [];
+            querySnapshot.forEach((doc) => { allHistory.push(doc.data()); });
+            const currentModulHistory = allHistory.filter(h => h.modul === targetModul);
+            
+            tableBody.innerHTML = '';
+            if (currentModulHistory.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5">Belum ada data untuk modul ini.</td></tr>';
+            } else {
+                [...currentModulHistory].reverse().forEach((d, idx) => {
+                    // Logic Tanggal Hukum
+                    let tglHukum = d.date; // Default format lama
+                    if(d.timestamp && d.timestamp.seconds) {
+                         tglHukum = new Date(d.timestamp.seconds * 1000).toLocaleString('id-ID', {
+                            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${idx+1}</td><td style="font-size:0.85rem;">${tglHukum}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // --- RENDER GRAFIK ---
+            setTimeout(() => {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (window.statsChartInstance) window.statsChartInstance.destroy();
+                window.statsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: currentModulHistory.map((_, i) => "Tes " + (i+1)),
+                        datasets: [{
+                            label: 'Nilai Kamu',
+                            data: currentModulHistory.map(d => d.score),
+                            borderColor: '#2980b9', backgroundColor: 'rgba(41, 128, 185, 0.2)', borderWidth: 2, tension: 0.3, fill: true
+                        }, {
+                            label: 'Batas Lulus (70)', 
+                            data: currentModulHistory.map(() => 70),
+                            borderColor: '#c0392b', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false
+                        }]
+                    },
+                    options: { animation: { duration: 1500 }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+
+                let modulStats = {};
+                allHistory.forEach(h => {
+                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
+                    modulStats[h.modul].total += h.score;
+                    modulStats[h.modul].count++;
+                });
+
+                const sortedKeys = Object.keys(modulStats).sort((a, b) => {
+                    const numA = parseFloat(a.replace(/[^\d.]/g, '')) || 0;
+                    const numB = parseFloat(b.replace(/[^\d.]/g, '')) || 0;
+                    return numA - numB;
+                });
+
+                const labels = [];
+                const dataScores = [];
+                const colors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+                sortedKeys.forEach((key, index) => {
+                    labels.push(key.replace('modul', 'M-').replace('btn-', ''));
+                    dataScores.push(Math.round(modulStats[key].total / modulStats[key].count));
+                });
+
+                const ctxAll = document.getElementById('allModulesChart').getContext('2d');
+                if (window.allModulesChartInstance) window.allModulesChartInstance.destroy();
+                window.allModulesChartInstance = new Chart(ctxAll, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Rata-rata Nilai', data: dataScores, backgroundColor: colors, borderWidth: 1 }]
+                    },
+                    options: { animation: { duration: 1500 }, responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+                });
+            }, 100);
+
+        } catch (e) { console.error("Error load data hukum:", e); }
+    }
+};
 
         } else {
             // ==========================================
@@ -2416,6 +2549,7 @@
 
 </body>
 </html>
+
 
 
 
