@@ -1521,6 +1521,16 @@
         }
     }
 
+// ==========================================
+    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH)
+    // ==========================================
+    window.submitQuiz = function() {
+        if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
+        window.speechSynthesis.cancel();
+        
+        const currentDB = window.currentDatabaseId || "";
+        console.log("DEBUG: ID Modul ->", currentDB);
+
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
         // ==========================================
@@ -1690,7 +1700,7 @@
             
             return;
         }
-
+        
         // ==========================================
         // CABANG 2: MODE NORMAL (HUKUM)
         // ==========================================
@@ -2491,6 +2501,4 @@
 
 </body>
 </html>
-
-
 
