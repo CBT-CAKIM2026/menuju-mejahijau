@@ -1044,6 +1044,28 @@
         } catch (e) { console.error("Gagal simpan skor:", e); }
     };
 
+    // --- FUNGSI BARU: SIMPAN KHUSUS PSIKOTES (JALUR VIP) ---
+    window.savePapiToCloud = async (status, redFlagCount, detailScores) => {
+        if (!currentUser || !db) return;
+        try {
+            // Kita simpan ke collection BEDA bernama 'riwayat_psikotes'
+            // Jadi tidak akan tercampur dengan 'riwayat_belajar' (Grafik aman!)
+            await addDoc(collection(db, "riwayat_psikotes"), {
+                uid: currentUser.uid,
+                nama: currentUser.displayName,
+                modul: "Modul 18 (PAPI)",
+                hasil_status: status, // "DISARANKAN" atau "PERLU PERBAIKAN"
+                jumlah_redflag: redFlagCount,
+                detail_skor: detailScores, // Menyimpan raw score (G:5, L:3, dll)
+                tanggal: new Date(),
+                formatted_date: new Date().toLocaleString('id-ID')
+            });
+            console.log("✅ Data PAPI sukses diamankan di jalur khusus!");
+        } catch (e) {
+            console.error("Gagal simpan PAPI:", e);
+        }
+    };
+
     window.openLeaderboard = async () => {
         if (!db) { alert("Database belum connect"); return; }
         document.getElementById('leaderboardOverlay').style.display = 'flex';
@@ -1500,7 +1522,7 @@
     }
 
 // ==========================================
-    // FUNGSI SUBMIT V3.0 (FIX LOGIKA SKORING)
+    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH)
     // ==========================================
     window.submitQuiz = function() {
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
@@ -1521,7 +1543,6 @@
 
             let papiScores = {}; 
             let redFlags = [];
-            // Inisialisasi
             const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
             traits.forEach(t => papiScores[t] = 0);
 
@@ -1533,43 +1554,31 @@
                     totalAnswered++;
                     const qData = currentQuestions[qIndex];
                     
-                    // 1. Hitung Skor dari JSON
                     if (qData.papi_keys && qData.papi_keys.length === 2) {
                         const aspect = qData.papi_keys[choiceIndex];
                         papiScores[aspect]++; 
                     }
                     
-                    // 2. DETEKSI TEKS BAHAYA (Ini yang paling VALID untuk Hakim)
                     if (qData.options && qData.options[choiceIndex]) {
                         const textPilihan = qData.options[choiceIndex].toLowerCase();
-                        // Jebakan 'Lambat'
                         if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
-                            redFlags.push(`⛔ FATAL (Soal ${qIndex+1}): Memilih 'Lambat Mengambil Keputusan'.`);
-                        }
-                        // Jebakan 'Narsistik' (Ingin diperhatikan)
-                        if (textPilihan.includes("ingin diperhatikan")) {
-                            redFlags.push(`⚠️ WARNING (Soal ${qIndex+1}): Terlalu butuh perhatian (Narsistik).`);
+                            redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Memilih 'Lambat Mengambil Keputusan' (FATAL).`);
                         }
                     }
                 }
             });
 
-            // --- LOGIKA PENILAIAN BARU (LEBIH ADIL) ---
+            // Analisis Text
             let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
             
-            // HANYA vonis 'Ragu-ragu' lewat skor jika soalnya BANYAK (>10)
-            // Kalau soal dikit (simulasi), kita abaikan skor murni I.
+            // Logic Penilaian (Hanya jika soal banyak)
             if (totalAnswered > 10) {
-                if (papiScores['I'] < 3) redFlags.push("⚠️ SKOR 'I' RENDAH: Indikasi kurang tegas (Overall).");
+                if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
                 if (papiScores['X'] > 5) redFlags.push("⚠️ SKOR 'X' TINGGI: Indikasi ingin tampil.");
             }
 
-            // Berikan Poin Plus (Apresiasi)
-            if (papiScores['G'] >= 1) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Bagus, pertahankan.</li>";
-            if (papiScores['C'] >= 1) analisisText += "<li style='color:green'>✅ <b>Teratur (C):</b> Sikap administrasi yang baik.</li>";
-            if (papiScores['S'] >= 1) analisisText += "<li style='color:green'>✅ <b>Independen (S):</b> Mampu menjaga jarak sosial.</li>";
-            if (papiScores['E'] >= 1) analisisText += "<li style='color:green'>✅ <b>Emosi Stabil (E):</b> Tenang dalam tekanan.</li>";
-            
+            if (papiScores['G'] >= 1) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Bagus.</li>";
+            if (papiScores['F'] >= 1) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus.</li>";
             analisisText += "</ul>";
 
             // TAMPILKAN HASIL
@@ -1578,36 +1587,41 @@
             const passStatus = document.getElementById('passStatus');
             const msg = document.getElementById('resultMsg');
 
-            // Logika Penentuan Status Akhir
+            let statusAkhir = ""; // Untuk disimpan ke database
+
             if (redFlags.length > 0) {
-                // Kalo ada Fatal Error (Pilih 'Lambat')
+                statusAkhir = "PERLU PERBAIKAN";
                 scoreCircle.innerText = "⚠️";
                 scoreCircle.style.background = "#f39c12"; 
-                passStatus.innerText = "PERLU PERBAIKAN";
+                passStatus.innerText = statusAkhir;
                 passStatus.style.color = "#d35400";
-                msg.innerHTML = "<b>Ditemukan 'Red Flag' pada mental Anda:</b><br>" + 
-                                redFlags.map(r => `<div style='color:#c0392b; font-weight:bold; margin-bottom:4px;'>${r}</div>`).join("");
+                msg.innerHTML = "<b>Ditemukan Indikator Merah:</b><br>" + redFlags.map(r => `<div style='color:#c0392b;'>${r}</div>`).join("");
             } else {
-                // Kalo bersih
+                statusAkhir = "DISARANKAN";
                 scoreCircle.innerText = "⚖️";
                 scoreCircle.style.background = "#2ecc71"; 
-                passStatus.innerText = "DISARANKAN";
+                passStatus.innerText = statusAkhir;
                 passStatus.style.color = "#27ae60";
-                msg.innerHTML = "<b>Profil Mental Stabil & Cocok.</b><br>Jawaban Anda mencerminkan karakter Hakim yang ideal (Teliti, Kerja Keras, & Teratur)." + analisisText;
+                msg.innerHTML = "<b>Profil Mental Stabil.</b><br>" + analisisText;
             }
 
             const btnReview = document.getElementById('btnReviewWrong');
             if(btnReview) btnReview.style.display = 'none';
             
-            // Update Tombol Nilai
             const btnShowScore = document.getElementById('btnShowScore');
             if(btnShowScore) {
                 btnShowScore.style.display = 'flex'; 
-                btnShowScore.innerHTML = "📝 Hasil"; 
+                btnShowScore.innerHTML = "📝 Nilai"; 
             }
 
             const modeInd = document.getElementById('modeIndicator');
             if(modeInd) modeInd.innerText = "PSIKOGRAM";
+
+            // 🔥 SIMPAN KE DATABASE KHUSUS (SUPAYA GRAFIK AMAN) 🔥
+            if (typeof window.savePapiToCloud === 'function') {
+                // Kita simpan Statusnya & Jumlah RedFlag-nya
+                window.savePapiToCloud(statusAkhir, redFlags.length, JSON.stringify(papiScores));
+            }
             
             return; 
         }
@@ -1656,17 +1670,17 @@
             btnReview.style.display = 'none';
         }
         
-        // Update Tombol Nilai
         const btnShowScore = document.getElementById('btnShowScore');
         if(btnShowScore) {
             btnShowScore.style.display = 'flex';
-            btnShowScore.innerHTML = "📝 Hasil"; 
+            btnShowScore.innerHTML = "📝 Nilai"; 
         }
 
         document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
         document.getElementById('modeIndicator').style.color = "var(--success)";
         document.querySelector('.finish-container').style.display = 'none';
 
+        // SIMPAN KE DATABASE NORMAL (GRAFIK)
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
         
@@ -2273,6 +2287,7 @@
 
 </body>
 </html>
+
 
 
 
