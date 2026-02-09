@@ -2001,20 +2001,30 @@
                         let colorStatus = '#d35400'; // Default Merah/Orange
                         if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
 
+                        // --- BAGIAN YANG DIEDIT (BARIS 2003 - 2017) ---
                         const tr = document.createElement('tr');
+                        
+                        // Kita amankan datanya dulu ke variabel string
+                        const detailData = typeof d.detail_skor === 'string' ? d.detail_skor : JSON.stringify(d.detail_skor);
+                        
                         tr.innerHTML = `
                             <td>${idx+1}</td>
                             <td>${tglTampil}</td>
                             <td style="font-weight:bold; color:${colorStatus}">${statusTeks}</td>
                             <td style="color:${redFlagCount > 0 ? 'red' : 'green'}">${redFlagCount} Indikator</td>
                             <td>
-                                <button onclick="alert('Detail Skor (JSON):\\n' + JSON.stringify(${d.detail_skor}).substring(0, 500) + '...')" 
-                                style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                Cek Data
+                                <button id="btn-papi-${idx}" 
+                                    style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
+                                    Cek Data
                                 </button>
                             </td>
                         `;
                         tableBody.appendChild(tr);
+                        
+                        // Pasang fungsi klik secara terpisah supaya tidak error render string
+                        document.getElementByid(`btn-papi-${idx}`).onclick = () => {
+                            alert(`DETAIL SKOR PAPI:\n\n${detailData}`);
+                        };
                     });
                 }
             } catch (e) {
@@ -2416,3 +2426,4 @@
 
 </body>
 </html>
+
