@@ -2022,7 +2022,7 @@
                         tableBody.appendChild(tr);
                         
                         // Pasang fungsi klik secara terpisah supaya tidak error render string
-                        document.getElementByid(`btn-papi-${idx}`).onclick = () => {
+                        document.getElementById(`btn-papi-${idx}`).onclick = () => {
                             alert(`DETAIL SKOR PAPI:\n\n${detailData}`);
                         };
                     });
@@ -2426,4 +2426,5 @@
 
 </body>
 </html>
+
 
