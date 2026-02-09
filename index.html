@@ -1049,23 +1049,21 @@
         } catch (e) { console.error("Gagal simpan skor:", e); }
     };
 
-    // --- FUNGSI BARU: SIMPAN KHUSUS PSIKOTES (JALUR VIP) ---
-    window.savePapiToCloud = async (status, redFlagCount, detailScores) => {
-        if (!currentUser || !db) return;
+    window.savePapiToCloud = async (status, totalFail, detail) => {
+        if(!auth.currentUser) return;
         try {
-            // Kita simpan ke collection BEDA bernama 'riwayat_psikotes'
-            // Jadi tidak akan tercampur dengan 'riwayat_belajar' (Grafik aman!)
             await addDoc(collection(db, "riwayat_psikotes"), {
-                uid: currentUser.uid,
-                nama: currentUser.displayName,
-                modul: "Modul 18 (PAPI)",
-                hasil_status: status, // "DISARANKAN" atau "PERLU PERBAIKAN"
-                jumlah_redflag: redFlagCount,
-                detail_skor: detailScores, // Menyimpan raw score (G:5, L:3, dll)
-                tanggal: new Date(),
-                formatted_date: new Date().toLocaleString('id-ID')
+                uid: auth.currentUser.uid,
+                nama: auth.currentUser.displayName,
+                modul: window.currentDatabaseId || "PAPI Kostick",
+                status: status,
+                fail_count: totalFail,
+                detail_skor: detail,
+                // --- TAMBAHKAN BARIS INI ---
+                createdAt: new Date() 
+                // ---------------------------
             });
-            console.log("✅ Data PAPI sukses diamankan di jalur khusus!");
+            console.log("Data PAPI Tersimpan!");
         } catch (e) {
             console.error("Gagal simpan PAPI:", e);
         }
@@ -2075,54 +2073,53 @@
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
                 } else {
-                    // 2. KITA URUTKAN SENDIRI SECARA MANUAL (Terbaru di Atas)
-                    let dataList = [];
-                    querySnapshot.forEach(doc => {
-                        let d = doc.data();
-                        // Pastikan field tanggal ada, kalau gak pake waktu sekarang biar aman
-                        if (!d.tanggal) d.tanggal = { seconds: 0 }; 
-                        dataList.push(d);
-                    });
-
-                    // Logic Sorting: Tanggal Besar (Baru) - Tanggal Kecil (Lama)
-                    dataList.sort((a, b) => b.tanggal.seconds - a.tanggal.seconds);
-
-                    // 3. TAMPILKAN KE TABEL
-                    dataList.forEach((d, idx) => {
-                        // Deteksi nama field (jaga-jaga beda nama)
-                        const statusTeks = d.hasil_status || d.status || "Selesai";
-                        const redFlagCount = d.jumlah_redflag !== undefined ? d.jumlah_redflag : 0;
-                        const tglTampil = d.waktu_lokal || d.date || '-';
-                        
-                        // Warna Status
-                        let colorStatus = '#d35400'; // Default Merah/Orange
-                        if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
-
-                        // --- BAGIAN YANG DIEDIT (BARIS 2003 - 2017) ---
-                        const tr = document.createElement('tr');
-                        
-                        // Kita amankan datanya dulu ke variabel string
-                        const detailData = typeof d.detail_skor === 'string' ? d.detail_skor : JSON.stringify(d.detail_skor);
-                        
-                        tr.innerHTML = `
-                            <td>${idx+1}</td>
-                            <td>${tglTampil}</td>
-                            <td style="font-weight:bold; color:${colorStatus}">${statusTeks}</td>
-                            <td style="color:${redFlagCount > 0 ? 'red' : 'green'}">${redFlagCount} Indikator</td>
-                            <td>
-                                <button id="btn-papi-${idx}" 
-                                    style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                    Cek Data
-                                </button>
-                            </td>
-                        `;
-                        tableBody.appendChild(tr);
-                        
-                        // Pasang fungsi klik secara terpisah supaya tidak error render string
-                        document.getElementById(`btn-papi-${idx}`).onclick = () => {
-                            alert(`DETAIL SKOR PAPI:\n\n${detailData}`);
-                        };
-                    });
+        // 2. KITA URUTKAN SENDIRI SECARA MANUAL (Terbaru di Atas)
+                let dataList = [];
+                querySnapshot.forEach(doc => {
+                    let d = doc.data();
+                    d.id = doc.id; // Simpan ID untuk tombol Cek Data nanti
+        
+                    // Pastikan field tanggal ada, gunakan createdAt dari Firebase
+                    // Jika belum ada (data lama), kita kasih default waktu sekarang
+                    if (!d.createdAt) {
+                        d.waktu_sortir = 0;
+                        d.tglTampil = "-";
+                    } else {
+                        const dateObj = d.createdAt.toDate();
+                        d.waktu_sortir = dateObj.getTime();
+                        d.tglTampil = dateObj.toLocaleString('id-ID', { 
+                            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+                        });
+                    }
+                    dataList.push(d);
+                });
+        
+                // 3. Logic Sorting: Tanggal Besar (Baru) ke Tanggal Kecil (Lama)
+                dataList.sort((a, b) => b.waktu_sortir - a.waktu_sortir);
+        
+                // 5. TAMPILKAN KE TABEL
+                dataList.forEach((d) => {
+                    const statusTeks = d.status || "Selesai";
+                    const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                    const tglTampil = d.tglTampil;
+        
+                    // Penentuan Warna Status
+                    let colorStatus = '#d35400'; 
+                    if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
+                    if (statusTeks === 'PERLU PERBAIKAN') colorStatus = 'red';
+        
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid #eee";
+                    tr.innerHTML = `
+                        <td style="padding:8px; font-size:0.75rem;">${tglTampil}</td>
+                        <td style="padding:8px; font-weight:bold; color:${colorStatus}">${statusTeks}</td>
+                        <td style="padding:8px;">${redFlagCount} Indikator</td>
+                        <td style="padding:8px;">
+                            <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')">Cek Data</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
                 }
             } catch (e) {
                 console.error("ERROR LOAD PSIKOTES:", e);
@@ -2537,10 +2534,70 @@
             return false;
         }
     });
+
+    // ==========================================
+// ANALISIS STRATEGIS CEK DATA PAPI (FINAL)
+// ==========================================
+window.bukaDetailPapi = async (docId) => {
+    try {
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const docRef = doc(db, "riwayat_psikotes", docId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const d = docSnap.data();
+            const dataObj = typeof d.detail_skor === 'string' ? JSON.parse(d.detail_skor) : d.detail_skor;
+            const mapping = dataObj.mapping || {};
+            const scores = dataObj.scores || {};
+
+            // Strategi Rujukan (Sesuai File Strategi Hakim Lo)
+            const strategi = {
+                'R': { label: "Role Consistency (Rasional)", target: "6-9", saran: "Pertahankan cara berpikir berbasis fakta." },
+                'D': { label: "Decision Making (Tegas/Hati-hati)", target: "5-7", saran: "Penting! Jangan ragu memutus, tapi hindari impulsif." },
+                'E': { label: "Emotional Restraint (Stabil)", target: "6-9", saran: "Hakim harus tenang, tidak boleh emosional." },
+                'F': { label: "Discipline (Patuh Hukum Acara)", target: "6-9", saran: "Bagus, kepatuhan pada aturan adalah harga mati." },
+                'B': { label: "Perseverance (Ketekunan)", target: "6-9", saran: "Ketekunan sangat ideal untuk membedah perkara." },
+                'N': { label: "Need to Finish (Tuntas)", target: "6-9", saran: "Jangan biarkan perkara menumpuk tanpa penyelesaian." },
+                'C': { label: "Conformity (Teratur)", target: "6-9", saran: "Logika putusan yang rapi berawal dari berkas yang rapi." },
+                'A': { label: "Attention to Detail (Teliti)", target: "6-9", saran: "Hati-hati! Detail kecil menentukan kebenaran materiil." },
+                'W': { label: "Need for Rules (Patuh Etik)", target: "7-9", saran: "Selalu utamakan kode etik di atas kepentingan pribadi." },
+                'K': { label: "Aggression (Agresivitas)", target: "0-3", saran: "Bahaya! Kurangi sifat agresif atau defensif." },
+                'X': { label: "Need to be Noticed", target: "0-4", saran: "Ingat: Hakim bekerja untuk keadilan, bukan panggung." }
+            };
+
+            let report = `⚖️ ANALISIS PROFIL HAKIM (PRO-TAMA)\n${"=".repeat(35)}\n\n`;
+
+            Object.keys(scores).forEach(el => {
+                const info = strategi[el] || { label: "Elemen Pendukung", target: "-", saran: "Pertahankan keseimbangan profil." };
+                const score = scores[el];
+                const soalList = mapping[el] ? mapping[el].join(", ") : "Data lama";
+                
+                // Logika Evaluasi Target
+                let evalMsg = "⚠️ CEK";
+                if (strategi[el]) {
+                    const range = info.target.match(/\d+/g);
+                    const min = parseInt(range[0]);
+                    const max = parseInt(range[1] || range[0]);
+                    evalMsg = (score >= min && score <= max) ? "✅ IDEAL" : "❌ EVALUASI";
+                }
+
+                report += `● [${el}] ${info.label}: ${score}\n`;
+                report += `  Status: ${evalMsg} (Target: ${info.target})\n`;
+                report += `  Nomor Soal: ${soalList}\n`;
+                report += `  Saran: ${info.saran}\n\n`;
+            });
+
+            alert(report);
+        }
+    } catch (e) {
+        alert("Gagal membedah data: " + e.message);
+    }
+};
 </script>
 
 </body>
 </html>
+
 
 
 
