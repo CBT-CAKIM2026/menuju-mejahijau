@@ -1521,18 +1521,8 @@
         }
     }
 
-// ==========================================
-    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH)
-    // ==========================================
-    window.submitQuiz = function() {
-        if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
-        window.speechSynthesis.cancel();
-        
-        const currentDB = window.currentDatabaseId || "";
-        console.log("DEBUG: ID Modul ->", currentDB);
-
         // ==========================================
-        // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI)
+        // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
         // ==========================================
         if (currentDB === 'modul18' || currentDB.includes('papi') || currentDB === 'modul_papi') {
             
@@ -1542,88 +1532,163 @@
             isSubmitted = true;
 
             let papiScores = {}; 
-            let redFlags = [];
+            // Inisialisasi 20 Aspek PAPI Standard (Wadah Hitung)
             const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
             traits.forEach(t => papiScores[t] = 0);
 
-            let totalAnswered = 0;
-
-            // Analisis Jawaban
+            // 1. HITUNG SKOR MURNI DARI JAWABAN
             userAnswers.forEach((choiceIndex, qIndex) => {
                 if (choiceIndex !== null && currentQuestions[qIndex]) {
-                    totalAnswered++;
                     const qData = currentQuestions[qIndex];
-                    
                     if (qData.papi_keys && qData.papi_keys.length === 2) {
                         const aspect = qData.papi_keys[choiceIndex];
-                        papiScores[aspect]++; 
-                    }
-                    
-                    if (qData.options && qData.options[choiceIndex]) {
-                        const textPilihan = qData.options[choiceIndex].toLowerCase();
-                        if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
-                            redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Memilih 'Lambat Mengambil Keputusan' (FATAL).`);
-                        }
+                        if(papiScores[aspect] !== undefined) papiScores[aspect]++; 
                     }
                 }
             });
 
-            // Analisis Text
-            let analisisText = "<ul style='text-align:left; margin-top:10px; font-size:0.9rem;'>";
+            // 2. KONFIGURASI TARGET SESUAI PDF "FORMAT PENILAIAN HAKIM KHUSUS"
+            // Mapping: Key PDF -> Key PAPI Standard (Supaya sinkron dengan database)
+            // M -> F (Disiplin/Authority), D -> I (Decision Making), A -> D (Detail)
             
-            // Logic Penilaian (Hanya jika soal banyak)
-            if (totalAnswered > 10) {
-                if (papiScores['I'] < 3) redFlags.push("⛔ SKOR 'I' RENDAH: Terlalu Ragu-Ragu.");
-                if (papiScores['X'] > 5) redFlags.push("⚠️ SKOR 'X' TINGGI: Indikasi ingin tampil.");
+            const pdfTargets = [
+                // === KELOMPOK WAJIB TINGGI ===
+                { id: 'R', mapTo: 'R', min: 6, max: 9, label: "Role Consistency (Rasional)", cat: "WAJIB" },
+                { id: 'D', mapTo: 'I', min: 5, max: 7, label: "Decision Making (Tegas & Hati-hati)", cat: "WAJIB" }, // PDF 'D' = PAPI 'I'
+                { id: 'E', mapTo: 'E', min: 6, max: 9, label: "Emotional Restraint (Tenang)", cat: "WAJIB" },
+                { id: 'M', mapTo: 'F', min: 6, max: 9, label: "Discipline / Order (Patuh Hukum Acara)", cat: "WAJIB" }, // PDF 'M' = PAPI 'F'
+                { id: 'B', mapTo: 'B', min: 6, max: 9, label: "Perseverance (Ketekunan)", cat: "WAJIB" },
+                { id: 'N', mapTo: 'N', min: 6, max: 9, label: "Need to Finish (Tuntas)", cat: "WAJIB" },
+                { id: 'C', mapTo: 'C', min: 6, max: 9, label: "Conformity (Rapi & Tertib)", cat: "WAJIB" },
+                { id: 'A', mapTo: 'D', min: 6, max: 9, label: "Attention to Detail (Teliti)", cat: "WAJIB" }, // PDF 'A' = PAPI 'D'
+                { id: 'Z', mapTo: 'Z', min: 5, max: 7, label: "Self Control (Adaptif)", cat: "WAJIB" },
+                { id: 'W', mapTo: 'W', min: 7, max: 9, label: "Need for Rules (Patuh Etik/SOP)", cat: "WAJIB" },
+
+                // === KELOMPOK MENENGAH ===
+                { id: 'L', mapTo: 'L', min: 4, max: 6, label: "Leadership (Wibawa)", cat: "NORMAL" },
+                { id: 'T', mapTo: 'T', min: 4, max: 6, label: "Work Tempo (Kecepatan)", cat: "NORMAL" },
+                { id: 'V', mapTo: 'V', min: 4, max: 6, label: "Vigor (Stamina Fisik)", cat: "NORMAL" },
+                { id: 'P', mapTo: 'P', min: 5, max: 7, label: "Independence (Mandiri)", cat: "NORMAL" },
+
+                // === KELOMPOK RISK (HINDARI) ===
+                { id: 'X', mapTo: 'X', min: 0, max: 4, label: "Need to be Noticed (Ingin Tampil)", cat: "RISK" },
+                { id: 'S', mapTo: 'S', min: 0, max: 4, label: "Social Extension (Mudah Dipengaruhi)", cat: "RISK" },
+                { id: 'G', mapTo: 'G', min: 0, max: 4, label: "Influence / Dominance", cat: "RISK" },
+                { id: 'K', mapTo: 'K', min: 0, max: 3, label: "Aggression (Emosional)", cat: "RISK" },
+                { id: 'O', mapTo: 'O', min: 0, max: 3, label: "Need for Closeness (Ketergantungan)", cat: "RISK" }
+            ];
+
+            // 3. PROSES ANALISIS & GENERATE REPORT
+            let analysisTableRows = "";
+            let riskCount = 0;
+            let wajibFailCount = 0;
+            let detailNotes = [];
+
+            pdfTargets.forEach(t => {
+                // Ambil skor menggunakan key mapping (Standar PAPI)
+                // Jika mapping tidak ditemukan, pakai skor 0 sebagai fallback
+                const score = papiScores[t.mapTo] !== undefined ? papiScores[t.mapTo] : 0;
+                
+                let status = "✅ OK";
+                let color = "green";
+                let rowBg = "";
+
+                // Logika Evaluasi
+                if (score < t.min || score > t.max) {
+                    if (t.cat === "RISK" && score > t.max) {
+                        status = "⛔ BAHAYA";
+                        color = "red";
+                        rowBg = "#ffebee";
+                        riskCount++;
+                        detailNotes.push(`⚠️ <b>${t.label}</b> Tinggi (${score}). Risiko pelanggaran etik/independensi.`);
+                    } 
+                    else if (t.cat === "WAJIB") {
+                        status = score < t.min ? "KURANG" : "BERLEBIH";
+                        color = "#d35400"; // Orange Tua
+                        rowBg = "#fff3e0";
+                        wajibFailCount++;
+                        if (score < t.min) detailNotes.push(`🔸 <b>${t.label}</b> Rendah (${score}). Perlu ditingkatkan.`);
+                    } 
+                    else {
+                        status = "⚠️ Cek";
+                        color = "#f39c12"; // Kuning
+                    }
+                }
+
+                analysisTableRows += `
+                <tr style="border-bottom:1px solid #eee; background-color:${rowBg};">
+                    <td style="padding:6px;"><b>${t.id}</b> - ${t.label}</td>
+                    <td style="padding:6px; text-align:center;">${t.min}-${t.max}</td>
+                    <td style="padding:6px; text-align:center; font-weight:bold; font-size:1.1rem;">${score}</td>
+                    <td style="padding:6px; font-weight:bold; color:${color}; text-align:right;">${status}</td>
+                </tr>`;
+            });
+
+            const analysisTable = `
+                <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
+                    <tr style="background:#f5f5f5; text-align:left; border-bottom:2px solid #ddd;">
+                        <th style="padding:8px;">Aspek (PDF)</th>
+                        <th style="padding:8px; text-align:center;">Target</th>
+                        <th style="padding:8px; text-align:center;">Skor</th>
+                        <th style="padding:8px; text-align:right;">Status</th>
+                    </tr>
+                    ${analysisTableRows}
+                </table>
+            `;
+
+            // 4. KESIMPULAN AKHIR
+            let statusAkhir = "DISARANKAN";
+            let statusColor = "#2ecc71";
+            let icon = "⚖️";
+            let headerMsg = "Profil Sesuai Standar Kompetensi Hakim.";
+
+            if (riskCount > 0) {
+                statusAkhir = "PERLU PERBAIKAN";
+                statusColor = "#c0392b"; // Merah
+                icon = "⛔";
+                headerMsg = `Ditemukan ${riskCount} Indikator Risiko Tinggi!`;
+            } else if (wajibFailCount > 2) { // Toleransi gagal wajib max 2
+                statusAkhir = "PERLU PERBAIKAN";
+                statusColor = "#e67e22"; // Orange
+                icon = "⚠️";
+                headerMsg = `Profil belum konsisten (Gagal di ${wajibFailCount} aspek inti).`;
             }
 
-            if (papiScores['G'] >= 1) analisisText += "<li style='color:green'>✅ <b>Kerja Keras (G):</b> Bagus.</li>";
-            if (papiScores['F'] >= 1) analisisText += "<li style='color:green'>✅ <b>Patuh Aturan (F):</b> Bagus.</li>";
-            analisisText += "</ul>";
-
-            // TAMPILKAN HASIL
-            document.getElementById('resultOverlay').style.display = 'flex';
+            // Update UI
             const scoreCircle = document.getElementById('finalScore');
             const passStatus = document.getElementById('passStatus');
             const msg = document.getElementById('resultMsg');
-
-            let statusAkhir = ""; // Untuk disimpan ke database
-
-            if (redFlags.length > 0) {
-                statusAkhir = "PERLU PERBAIKAN";
-                scoreCircle.innerText = "⚠️";
-                scoreCircle.style.background = "#f39c12"; 
-                passStatus.innerText = statusAkhir;
-                passStatus.style.color = "#d35400";
-                msg.innerHTML = "<b>Ditemukan Indikator Merah:</b><br>" + redFlags.map(r => `<div style='color:#c0392b;'>${r}</div>`).join("");
-            } else {
-                statusAkhir = "DISARANKAN";
-                scoreCircle.innerText = "⚖️";
-                scoreCircle.style.background = "#2ecc71"; 
-                passStatus.innerText = statusAkhir;
-                passStatus.style.color = "#27ae60";
-                msg.innerHTML = "<b>Profil Mental Stabil.</b><br>" + analisisText;
-            }
-
             const btnReview = document.getElementById('btnReviewWrong');
+            
+            scoreCircle.innerText = icon;
+            scoreCircle.style.background = statusColor;
+            passStatus.innerText = statusAkhir;
+            passStatus.style.color = statusColor;
+            
+            msg.innerHTML = `<div style="text-align:left; margin-bottom:10px; font-weight:bold; color:${statusColor}">${headerMsg}</div>`;
+            
+            if (detailNotes.length > 0) {
+                msg.innerHTML += `<div style="text-align:left; font-size:0.85rem; background:#fff8e1; padding:10px; border-radius:6px; border:1px solid #ffe0b2; margin-bottom:15px;">
+                    <strong>Catatan Penting:</strong>
+                    <ul style="margin:5px 0 0 0; padding-left:20px; color:#5d4037;">
+                        ${detailNotes.map(n => `<li>${n}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            msg.innerHTML += `<div style="max-height:250px; overflow-y:auto; border:1px solid #eee; border-radius:6px;">${analysisTable}</div>`;
+
             if(btnReview) btnReview.style.display = 'none';
-            
-            const btnShowScore = document.getElementById('btnShowScore');
-            if(btnShowScore) {
-                btnShowScore.style.display = 'flex'; 
-                btnShowScore.innerHTML = "📝 Nilai"; 
-            }
+            document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
+            document.getElementById('resultOverlay').style.display = 'flex';
 
-            const modeInd = document.getElementById('modeIndicator');
-            if(modeInd) modeInd.innerText = "PSIKOGRAM";
-
-            // 🔥 SIMPAN KE DATABASE KHUSUS (SUPAYA GRAFIK AMAN) 🔥
+            // 🔥 SIMPAN KE DATABASE 🔥
             if (typeof window.savePapiToCloud === 'function') {
-                // Kita simpan Statusnya & Jumlah RedFlag-nya
-                window.savePapiToCloud(statusAkhir, redFlags.length, JSON.stringify(papiScores));
+                const totalFail = riskCount + wajibFailCount;
+                window.savePapiToCloud(statusAkhir, totalFail, JSON.stringify(papiScores));
             }
             
-            return; 
+            return;
         }
 
         // ==========================================
@@ -2426,5 +2491,6 @@
 
 </body>
 </html>
+
 
 
