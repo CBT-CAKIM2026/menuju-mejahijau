@@ -1692,6 +1692,16 @@
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
             document.getElementById('resultOverlay').style.display = 'flex';
 
+            const btnShowScore = document.getElementById('btnShowScore');
+            if(btnShowScore) {
+                btnShowScore.style.display = 'flex'; // Paksa tombol muncul
+                btnShowScore.innerHTML = "📝 Nilai"; 
+                // Set onclick supaya ngebuka pop-up lagi
+                btnShowScore.onclick = function() {
+                    document.getElementById('resultOverlay').style.display = 'flex';
+                };
+            }
+            
             // 🔥 SIMPAN KE DATABASE 🔥
             if (typeof window.savePapiToCloud === 'function') {
                 const totalFail = riskCount + wajibFailCount;
@@ -2519,5 +2529,6 @@
 
 </body>
 </html>
+
 
 
