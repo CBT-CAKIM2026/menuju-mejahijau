@@ -688,7 +688,7 @@
                 <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA C</button>
                 <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Prodeo & Posbakum</button>
                 <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: E-Court, E-Litigasi & Surat Tercatat</button>
-                <button class="modul-btn" id="btn-modul18" onclick="switchDatabase('modul18')">Modul 18: PAPI KOSTIK</button>
+                <button class="modul-btn" id="btn-modul_papi" onclick="switchDatabase('modul_papi')">Modul 18: PAPI KOSTIK</button>
            </div>
         </div>
 
@@ -1499,18 +1499,7 @@
         }
     }
 
-    // ==========================================
-    // FUNGSI SUBMIT CERDAS (HUKUM + PSIKOLOGI)
-    // ==========================================
-    window.submitQuiz = function() {
-        if(timerInterval) clearInterval(timerInterval);
-        window.speechSynthesis.cancel(); // Matikan audio
-        
-// ==========================================
-    // FUNGSI SUBMIT CERDAS (HUKUM + PSIKOLOGI)
-    // REVISI: Trigger via 'modul18'
-    // ==========================================
-    window.submitQuiz = function() {
+window.submitQuiz = function() {
         if(timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel(); // Matikan audio
         
@@ -1605,9 +1594,9 @@
             
             return; // STOP DI SINI (Jangan jalankan logika hukum di bawah)
         }
-
+    
         // ------------------------------------------------
-        // CABANG 2: LOGIKA STANDAR (HUKUM/TIU)
+        // CABANG 2: LOGIKA STANDAR (HUKUM/TIU) - ASLI KAMU
         // ------------------------------------------------
         isSubmitted = true;
         document.getElementById('floatingTimer').style.display = 'none';
@@ -1628,8 +1617,6 @@
         });
         
         const final = Math.round((score/currentQuestions.length)*100);
-        
-        // Simpan ke Cloud (hanya jika fungsi tersedia)
         if (typeof window.saveScoreToCloud === 'function') {
             window.saveScoreToCloud(currentModulKey, final);
         }
@@ -1665,9 +1652,7 @@
         document.querySelector('.finish-container').style.display = 'none';
         document.getElementById('btnShowScore').style.display = 'flex';
 
-        if (typeof window.saveAndShowChart === 'function') {
-            window.saveAndShowChart(final, correctCount, wrongCount);
-        }
+        saveAndShowChart(final, correctCount, wrongCount);
         loadQuestion(currentIdx);
     };
 
@@ -2271,8 +2256,6 @@
 
 </body>
 </html>
-
-
 
 
 
