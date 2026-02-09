@@ -688,6 +688,7 @@
                 <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA C</button>
                 <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Prodeo & Posbakum</button>
                 <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: E-Court, E-Litigasi & Surat Tercatat</button>
+                <button class="modul-btn" id="btn-modul18" onclick="switchDatabase('modul18')">Modul 18: PAPI KOSTIK</button>
            </div>
         </div>
 
@@ -2161,8 +2162,125 @@
         }
     });
 </script>
+    // ============================================================
+    // 🧠 PAPI KOSTICK INTELLIGENCE MODULE (EXTENSION)
+    // Code by: Ibu Psikolog (AI) for Calon Hakim Indonesia
+    // ============================================================
 
+    // 1. Simpan fungsi submit asli supaya tidak hilang
+    const originalSubmit = window.submitQuiz;
+
+    // 2. Override fungsi submitQuiz
+    window.submitQuiz = function() {
+        // Cek apakah modul yang sedang dikerjakan adalah PAPI Kostick
+        // Asumsi ID Modul mengandung kata "papi" (misal: modul_papi)
+        if (window.currentDatabaseId && window.currentDatabaseId.toLowerCase().includes('papi')) {
+            handlePapiAnalysis(); // Jalankan analisis Psikolog
+        } else {
+            originalSubmit(); // Jalankan logika ujian biasa (Benar/Salah)
+        }
+    };
+
+    // 3. Logika Analisis PAPI Kostick
+    function handlePapiAnalysis() {
+        if(window.timerInterval) clearInterval(window.timerInterval);
+        document.body.classList.remove('mode-focus');
+        document.getElementById('floatingTimer').style.display = 'none';
+
+        let papiScores = {}; 
+        let redFlags = [];
+        let totalAnswered = 0;
+
+        // Inisialisasi skor 0 untuk semua aspek
+        const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
+        traits.forEach(t => papiScores[t] = 0);
+
+        // --- ALGORITMA HITUNG SKOR & DETEKSI BAHAYA ---
+        userAnswers.forEach((choiceIndex, qIndex) => {
+            if (choiceIndex !== null) {
+                totalAnswered++;
+                const questionData = currentQuestions[qIndex];
+                
+                // Pastikan soal punya data papi_keys (Format JSON Baru)
+                if (questionData.papi_keys && questionData.papi_keys.length === 2) {
+                    const aspect = questionData.papi_keys[choiceIndex]; // Ambil aspek (misal "G" atau "L")
+                    papiScores[aspect]++; // Tambah skor aspek tsb
+
+                    // --- AUDIT REAL-TIME (Logic "Psikolog Senior") ---
+                    
+                    // 1. Cek Jebakan "Ragu-Ragu" (Critical Item: I vs S/V)
+                    // Jika user memilih "Lambat Memutus" (biasanya I negatif/lawan)
+                    // Kita cek manual berdasarkan teks opsi (karena kode huruf bisa ambigu posisi A/B nya)
+                    const textPilihan = questionData.options[choiceIndex].toLowerCase();
+                    
+                    if (textPilihan.includes("lambat") && textPilihan.includes("keputusan")) {
+                         redFlags.push(`⚠️ SOAL NO ${qIndex+1}: Anda memilih 'Lambat Mengambil Keputusan'. Ini FATAL bagi calon hakim.`);
+                    }
+                }
+            }
+        });
+
+        // --- ANALISIS PROFIL GLOBAL ---
+        let analisisText = "<ul>";
+        
+        // Cek Decision Making (I)
+        if (papiScores['I'] < 3) {
+            redFlags.push("⛔ SKOR 'I' RENDAH (Indecisive): Anda terlalu ragu-ragu. Hakim harus tegas.");
+        } else if (papiScores['I'] > 8 && papiScores['D'] < 4) {
+            redFlags.push("⚠️ SKOR 'I' TINGGI TAPI 'D' RENDAH: Anda impulsif (cepat tapi ceroboh).");
+        }
+
+        // Cek Narsisme (X)
+        if (papiScores['X'] > 6) {
+             redFlags.push("⚠️ SKOR 'X' TINGGI: Anda terlalu butuh perhatian/pujian. Hakim harus 'low profile'.");
+        }
+
+        // Cek Stamina (V) & Kerja Keras (G)
+        if (papiScores['G'] > 5 && papiScores['V'] > 5) {
+            analisisText += "<li style='color:green'>✅ <b>Stamina & Kerja Keras:</b> Sangat Baik. Cocok untuk sidang maraton.</li>";
+        }
+
+        // Cek Kepatuhan (F & W)
+        if (papiScores['F'] > 4 || papiScores['W'] > 4) {
+             analisisText += "<li style='color:green'>✅ <b>Integritas:</b> Anda tipe yang patuh pada aturan (SOP). Bagus.</li>";
+        }
+
+        analisisText += "</ul>";
+
+        // --- TAMPILKAN HASIL (Manipulasi DOM ResultOverlay) ---
+        const resultOverlay = document.getElementById('resultOverlay');
+        const scoreCircle = document.getElementById('finalScore');
+        const passStatus = document.getElementById('passStatus');
+        const msg = document.getElementById('resultMsg');
+
+        resultOverlay.style.display = 'flex';
+        
+        // Tampilan Skor Bukan Angka 0-100, tapi status
+        if (redFlags.length > 0) {
+            scoreCircle.innerText = "⚠️";
+            scoreCircle.style.background = "var(--warning)";
+            passStatus.innerText = "PERLU PERBAIKAN";
+            passStatus.style.color = "var(--warning)";
+            msg.innerHTML = "<b>Ditemukan Potensi 'Red Flag' pada Profil Anda:</b><br><br>" + 
+                            redFlags.map(r => `<div style='color:#c0392b; margin-bottom:5px; text-align:left;'>${r}</div>`).join("");
+        } else {
+            scoreCircle.innerText = "⚖️";
+            scoreCircle.style.background = "var(--pass)";
+            passStatus.innerText = "DISARANKAN";
+            passStatus.style.color = "var(--pass)";
+            msg.innerHTML = "<b>Profil Mental Stabil.</b><br>Anda memiliki keseimbangan antara ketelitian, kepatuhan aturan, dan ketegasan.<br>" + analisisText;
+        }
+
+        // Sembunyikan tombol "Review Salah" karena PAPI tidak ada salah/benar
+        const btnReview = document.getElementById('btnReviewWrong');
+        if(btnReview) btnReview.style.display = 'none';
+        
+        // Ubah Mode Indikator
+        document.getElementById('modeIndicator').innerText = "HASIL PSIKOGRAM";
+    }
+</script>
 </body>
 </html>
+
 
 
