@@ -2464,88 +2464,114 @@
             btnPsi.style.color = mode === 'psikotes' ? 'white' : '#333';
         }
 
-        if (mode === 'psikotes') {
+         if (mode === 'psikotes') {
             // ==========================================
-            // MODE 1: MENAMPILKAN DATA PSIKOTES (REVISI DATA KOSONG)
+            // MODE 1: GLOBAL LEADERBOARD PSIKOTES (BEST RESULT PER USER)
             // ==========================================
-            if(statsTitle) statsTitle.innerText = "Riwayat Tes Kepribadian (PAPI)";
+            if(statsTitle) statsTitle.innerText = "Ranking Profil Kepribadian (Global)";
             if(chartContainer) chartContainer.style.display = 'none'; 
             if(chartContainer2) chartContainer2.style.display = 'none';
             const title2 = document.querySelectorAll('.stats-section-title')[1];
             if(title2) title2.style.display = 'none';
             
+            // UBAH HEADER TABEL: Tambah Kolom "NAMA"
             const thead = document.querySelector('.stats-table thead tr');
-            if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
+            if(thead) thead.innerHTML = '<th>No</th><th>Nama Peserta</th><th>Status Terbaik</th><th>Indikator</th><th>Tanggal</th>';
 
             try {
-                const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
+                // 1. TARIK SEMUA DATA (Hapus filter UID biar jadi Global)
+                const q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
                 
                 tableBody.innerHTML = '';
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada data psikotes masuk.</td></tr>';
                 } else {
-                    let dataList = [];
+                    // 2. LOGIKA CARI HASIL TERBAIK PER USER
+                    let userBestMap = {};
+
                     querySnapshot.forEach(doc => {
                         let d = doc.data();
-                        d.id = doc.id; 
-                        // Cek validitas tanggal
-                        if (!d.createdAt) {
-                            d.waktu_sortir = 0; 
-                            d.tglTampil = "-";
+                        d.id = doc.id;
+                        
+                        // Validasi data kosong
+                        if (!d.createdAt || !d.nama) return;
+
+                        // Konversi Tanggal
+                        const dateObj = d.createdAt.toDate();
+                        d.waktu_sortir = dateObj.getTime();
+                        d.tglTampil = dateObj.toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        
+                        // Hitung skor prioritas (Skala buatan untuk sorting)
+                        // Disarankan = 100 poin, Perlu Perbaikan = 0 poin.
+                        // Dikurangi jumlah Red Flag (makin sedikit makin bagus)
+                        let skorPrioritas = 0;
+                        const statusTeks = d.status || "";
+                        const redFlag = d.fail_count || 0;
+
+                        if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) {
+                            skorPrioritas = 1000 - redFlag; // Prioritas Utama
                         } else {
-                            const dateObj = d.createdAt.toDate();
-                            d.waktu_sortir = dateObj.getTime();
-                            d.tglTampil = dateObj.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                            skorPrioritas = 500 - redFlag; // Prioritas Kedua
                         }
-                        dataList.push(d);
-                    });
-                    
-                    // Urutkan dari yang terbaru
-                    dataList.sort((a, b) => b.waktu_sortir - a.waktu_sortir);
-                    
-                    dataList.forEach((d, idx) => {
-                        // LOGIKA BARU: Jika data kosong (-), jangan tampilkan apa-apa
-                        let statusTeks = "";
-                        let redFlagInfo = "";
-                        let btnCek = "";
-                        let colorStatus = "black";
+                        d.sortingScore = skorPrioritas;
 
-                        if (d.tglTampil !== "-") {
-                            // Kalau datanya VALID, baru isi variabelnya
-                            statusTeks = d.status || "Selesai";
-                            const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
-                            redFlagInfo = `${redFlagCount} Indikator`;
-                            
-                            colorStatus = '#d35400'; 
-                            if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
-                            if (statusTeks === 'PERLU PERBAIKAN') colorStatus = 'red';
-
-                            // Tombol Cek Data (Hanya muncul jika ada data)
-                            btnCek = `
-                                <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')" 
-                                    style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                    Cek Data
-                                </button>
-                            `;
+                        // LOGIKA FILTER: Cuma simpan yang terbaik buat setiap Nama/UID
+                        // Jika user belum ada di map, atau data baru ini skornya lebih tinggi, simpan.
+                        if (!userBestMap[d.uid]) {
+                            userBestMap[d.uid] = d;
                         } else {
-                            // Kalau Data KOSONG, biarkan blank
-                            d.tglTampil = ""; // Kosongkan tanggal juga biar bersih
+                            if (d.sortingScore > userBestMap[d.uid].sortingScore) {
+                                userBestMap[d.uid] = d; // Update dengan hasil yang lebih bagus
+                            }
+                        }
+                    });
+
+                    // 3. UBAH KE ARRAY & SORTING FINAL
+                    let finalRanking = Object.values(userBestMap);
+                    
+                    // Urutkan: Yang "Disarankan" paling atas, lalu berdasarkan Red Flag tersedikit
+                    finalRanking.sort((a, b) => b.sortingScore - a.sortingScore);
+                    
+                    // 4. RENDER TABEL
+                    finalRanking.forEach((d, idx) => {
+                        const statusTeks = d.status || "Selesai";
+                        const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                        
+                        let colorStatus = '#d35400'; 
+                        let iconStatus = '⚠️';
+                        
+                        if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) {
+                            colorStatus = 'green';
+                            iconStatus = '✅';
+                        }
+                        if (statusTeks.includes('PERLU')) {
+                            colorStatus = '#c0392b';
+                            iconStatus = '❌';
                         }
                         
+                        // Highlight baris punya sendiri (opsional, biar tau posisi kita dimana)
+                        let bgRow = (currentUser && d.uid === currentUser.uid) ? '#e3f2fd' : 'white';
+                        let nameDisplay = (currentUser && d.uid === currentUser.uid) ? `<b>${d.nama} (Anda)</b>` : d.nama;
+
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = "1px solid #eee";
+                        tr.style.backgroundColor = bgRow;
+                        
                         tr.innerHTML = `
                             <td style="padding:8px; text-align:center;">${idx + 1}</td>
-                            <td style="padding:8px; font-size:0.75rem;">${d.tglTampil}</td>
+                            <td style="padding:8px; text-align:left;">${nameDisplay}</td>
                             <td style="padding:8px; font-weight:bold; color:${colorStatus}">${statusTeks}</td>
-                            <td style="padding:8px; text-align:center;">${redFlagInfo}</td>
-                            <td style="padding:8px; text-align:center;">${btnCek}</td>
+                            <td style="padding:8px; text-align:center;">${redFlagCount} <small>Red Flags</small></td>
+                            <td style="padding:8px; font-size:0.75rem; text-align:center;">${d.tglTampil}</td>
                         `;
                         tableBody.appendChild(tr);
                     });
                 }
-            } catch (e) { console.error("ERROR LOAD PSIKOTES:", e); }
+            } catch (e) { console.error("ERROR LOAD PSIKOTES GLOBAL:", e); }
+
+        } else {
+            // ... (CODINGAN BAGIAN HUKUM JANGAN DIUBAH/DIHAPUS) ...
     
         } else {
             // ==========================================
@@ -3286,6 +3312,7 @@
 
 </body>
 </html>
+
 
 
 
