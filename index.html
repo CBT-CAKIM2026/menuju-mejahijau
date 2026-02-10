@@ -2915,7 +2915,7 @@
         btnHukum.style.color = '#333';
     }
 }
-// --- FUNGSI LOAD DATA DASHBOARD (UPDATE TOMBOL GLOBAL) ---
+// --- FUNGSI LOAD DATA DASHBOARD (VERSI BERSIH - TANPA TOMBOL DOUBLE) ---
     window.loadLobbyData = async () => {
         const user = auth.currentUser;
         if (!user || !db) return;
@@ -2994,6 +2994,8 @@
                         html += `<div class="mini-rank-item"><span class="rank-num">${medal}</span><span class="rank-name">${u.nama}</span><span class="rank-score">${u.total} Pts</span></div>`;
                     });
                     lbContainer.innerHTML = html;
+                    
+                    // KITA HAPUS KODE TOMBOL DI SINI SUPAYA TIDAK DOUBLE
                 }
             }
         } catch (e) { console.error("Err Leaderboard:", e); }
@@ -3118,6 +3120,7 @@
 
 </body>
 </html>
+
 
 
 
