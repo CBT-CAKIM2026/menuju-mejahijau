@@ -649,52 +649,68 @@
     
     <div id="appSection" style="display:none;">
         <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
-        <div class="sidebar-left">
+         <div class="sidebar-left">
             <div class="sidebar-header">
-                <h3>CBT CAKIM 2026</h3>
+                <h3>PRO-TAMA (CBT CAKIM PA 2026)</h3>
                 <div class="user-profile">
                     <img id="userAvatar" src="" class="user-avatar" alt="">
                     <span id="roleDisplay">Peserta</span>
                 </div>
                 <div class="timer-container" id="timerDisplay">00:00:00</div>
             </div>
+        
+            <div style="display: flex; gap: 5px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd;">
+                <button onclick="switchCategory('hukum')" id="btnTabHukum" style="flex:1; padding:10px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; background:var(--primary); color:white; transition: 0.3s;">
+                    <i class="fas fa-gavel"></i> HUKUM
+                </button>
+                <button onclick="switchCategory('psikotes')" id="btnTabPsikotes" style="flex:1; padding:10px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; background:#ccc; color:#333; transition: 0.3s;">
+                    <i class="fas fa-brain"></i> PSIKOTES
+                </button>
+            </div>
+        
             <div class="modul-selector">
-                <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">Daftar Modul:</small>
-                <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
-                <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
-                <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
-                <button class="modul-btn" id="btn-modul4" onclick="switchDatabase('modul4')">Modul 4: Pendaftaran & Relaas</button>
-                <button class="modul-btn" id="btn-modul5" onclick="switchDatabase('modul5')">Modul 5: Gugatan & Permohonan</button>
-                <button class="modul-btn" id="btn-modul6" onclick="switchDatabase('modul6')">Modul 6: PMH & Wanprestasi</button>
-                <button class="modul-btn" id="btn-modul7" onclick="switchDatabase('modul7')">Modul 7: Mediasi</button>
-                <button class="modul-btn" id="btn-modul8" onclick="switchDatabase('modul8')">Modul 8: Perkawinan (KHI)</button>
-                <button class="modul-btn" id="btn-modul8.1" onclick="switchDatabase('modul8.1')">Modul 8.1: Perkawinan (Lanjutan)</button>
-                <button class="modul-btn" id="btn-modul8.2" onclick="switchDatabase('modul8.2')">Modul 8.2: Perkawinan (Akhir)</button>
-                <button class="modul-btn" id="btn-modul8.3" onclick="switchDatabase('modul8.3')">Modul 8.3: Perkawinan (UU 1/1974)</button>
-                <button class="modul-btn" id="btn-modul8.4" onclick="switchDatabase('modul8.4')">Modul 8.4: Pelaksana (PP 9/1975)</button>
-                <button class="modul-btn" id="btn-modul9" onclick="switchDatabase('modul9')">Modul 9: Perwalian & Pengangkatan</button>
-                <button class="modul-btn" id="btn-modul10" onclick="switchDatabase('modul10')">Modul 10: Waris Islam (Dasar)</button>
-                <button class="modul-btn" id="btn-modul10.1" onclick="switchDatabase('modul10.1')">Modul 10.1: Waris (KHI)</button>
-                <button class="modul-btn" id="btn-modul10.2" onclick="switchDatabase('modul10.2')">Modul 10.2: Waris (BW)</button>
-                <button class="modul-btn" id="btn-modul10.3" onclick="switchDatabase('modul10.3')">Modul 10.3: Studi Kasus Waris</button>
-                <button class="modul-btn" id="btn-modul11" onclick="switchDatabase('modul11')">Modul 11: Wasiat & Hibah</button>
-                <button class="modul-btn" id="btn-modul12" onclick="switchDatabase('modul12')">Modul 12: Sita Jaminan</button> 
-                <button class="modul-btn" id="btn-modul13" onclick="switchDatabase('modul13')">Modul 13: Ekonomi Syariah A</button>
-                <button class="modul-btn" id="btn-modul13.1" onclick="switchDatabase('modul13.1')">Modul 13.1: Akad Syariah</button>
-                <button class="modul-btn" id="btn-modul13.2" onclick="switchDatabase('modul13.2')">Modul 13.2: Ekonomi Syariah B</button>
-                <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan</button>
-                <button class="modul-btn" id="btn-modul15" onclick="switchDatabase('modul15')">Modul 15: Buku Saku PA A</button>
-                <button class="modul-btn" id="btn-modul15.1" onclick="switchDatabase('modul15.1')">Modul 15.1: Buku Saku PA B</button>
-                <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA C</button>
-                <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Prodeo & Posbakum</button>
-                <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: E-Court, E-Litigasi & Surat Tercatat</button>
-                <button class="modul-btn" id="btn-modul18" onclick="switchDatabase('modul18')">Modul 18: PAPI Kostick</button>
-                <button class="modul-btn" id="btn-modul19" onclick="switchDatabase('modul19')">Modul 19: TPA Verbal</button>
-                <button class="modul-btn" id="btn-modul19.1" onclick="switchDatabase('modul19.1')">Modul 19.1: TPA Numerik</button>
-                <button class="modul-btn" id="btn-modul19.2" onclick="switchDatabase('modul19.2')">Modul 19.2: TPA Kuant&Tekn</button>
-                <button class="modul-btn" id="btn-modul19.3" onclick="switchDatabase('modul19.3')">Modul 19.3: TPA Daya Ingat</button>
-                <button class="modul-btn" id="btn-modul19.4" onclick="switchDatabase('modul19.4')">Modul 19.4: TPA Figural</button>
-           </div>
+                <div id="group-hukum">
+                    <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">Materi Hukum & Peradilan:</small>
+                    <button class="modul-btn active-modul" id="btn-modul1" onclick="switchDatabase('modul1')">Modul 1: Kekuasaan Kehakiman</button>
+                    <button class="modul-btn" id="btn-modul2" onclick="switchDatabase('modul2')">Modul 2: Mahkamah Agung</button>
+                    <button class="modul-btn" id="btn-modul3" onclick="switchDatabase('modul3')">Modul 3: Peradilan Agama</button>
+                    <button class="modul-btn" id="btn-modul4" onclick="switchDatabase('modul4')">Modul 4: Pendaftaran & Relaas</button>
+                    <button class="modul-btn" id="btn-modul5" onclick="switchDatabase('modul5')">Modul 5: Gugatan & Permohonan</button>
+                    <button class="modul-btn" id="btn-modul6" onclick="switchDatabase('modul6')">Modul 6: PMH & Wanprestasi</button>
+                    <button class="modul-btn" id="btn-modul7" onclick="switchDatabase('modul7')">Modul 7: Mediasi</button>
+                    <button class="modul-btn" id="btn-modul8" onclick="switchDatabase('modul8')">Modul 8: Perkawinan (KHI)</button>
+                    <button class="modul-btn" id="btn-modul8.1" onclick="switchDatabase('modul8.1')">Modul 8.1: Perkawinan (Lanjutan)</button>
+                    <button class="modul-btn" id="btn-modul8.2" onclick="switchDatabase('modul8.2')">Modul 8.2: Perkawinan (Akhir)</button>
+                    <button class="modul-btn" id="btn-modul8.3" onclick="switchDatabase('modul8.3')">Modul 8.3: Perkawinan (UU 1/1974)</button>
+                    <button class="modul-btn" id="btn-modul8.4" onclick="switchDatabase('modul8.4')">Modul 8.4: Pelaksana (PP 9/1975)</button>
+                    <button class="modul-btn" id="btn-modul9" onclick="switchDatabase('modul9')">Modul 9: Perwalian & Pengangkatan</button>
+                    <button class="modul-btn" id="btn-modul10" onclick="switchDatabase('modul10')">Modul 10: Waris Islam (Dasar)</button>
+                    <button class="modul-btn" id="btn-modul10.1" onclick="switchDatabase('modul10.1')">Modul 10.1: Waris (KHI)</button>
+                    <button class="modul-btn" id="btn-modul10.2" onclick="switchDatabase('modul10.2')">Modul 10.2: Waris (BW)</button>
+                    <button class="modul-btn" id="btn-modul10.3" onclick="switchDatabase('modul10.3')">Modul 10.3: Studi Kasus Waris</button>
+                    <button class="modul-btn" id="btn-modul11" onclick="switchDatabase('modul11')">Modul 11: Wasiat & Hibah</button>
+                    <button class="modul-btn" id="btn-modul12" onclick="switchDatabase('modul12')">Modul 12: Sita Jaminan</button> 
+                    <button class="modul-btn" id="btn-modul13" onclick="switchDatabase('modul13')">Modul 13: Ekonomi Syariah A</button>
+                    <button class="modul-btn" id="btn-modul13.1" onclick="switchDatabase('modul13.1')">Modul 13.1: Akad Syariah</button>
+                    <button class="modul-btn" id="btn-modul13.2" onclick="switchDatabase('modul13.2')">Modul 13.2: Ekonomi Syariah B</button>
+                    <button class="modul-btn" id="btn-modul14" onclick="switchDatabase('modul14')">Modul 14: Perwakafan</button>
+                    <button class="modul-btn" id="btn-modul15" onclick="switchDatabase('modul15')">Modul 15: Buku Saku PA A</button>
+                    <button class="modul-btn" id="btn-modul15.1" onclick="switchDatabase('modul15.1')">Modul 15.1: Buku Saku PA B</button>
+                    <button class="modul-btn" id="btn-modul15.2" onclick="switchDatabase('modul15.2')">Modul 15.2: Buku Saku PA C</button>
+                    <button class="modul-btn" id="btn-modul16" onclick="switchDatabase('modul16')">Modul 16: Prodeo & Posbakum</button>
+                    <button class="modul-btn" id="btn-modul17" onclick="switchDatabase('modul17')">Modul 17: E-Court, E-Litigasi & Surat Tercatat</button>
+                </div>
+        
+                <div id="group-psikotes" style="display: none;">
+                    <small style="color: #666; display:block; margin-bottom:10px; font-weight:bold;">Tes Kepribadian & TPA:</small>
+                    <button class="modul-btn" id="btn-modul18" onclick="switchDatabase('modul18')">Modul 18: PAPI Kostick</button>
+                    <button class="modul-btn" id="btn-modul19" onclick="switchDatabase('modul19')">Modul 19: TPA Verbal</button>
+                    <button class="modul-btn" id="btn-modul19.1" onclick="switchDatabase('modul19.1')">Modul 19.1: TPA Numerik</button>
+                    <button class="modul-btn" id="btn-modul19.2" onclick="switchDatabase('modul19.2')">Modul 19.2: TPA Kuant&Tekn</button>
+                    <button class="modul-btn" id="btn-modul19.3" onclick="switchDatabase('modul19.3')">Modul 19.3: TPA Daya Ingat</button>
+                    <button class="modul-btn" id="btn-modul19.4" onclick="switchDatabase('modul19.4')">Modul 19.4: TPA Figural</button>
+                </div>
+            </div>
         </div>
 
         <div class="main-content">
@@ -2579,6 +2595,31 @@
             loadQuestion(0);
             startTimer();
         }
+
+        window.switchCategory = function(cat) {
+        const groupHukum = document.getElementById('group-hukum');
+        const groupPsikotes = document.getElementById('group-psikotes');
+        const btnHukum = document.getElementById('btnTabHukum');
+        const btnPsikotes = document.getElementById('btnTabPsikotes');
+
+    if (cat === 'hukum') {
+        groupHukum.style.display = 'block';
+        groupPsikotes.style.display = 'none';
+        // Styling Button
+        btnHukum.style.background = 'var(--primary)';
+        btnHukum.style.color = 'white';
+        btnPsikotes.style.background = '#ccc';
+        btnPsikotes.style.color = '#333';
+    } else {
+        groupHukum.style.display = 'none';
+        groupPsikotes.style.display = 'block';
+        // Styling Button
+        btnPsikotes.style.background = '#8e44ad'; // Warna ungu biar beda
+        btnPsikotes.style.color = 'white';
+        btnHukum.style.background = '#ccc';
+        btnHukum.style.color = '#333';
+    }
+}
 </script>
 
 <script>
@@ -2699,3 +2740,4 @@
 
 </body>
 </html>
+
