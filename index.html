@@ -930,9 +930,9 @@
             <div id="miniLeaderboardList" style="font-size: 0.85rem;">
                 <p style="color:#ccc; text-align:center;">Memuat data...</p>
             </div>
-            <button onclick="openLeaderboard()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;">
-                Lihat Selengkapnya >
-            </button>
+        <button onclick="openLeaderboard('global')" style="width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;">
+            Lihat Selengkapnya >
+        </button>
         </div>
 
         <div style="margin-top: auto; padding-bottom: 60px;">
@@ -1286,36 +1286,108 @@
         }
     };
 
-    window.openLeaderboard = async () => {
+// --- FUNGSI DUAL MODE LEADERBOARD (GLOBAL vs MODUL) ---
+    window.openLeaderboard = async (mode = 'local') => {
         if (!db) { alert("Database belum connect"); return; }
+        
         document.getElementById('leaderboardOverlay').style.display = 'flex';
         const tbody = document.getElementById('leaderboardBody');
-        tbody.innerHTML = '<tr><td colspan="4">Sedang memuat data...</td></tr>';
-        document.getElementById('lbModulName').innerText = document.getElementById('modulTitle').innerText;
+        const titleEl = document.getElementById('lbModulName');
+        
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat Data...</td></tr>';
 
-        const q = query(collection(db, "leaderboard"), where("modul", "==", currentDatabaseId || "modul1"), orderBy("skor", "desc"), limit(100));
         try {
-            const snapshot = await getDocs(q); 
-            const bestScores = {};
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                if (!bestScores[data.nama] || parseInt(data.skor) > parseInt(bestScores[data.nama].skor)) {
-                    bestScores[data.nama] = data;
-                }
-            });
-            let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
-            tbody.innerHTML = '';
-            if (sortedData.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
-            else {
-                sortedData.forEach((val, index) => {
-                    let rowStyle = index === 0 ? 'style="background:#fff3cd; font-weight:bold;"' : (index === 1 ? 'style="background:#f8f9fa; font-weight:bold;"' : '');
-                    let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `<td ${rowStyle}>${index + 1}</td><td ${rowStyle}>${val.nama}</td><td ${rowStyle}>${val.skor}</td><td ${rowStyle}>${tgl}</td>`;
-                    tbody.appendChild(tr);
+            // === MODE 1: GLOBAL RANKING (AKUMULASI) ===
+            if (mode === 'global') {
+                titleEl.innerText = "Ranking Global (Akumulasi Poin)";
+                
+                // Ambil semua data (mirip logika sidebar tapi buat tabel)
+                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(1000));
+                const snapLb = await getDocs(qLb);
+                
+                let userTotals = {}; 
+                snapLb.forEach(doc => {
+                    const d = doc.data();
+                    const nilai = parseInt(d.skor) || 0;
+                    if (!userTotals[d.nama]) userTotals[d.nama] = {};
+                    if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
+                        userTotals[d.nama][d.modul] = nilai;
+                    }
                 });
+
+                let rankingList = [];
+                for (let [nama, modules] of Object.entries(userTotals)) {
+                    const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
+                    // Hitung jumlah modul yang dikerjakan juga biar keren
+                    const moduleCount = Object.keys(modules).length;
+                    rankingList.push({ nama: nama, total: totalPoints, count: moduleCount });
+                }
+
+                // Sortir Poin Tertinggi
+                rankingList.sort((a, b) => b.total - a.total);
+
+                // Render Tabel
+                tbody.innerHTML = '';
+                if (rankingList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
+                } else {
+                    rankingList.forEach((val, index) => {
+                        let rankDisplay = index + 1;
+                        let rowStyle = '';
+                        let icon = '';
+                        
+                        if (index === 0) { rowStyle = 'background:#fff9c4; font-weight:bold;'; icon = '🥇 '; }
+                        else if (index === 1) { rowStyle = 'background:#f5f5f5; font-weight:bold;'; icon = '🥈 '; }
+                        else if (index === 2) { rowStyle = 'background:#fff; border:1px solid #d7ccc8; font-weight:bold;'; icon = '🥉 '; }
+
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="text-align:center; ${rowStyle}">${icon}${rankDisplay}</td>
+                            <td style="${rowStyle}">${val.nama}</td>
+                            <td style="text-align:center; ${rowStyle}">${val.total} Pts</td>
+                            <td style="text-align:center; font-size:0.8rem; ${rowStyle}">${val.count} Modul</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+            } 
+            // === MODE 2: LOCAL RANKING (PER MODUL) ===
+            else {
+                // Ini logika lama lo (tetap dipertahankan buat mode ujian)
+                const currentModul = window.currentDatabaseId || "modul1";
+                titleEl.innerText = document.getElementById('modulTitle').innerText || currentModul;
+
+                const q = query(collection(db, "leaderboard"), where("modul", "==", currentModul), orderBy("skor", "desc"), limit(100));
+                const snapshot = await getDocs(q);
+                
+                const bestScores = {};
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (!bestScores[data.nama] || parseInt(data.skor) > parseInt(bestScores[data.nama].skor)) {
+                        bestScores[data.nama] = data;
+                    }
+                });
+                
+                let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
+                
+                tbody.innerHTML = '';
+                if (sortedData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data modul ini.</td></tr>';
+                } else {
+                    sortedData.forEach((val, index) => {
+                        let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${index + 1}</td><td>${val.nama}</td><td>${val.skor}</td><td>${tgl}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
             }
-        } catch (error) { console.error(error); tbody.innerHTML = '<tr><td colspan="4">Gagal memuat.</td></tr>'; }
+
+        } catch (error) { 
+            console.error(error); 
+            tbody.innerHTML = '<tr><td colspan="4" style="color:red;">Gagal memuat data.</td></tr>'; 
+        }
     };
 
     window.closeLeaderboard = () => { document.getElementById('leaderboardOverlay').style.display = 'none'; };
@@ -2843,38 +2915,31 @@
         btnHukum.style.color = '#333';
     }
 }
-// --- FUNGSI LOAD DATA DASHBOARD (FIX SKOR VS SCORE) ---
+// --- FUNGSI LOAD DATA DASHBOARD (UPDATE TOMBOL GLOBAL) ---
     window.loadLobbyData = async () => {
         const user = auth.currentUser;
         if (!user || !db) return;
 
-        // --- BAGIAN 1: GRAFIK DONUT (Baca dari 'riwayat_belajar' -> field: score) ---
+        // 1. RATA-RATA (GRAFIK)
         try {
             const qHistory = query(collection(db, "riwayat_belajar"), where("uid", "==", user.uid));
             const snapHistory = await getDocs(qHistory);
-            
             let bestScoresMap = {}; 
-
             snapHistory.forEach(doc => {
                 const d = doc.data();
-                // Di riwayat_belajar, namanya 'score'
                 const nilai = parseInt(d.score) || 0; 
-                
                 if (!bestScoresMap[d.modul] || nilai > bestScoresMap[d.modul]) {
                     bestScoresMap[d.modul] = nilai;
                 }
             });
-
             const modulesTaken = Object.values(bestScoresMap);
             let avg = 0;
             if (modulesTaken.length > 0) {
                 const totalBest = modulesTaken.reduce((a, b) => a + b, 0);
                 avg = Math.round(totalBest / modulesTaken.length);
             }
-            
             const txtAvg = document.getElementById('avgScoreText');
             if(txtAvg) txtAvg.innerText = avg;
-
             const ctx = document.getElementById('lobbyMiniChart');
             if (ctx) {
                 if (window.lobbyChartInstance) window.lobbyChartInstance.destroy();
@@ -2898,55 +2963,44 @@
             }
         } catch (e) { console.error("Err History:", e); }
 
-        // --- BAGIAN 2: TOP 3 GLOBAL (Baca dari 'leaderboard' -> field: skor) ---
+        // 2. TOP 3 GLOBAL (SIDEBAR)
         try {
-            // FIX: Urutkan berdasarkan 'skor' bukan 'score'
             const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(500));
             const snapLb = await getDocs(qLb);
-            
             let userTotals = {}; 
-
             snapLb.forEach(doc => {
                 const d = doc.data();
-                // NAH INI DIA FIXNYA: Pakai 'd.skor' (Bhs Indonesia)
                 const nilai = parseInt(d.skor) || 0; 
-                
                 if (!userTotals[d.nama]) userTotals[d.nama] = {};
-                
-                // Simpan skor tertinggi per modul
                 if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
                     userTotals[d.nama][d.modul] = nilai;
                 }
             });
-
-            // Hitung Total Akumulasi
             let rankingList = [];
             for (let [nama, modules] of Object.entries(userTotals)) {
                 const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
                 rankingList.push({ nama: nama, total: totalPoints });
             }
-
-            // Urutkan dari Poin Terbanyak
             rankingList.sort((a, b) => b.total - a.total);
 
-            // Render HTML
             const lbContainer = document.getElementById('miniLeaderboardList');
             if (lbContainer) {
                 if (rankingList.length === 0) {
-                    lbContainer.innerHTML = '<small style="color:#999; display:block; text-align:center;">Belum ada data.</small>';
+                    lbContainer.innerHTML = '<small style="color:#999;">Belum ada data.</small>';
                 } else {
                     let html = '';
                     rankingList.slice(0, 3).forEach((u, i) => {
                         let medal = i===0 ? '🥇' : (i===1 ? '🥈' : '🥉');
-                        html += `
-                            <div class="mini-rank-item">
-                                <span class="rank-num">${medal}</span>
-                                <span class="rank-name">${u.nama}</span>
-                                <span class="rank-score">${u.total} Pts</span>
-                            </div>
-                        `;
+                        html += `<div class="mini-rank-item"><span class="rank-num">${medal}</span><span class="rank-name">${u.nama}</span><span class="rank-score">${u.total} Pts</span></div>`;
                     });
                     lbContainer.innerHTML = html;
+                    
+                    // --- INI PERUBAHANNYA: TOMBOL DITAMBAH DI SINI ---
+                    const btnMore = document.createElement('button');
+                    btnMore.innerHTML = 'Lihat Selengkapnya >';
+                    btnMore.style = "width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;";
+                    btnMore.onclick = function() { window.openLeaderboard('global'); }; // PANGGIL MODE GLOBAL
+                    lbContainer.appendChild(btnMore);
                 }
             }
         } catch (e) { console.error("Err Leaderboard:", e); }
@@ -3071,6 +3125,7 @@
 
 </body>
 </html>
+
 
 
 
