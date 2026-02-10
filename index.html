@@ -323,54 +323,38 @@
             color: rgba(255,255,255,0.8);
         }
     
-        /* --- TIMER LCD MODERN (BASE STYLE) --- */
+    /* --- TIMER LCD CLEAN & TRANSPARENT --- */
         .timer-container {
-            /* Base: Kotak Hitam Digital */
-            background: #1a1a1a; 
-            font-family: 'Courier New', Courier, monospace; /* Font Digital */
-            padding: 10px 25px;
-            border-radius: 50px; /* Bentuk Pill/Kapsul */
-            font-size: 1.6rem; 
+            /* Ganti background solid jadi semi-transparan biar nyatu sama sidebar */
+            background: rgba(0, 0, 0, 0.25); 
+            backdrop-filter: blur(4px);
+            
+            font-family: 'Courier New', Courier, monospace;
+            padding: 8px 0; /* Padding atas bawah aja */
+            width: 100%;    /* Lebar penuh ngikutin container */
+            border-radius: 50px;
+            font-size: 1.5rem; 
             font-weight: 800;
             text-align: center;
             margin-top: 15px;
             
-            /* Default Border & Shadow (Mati) */
-            border: 2px solid #333;
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); /* Efek Kedalaman Layar */
-            
-            /* Transisi Halus pas ganti warna */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Border tipis putih transparan biar rapi */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; /* Warna default putih gading */
             letter-spacing: 2px;
-            
-            /* Default warna (sebelum JS load) */
-            color: #555; 
-            display: block; /* Pastikan selalu muncul */
+            transition: all 0.3s ease;
+            display: block;
         }
     
-        /* --- LOGIC WARNA (NEON EFFECT) --- */
-        /* Ini yang bakal dipanggil JS lo: Hijau -> Kuning -> Merah */
-        .timer-green {
-            color: #00e676 !important; /* Hijau Neon Menyala */
-            border-color: #00e676 !important;
-            text-shadow: 0 0 15px rgba(0, 230, 118, 0.6); /* Efek Cahaya */
-            box-shadow: inset 0 0 20px rgba(0, 230, 118, 0.1), 0 0 10px rgba(0, 230, 118, 0.2) !important;
-        }
-    
-        .timer-yellow {
-            color: #ffea00 !important; /* Kuning Emas Neon */
-            border-color: #ffea00 !important;
-            text-shadow: 0 0 15px rgba(255, 234, 0, 0.6);
-            box-shadow: inset 0 0 20px rgba(255, 234, 0, 0.1), 0 0 10px rgba(255, 234, 0, 0.2) !important;
-        }
-    
-        .timer-panic {
-            color: #ff1744 !important; /* Merah Bahaya Neon */
-            border-color: #ff1744 !important;
-            background: #2a0000 !important; /* Background agak merah dikit biar tegang */
-            text-shadow: 0 0 20px rgba(255, 23, 68, 0.9);
-            box-shadow: 0 0 25px rgba(255, 23, 68, 0.4) !important;
-            animation: panicPulse 0.5s infinite alternate;
+        /* Logic Warna Teks Tetap Jalan (Hijau/Kuning/Merah) */
+        .timer-green { color: #69f0ae !important; text-shadow: 0 0 10px rgba(105, 240, 174, 0.4); border-color: #69f0ae !important; }
+        .timer-yellow { color: #ffd740 !important; text-shadow: 0 0 10px rgba(255, 215, 64, 0.4); border-color: #ffd740 !important; }
+        .timer-panic { 
+            color: #ff5252 !important; 
+            text-shadow: 0 0 15px rgba(255, 82, 82, 0.6); 
+            border-color: #ff5252 !important; 
+            background: rgba(50, 0, 0, 0.5) !important; /* Latar agak merah dikit pas panik */
+            animation: panicPulse 0.5s infinite alternate; 
         }
     
         @keyframes panicPulse { 
@@ -1104,8 +1088,21 @@
                 
                 // FIX: Tampilkan LOBBY AWAL & Foto Profil
                 tampilkanLobby();
-                document.getElementById('roleDisplay').innerText = user.displayName;
+                // --- UPDATE DATA USER & ROLE ---
+                // Update Nama (Potong biar gak kepanjangan)
+                let namaPendek = user.displayName.split(" ")[0]; 
+                document.getElementById('roleDisplay').innerText = user.displayName; 
                 document.getElementById('userAvatar').src = user.photoURL;
+                
+                // --- LOGIKA CEK ADMIN (ilhamnp22@gmail.com) ---
+                const roleLabel = document.querySelector('.user-role-label');
+                if (user.email === "ilhamnp22@gmail.com") {
+                    // Kalo elo yang login
+                    if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-shield" style="color:#ffd700;"></i> Administrator';
+                } else {
+                    // Kalo orang lain
+                    if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-tie"></i> Peserta Ujian';
+                }
                 
                 // FIX: SEMBUNYIKAN TIMER & FOOTER HP DI LOBBY
                 document.getElementById('floatingTimer').style.display = 'none';
@@ -2859,6 +2856,7 @@
 
 </body>
 </html>
+
 
 
 
