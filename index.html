@@ -243,31 +243,140 @@
         body.mode-focus .sidebar-left { margin-left: -280px; }
         body.mode-focus #floatingTimer { display: block !important; }
 
+    /* --- HEADER SIDEBAR ELEGAN (MODERN DASHBOARD STYLE) --- */
         .sidebar-header {
             padding: 20px;
-            background-color: var(--primary);
+            /* Gradient Hijau Mewah */
+            background: linear-gradient(135deg, #004d00 0%, #002d00 100%); 
             color: white;
             text-align: center;
-            border-bottom: 3px solid var(--gold);
+            border-bottom: 4px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
-
-        .user-profile {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 10px; font-size: 0.9rem;
+    
+        /* Styling Judul Aplikasi */
+        .header-app-title {
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
-        .user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--gold); }
-
+    
+        .header-app-title h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    
+        .header-app-title span {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 600;
+            display: block;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+    
+        /* --- PROFILE CARD (GLASSMORPHISM) --- */
+        .user-profile-card {
+            background: rgba(255, 255, 255, 0.1); /* Efek Kaca */
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+            margin-bottom: 15px;
+        }
+    
+        .user-avatar-styled {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px; /* Squircle */
+            border: 2px solid var(--gold);
+            object-fit: cover;
+        }
+    
+        .user-info-text {
+            display: flex; 
+            flex-direction: column;
+            overflow: hidden;
+        }
+    
+        .user-name-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+    
+        .user-role-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.8);
+        }
+    
+        /* --- TIMER LCD MODERN (BASE STYLE) --- */
         .timer-container {
-            background: rgba(0,0,0,0.2);
-            padding: 10px; margin-top: 15px; border-radius: 5px;
-            font-size: 1.5rem; font-weight: bold; color: #ffeb3b; 
-            border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease; 
-            display: block; 
+            /* Base: Kotak Hitam Digital */
+            background: #1a1a1a; 
+            font-family: 'Courier New', Courier, monospace; /* Font Digital */
+            padding: 10px 25px;
+            border-radius: 50px; /* Bentuk Pill/Kapsul */
+            font-size: 1.6rem; 
+            font-weight: 800;
+            text-align: center;
+            margin-top: 15px;
+            
+            /* Default Border & Shadow (Mati) */
+            border: 2px solid #333;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); /* Efek Kedalaman Layar */
+            
+            /* Transisi Halus pas ganti warna */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 2px;
+            
+            /* Default warna (sebelum JS load) */
+            color: #555; 
+            display: block; /* Pastikan selalu muncul */
         }
-        .timer-green { background-color: var(--success) !important; color: white !important; border-color: var(--pass) !important; }
-        .timer-yellow { background-color: var(--warning) !important; color: black !important; border-color: #f1c40f !important; }
-        .timer-panic { background-color: var(--danger) !important; color: white !important; border-color: var(--fail) !important; animation: panicPulse 0.5s infinite alternate; }
-        @keyframes panicPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0.8; } }
+    
+        /* --- LOGIC WARNA (NEON EFFECT) --- */
+        /* Ini yang bakal dipanggil JS lo: Hijau -> Kuning -> Merah */
+        .timer-green {
+            color: #00e676 !important; /* Hijau Neon Menyala */
+            border-color: #00e676 !important;
+            text-shadow: 0 0 15px rgba(0, 230, 118, 0.6); /* Efek Cahaya */
+            box-shadow: inset 0 0 20px rgba(0, 230, 118, 0.1), 0 0 10px rgba(0, 230, 118, 0.2) !important;
+        }
+    
+        .timer-yellow {
+            color: #ffea00 !important; /* Kuning Emas Neon */
+            border-color: #ffea00 !important;
+            text-shadow: 0 0 15px rgba(255, 234, 0, 0.6);
+            box-shadow: inset 0 0 20px rgba(255, 234, 0, 0.1), 0 0 10px rgba(255, 234, 0, 0.2) !important;
+        }
+    
+        .timer-panic {
+            color: #ff1744 !important; /* Merah Bahaya Neon */
+            border-color: #ff1744 !important;
+            background: #2a0000 !important; /* Background agak merah dikit biar tegang */
+            text-shadow: 0 0 20px rgba(255, 23, 68, 0.9);
+            box-shadow: 0 0 25px rgba(255, 23, 68, 0.4) !important;
+            animation: panicPulse 0.5s infinite alternate;
+        }
+    
+        @keyframes panicPulse { 
+            0% { transform: scale(1); opacity: 1; border-color: #ff1744; } 
+            100% { transform: scale(1.05); opacity: 0.9; border-color: #ff5252; } 
+        }
 
         .modul-selector { 
             flex: 1; 
@@ -651,20 +760,22 @@
         <div class="watermark" id="watermark">Developed by Ilham Nur Pratama - APP 23 - PA Serang</div>
          <div class="sidebar-left">
             <div class="sidebar-header">
-            <img src="PRO-TAMA.png" alt="Logo" style="height: 65px; width: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
-        
-            <h3 style="margin: 0; line-height: 1.3; font-size: 1.4rem; letter-spacing: 1px;">
-                PRO-TAMA<br>
-                <span style="font-size: 0.85rem; font-weight: 600; opacity: 0.9; display: block; margin-top: 5px;">
-                    (CBT CAKIM PA 2026)
-                </span>
-            </h3>
-            
-            <div class="user-profile" style="margin-top: 15px;">
-                <img id="userAvatar" src="" class="user-avatar" alt="">
-                <span id="roleDisplay">Peserta</span>
+            <img src="PRO-TAMA.png" alt="Logo" style="height: 55px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+
+            <div class="header-app-title">
+                <h3>PRO-TAMA</h3>
+                <span>CBT CAKIM PA 2026</span>
             </div>
-            <div class="timer-container" id="timerDisplay">00:00:00</div>
+
+            <div class="user-profile-card">
+                <img id="userAvatar" src="" class="user-avatar-styled" alt="User">
+                <div class="user-info-text">
+                    <span id="roleDisplay" class="user-name-label">Memuat Nama...</span>
+                    <span class="user-role-label"><i class="fas fa-user-shield"></i> Peserta Ujian</span>
+                </div>
+            </div>
+
+            <div class="timer-pill" id="timerDisplay">00:00:00</div>
         </div>
         
             <div style="display: flex; gap: 5px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd;">
@@ -2748,5 +2859,6 @@
 
 </body>
 </html>
+
 
 
