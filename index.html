@@ -461,7 +461,7 @@
         .act-admin { background: linear-gradient(135deg, #34495e, #2c3e50); } 
         .act-rank  { background: linear-gradient(135deg, #f1c40f, #f39c12); color: white; } 
         .act-data  { background: linear-gradient(135deg, #2ecc71, #27ae60); } 
-        .act-nilai { background: linear-gradient(135deg, #e67e22, #d35400); font-weight: 700; } 
+        .act-nilai { background: linear-gradient(135deg, #9b59b6, #8e44ad); font-weight: 700; }
         .act-exit  { background: linear-gradient(135deg, #e74c3c, #c0392b); grid-column: span 2; margin-top: 5px; }
 
         /* --- 2. LAYOUT SIDEBAR & INFO (FIXED: BALIK KE TENGAH) --- */
@@ -582,11 +582,23 @@
         }
         
         .result-box { 
-            background: white; padding: 20px; border-radius: 15px; text-align: center; 
-            width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            max-height: 95vh; overflow-y: auto; animation: slideUp 0.5s ease-out; 
+            background: white; 
+            padding: 25px; /* Padding sisi */
+            border-radius: 15px; 
+            text-align: center; 
+            width: 800px; 
+            max-width: 95%; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            
+            /* --- INI PERBAIKAN SCROLLNYA --- */
+            max-height: 85vh; /* Jangan full 95vh biar gak mepet atas bawah */
+            overflow-y: auto; /* Aktifkan scroll */
+            padding-bottom: 80px !important; /* Ruang kosong ekstra di bawah biar tombol gak kepotong */
+            
+            animation: slideUp 0.5s ease-out; 
             border-top: 5px solid var(--primary);
-            position: relative; z-index: 1000000; /* LEBIH TINGGI LAGI */
+            position: relative; 
+            z-index: 1000000; 
         }
         
         .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center;  align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
@@ -1017,8 +1029,8 @@
                 <i class="fas fa-chart-bar"></i> Data
             </button>
 
-            <button class="btn-action act-nilai" id="btnShowScore" onclick="showResult()" style="display:none;">
-                <i class="fas fa-star"></i> Nilai
+             <button class="btn-action act-nilai" id="btnShowScore" onclick="showResult()" style="display:none;">
+                <i class="fas fa-award"></i> Nilai
             </button>
             
             <button class="btn-action act-exit" onclick="handleLogout()">
@@ -2454,7 +2466,7 @@
 
         if (mode === 'psikotes') {
             // ==========================================
-            // MODE 1: MENAMPILKAN DATA PSIKOTES (TETAP SAMA)
+            // MODE 1: MENAMPILKAN DATA PSIKOTES (REVISI DATA KOSONG)
             // ==========================================
             if(statsTitle) statsTitle.innerText = "Riwayat Tes Kepribadian (PAPI)";
             if(chartContainer) chartContainer.style.display = 'none'; 
@@ -2477,8 +2489,10 @@
                     querySnapshot.forEach(doc => {
                         let d = doc.data();
                         d.id = doc.id; 
+                        // Cek validitas tanggal
                         if (!d.createdAt) {
-                            d.waktu_sortir = 0; d.tglTampil = "-";
+                            d.waktu_sortir = 0; 
+                            d.tglTampil = "-";
                         } else {
                             const dateObj = d.createdAt.toDate();
                             d.waktu_sortir = dateObj.getTime();
@@ -2486,14 +2500,38 @@
                         }
                         dataList.push(d);
                     });
+                    
+                    // Urutkan dari yang terbaru
                     dataList.sort((a, b) => b.waktu_sortir - a.waktu_sortir);
                     
                     dataList.forEach((d, idx) => {
-                        const statusTeks = d.status || "Selesai";
-                        const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
-                        let colorStatus = '#d35400'; 
-                        if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
-                        if (statusTeks === 'PERLU PERBAIKAN') colorStatus = 'red';
+                        // LOGIKA BARU: Jika data kosong (-), jangan tampilkan apa-apa
+                        let statusTeks = "";
+                        let redFlagInfo = "";
+                        let btnCek = "";
+                        let colorStatus = "black";
+
+                        if (d.tglTampil !== "-") {
+                            // Kalau datanya VALID, baru isi variabelnya
+                            statusTeks = d.status || "Selesai";
+                            const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                            redFlagInfo = `${redFlagCount} Indikator`;
+                            
+                            colorStatus = '#d35400'; 
+                            if (statusTeks === 'DISARANKAN' || statusTeks === 'LULUS') colorStatus = 'green';
+                            if (statusTeks === 'PERLU PERBAIKAN') colorStatus = 'red';
+
+                            // Tombol Cek Data (Hanya muncul jika ada data)
+                            btnCek = `
+                                <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')" 
+                                    style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
+                                    Cek Data
+                                </button>
+                            `;
+                        } else {
+                            // Kalau Data KOSONG, biarkan blank
+                            d.tglTampil = ""; // Kosongkan tanggal juga biar bersih
+                        }
                         
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = "1px solid #eee";
@@ -2501,19 +2539,14 @@
                             <td style="padding:8px; text-align:center;">${idx + 1}</td>
                             <td style="padding:8px; font-size:0.75rem;">${d.tglTampil}</td>
                             <td style="padding:8px; font-weight:bold; color:${colorStatus}">${statusTeks}</td>
-                            <td style="padding:8px; text-align:center;">${redFlagCount} Indikator</td>
-                            <td style="padding:8px; text-align:center;">
-                                <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')" 
-                                    style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                    Cek Data
-                                </button>
-                            </td>
+                            <td style="padding:8px; text-align:center;">${redFlagInfo}</td>
+                            <td style="padding:8px; text-align:center;">${btnCek}</td>
                         `;
                         tableBody.appendChild(tr);
                     });
                 }
             } catch (e) { console.error("ERROR LOAD PSIKOTES:", e); }
-
+    
         } else {
             // ==========================================
             // MODE 2: MENAMPILKAN DATA HUKUM (UPDATED: LOBBY JADI LINE CHART)
@@ -3253,6 +3286,7 @@
 
 </body>
 </html>
+
 
 
 
