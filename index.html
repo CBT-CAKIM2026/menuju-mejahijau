@@ -323,7 +323,7 @@
             color: rgba(255,255,255,0.8);
         }
     
-     /* --- TIMER SOLID BOX STYLE (SESUAI GAMBAR) --- */
+    /* --- TIMER SOLID BOX (COMPACT VERSION) --- */
         .timer-container {
             /* Background Hijau Botol Solid */
             background: #0e5e2a; 
@@ -334,51 +334,45 @@
             /* Border Kuning/Emas Tipis */
             border: 2px solid #fbc02d;
             
-            /* Font Tebal & Jelas (Bukan Digital/Mono lagi, tapi Sans-Serif) */
+            /* Font Tebal tapi Ukuran Pas */
             font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: 2rem; /* Ukuran Besar */
+            font-weight: 700;
+            font-size: 1.4rem; /* KECILIN DARI 2rem KE 1.4rem */
             letter-spacing: 1px;
             
-            /* Shape Kotak dengan Sudut Tumpul (Rounded) */
-            border-radius: 12px;
-            padding: 5px 0;
-            width: 100%;
-            text-align: center;
-            margin-top: 15px;
+            /* Shape Kotak Rapi */
+            border-radius: 8px;
+            padding: 6px 0;     /* Padding atas bawah dirampingin */
+            width: 85%;         /* Lebar 85% biar ada sisa ruang kiri-kanan (Simetris) */
+            margin: 12px auto;  /* Posisi Auto Tengah (Center) */
             
-            /* Shadow biar nimbul dikit */
-            box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+            /* Shadow halus */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             
             transition: all 0.3s ease;
             display: block;
         }
     
-        /* --- LOGIC WARNA --- */
-        /* Kita mainkan Background-nya supaya ketara bedanya */
-    
-        /* FASE AMAN: Hijau - Kuning (Sesuai Gambar Default) */
+        /* --- LOGIC WARNA (TETAP SAMA) --- */
         .timer-green {
             background: #0e5e2a !important;
             color: #ffeb3b !important;
             border-color: #fbc02d !important;
         }
     
-        /* FASE WARNING: Background Kuning - Teks Hitam (Kontras Tinggi) */
         .timer-yellow {
             background: #ffeb3b !important;
             color: #222 !important;
             border-color: #f57f17 !important;
-            text-shadow: none; /* Matiin shadow biar teks hitam jelas */
+            text-shadow: none; 
         }
     
-        /* FASE PANIC: Background Merah - Teks Putih (Alarm!) */
         .timer-panic {
             background: #d32f2f !important;
             color: #fff !important;
             border-color: #b71c1c !important;
-            box-shadow: 0 0 15px rgba(211, 47, 47, 0.6) !important;
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.5) !important;
             animation: panicPulse 0.5s infinite alternate;
         }
     
@@ -2881,6 +2875,7 @@
 
 </body>
 </html>
+
 
 
 
