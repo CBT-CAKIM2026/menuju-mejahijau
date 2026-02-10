@@ -323,55 +323,63 @@
             color: rgba(255,255,255,0.8);
         }
     
-        /* --- TIMER LCD GOLD EDITION --- */
+     /* --- TIMER SOLID BOX STYLE (SESUAI GAMBAR) --- */
         .timer-container {
-            /* Background Semi-Transparan Gelap */
-            background: rgba(0, 0, 0, 0.3); 
-            backdrop-filter: blur(5px);
+            /* Background Hijau Botol Solid */
+            background: #0e5e2a; 
             
-            font-family: 'Courier New', Courier, monospace;
-            padding: 8px 0;
-            width: 100%;
-            border-radius: 50px;
-            font-size: 1.6rem; 
+            /* Angka Kuning Terang */
+            color: #ffeb3b; 
+            
+            /* Border Kuning/Emas Tipis */
+            border: 2px solid #fbc02d;
+            
+            /* Font Tebal & Jelas (Bukan Digital/Mono lagi, tapi Sans-Serif) */
+            font-family: 'Poppins', sans-serif;
             font-weight: 800;
+            font-size: 2rem; /* Ukuran Besar */
+            letter-spacing: 1px;
+            
+            /* Shape Kotak dengan Sudut Tumpul (Rounded) */
+            border-radius: 12px;
+            padding: 5px 0;
+            width: 100%;
             text-align: center;
             margin-top: 15px;
             
-            /* WARNA EMAS (DEFAULT) */
-            color: #ffd700; 
-            border: 2px solid #d4af37; /* List Pinggir Emas */
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); /* Sedikit pendar emas */
-            box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1); 
+            /* Shadow biar nimbul dikit */
+            box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             
-            letter-spacing: 2px;
             transition: all 0.3s ease;
             display: block;
         }
     
-        /* Logic Warna: AMAN = EMAS, WARNING = ORANYE, PANIC = MERAH */
-        
-        /* Timer Green kita ubah jadi Emas juga biar konsisten pas waktu masih banyak */
-        .timer-green { 
-            color: #ffd700 !important; 
-            border-color: #d4af37 !important; 
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        /* --- LOGIC WARNA --- */
+        /* Kita mainkan Background-nya supaya ketara bedanya */
+    
+        /* FASE AMAN: Hijau - Kuning (Sesuai Gambar Default) */
+        .timer-green {
+            background: #0e5e2a !important;
+            color: #ffeb3b !important;
+            border-color: #fbc02d !important;
         }
     
-        /* Kuning kita geser dikit ke Oranye biar beda sama Emas */
-        .timer-yellow { 
-            color: #ff9800 !important; 
-            border-color: #ff9800 !important; 
-            text-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+        /* FASE WARNING: Background Kuning - Teks Hitam (Kontras Tinggi) */
+        .timer-yellow {
+            background: #ffeb3b !important;
+            color: #222 !important;
+            border-color: #f57f17 !important;
+            text-shadow: none; /* Matiin shadow biar teks hitam jelas */
         }
     
-        /* Merah Panik Tetap Sama (Alarm!) */
-        .timer-panic { 
-            color: #ff5252 !important; 
-            border-color: #ff5252 !important; 
-            background: rgba(50, 0, 0, 0.6) !important;
-            text-shadow: 0 0 20px rgba(255, 82, 82, 0.8); 
-            animation: panicPulse 0.5s infinite alternate; 
+        /* FASE PANIC: Background Merah - Teks Putih (Alarm!) */
+        .timer-panic {
+            background: #d32f2f !important;
+            color: #fff !important;
+            border-color: #b71c1c !important;
+            box-shadow: 0 0 15px rgba(211, 47, 47, 0.6) !important;
+            animation: panicPulse 0.5s infinite alternate;
         }
     
         @keyframes panicPulse { 
@@ -2873,6 +2881,7 @@
 
 </body>
 </html>
+
 
 
 
