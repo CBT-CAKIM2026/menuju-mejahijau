@@ -1176,7 +1176,8 @@
                 let namaPendek = user.displayName.split(" ")[0]; 
                 document.getElementById('roleDisplay').innerText = user.displayName; 
                 document.getElementById('userAvatar').src = user.photoURL;
-                
+
+                setTimeout(() => { window.loadLobbyData(); }, 1000);
                 // --- LOGIKA CEK ADMIN (ilhamnp22@gmail.com) ---
                 const roleLabel = document.querySelector('.user-role-label');
                 if (user.email === "ilhamnp22@gmail.com") {
@@ -2842,100 +2843,117 @@
         btnHukum.style.color = '#333';
     }
 }
-    // --- FUNGSI LOAD DATA DASHBOARD LOBBY (BARU) ---
+// --- FUNGSI LOAD DATA DASHBOARD (SMART AGGREGATION V2) ---
     window.loadLobbyData = async () => {
-        if (!auth.currentUser || !db) return; // Pakai auth.currentUser biar aman
+        // Kita pakai auth.currentUser langsung biar realtime
+        const user = auth.currentUser;
+        if (!user || !db) return;
 
-        // 1. HITUNG RATA-RATA NILAI USER
+        // --- BAGIAN 1: RATA-RATA NILAI USER (Best Score per Modul) ---
         try {
-            const qHistory = query(collection(db, "riwayat_belajar"), where("uid", "==", auth.currentUser.uid));
+            const qHistory = query(collection(db, "riwayat_belajar"), where("uid", "==", user.uid));
             const snapHistory = await getDocs(qHistory);
             
-            let totalScore = 0;
-            let count = 0;
-            
+            // Logika: Cari nilai TERTINGGI untuk setiap modul unik
+            let bestScoresMap = {}; // Contoh: { 'modul1': 80, 'modul2': 90 }
+
             snapHistory.forEach(doc => {
                 const d = doc.data();
-                if (d.score !== undefined) {
-                    totalScore += parseInt(d.score);
-                    count++;
+                const score = parseInt(d.score) || 0;
+                // Jika belum ada record modul ini ATAU skor baru lebih tinggi, simpan
+                if (!bestScoresMap[d.modul] || score > bestScoresMap[d.modul]) {
+                    bestScoresMap[d.modul] = score;
                 }
             });
 
-            const avg = count > 0 ? Math.round(totalScore / count) : 0;
+            // Hitung Rata-rata dari nilai terbaik
+            const modulesTaken = Object.values(bestScoresMap);
+            let avg = 0;
+            if (modulesTaken.length > 0) {
+                const totalBest = modulesTaken.reduce((a, b) => a + b, 0);
+                avg = Math.round(totalBest / modulesTaken.length);
+            }
             
             // Update Teks Angka
             const txtAvg = document.getElementById('avgScoreText');
             if(txtAvg) txtAvg.innerText = avg;
 
-            // Render Grafik Donut (Chart.js)
+            // Render Grafik Donut
             const ctx = document.getElementById('lobbyMiniChart');
             if (ctx) {
                 if (window.lobbyChartInstance) window.lobbyChartInstance.destroy();
-                
                 window.lobbyChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Rata-rata', 'Sisa'],
+                        labels: ['Pencapaian', 'Gap'],
                         datasets: [{
                             data: [avg, 100 - avg],
-                            backgroundColor: ['#004d00', '#e0e0e0'], // Hijau vs Abu
+                            backgroundColor: [avg >= 70 ? '#2e7d32' : '#f39c12', '#eeeeee'], // Hijau kalau lulus, Kuning kalau belum
                             borderWidth: 0,
-                            cutout: '70%' // Bolong tengah
+                            cutout: '75%'
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false }, tooltip: { enabled: false } },
                         animation: { animateScale: true, animateRotate: true }
                     }
                 });
             }
+        } catch (e) { console.error("Err History:", e); }
 
-        } catch (e) {
-            console.error("Gagal load history lobby:", e);
-        }
-
-        // 2. LOAD TOP 3 GLOBAL
+        // --- BAGIAN 2: TOP 3 GLOBAL (Akumulasi Total Poin) ---
         try {
-            const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(20)); // Ambil agak banyak buat disaring
+            // Ambil data leaderboard (kita ambil agak banyak untuk diolah client-side)
+            const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(500));
             const snapLb = await getDocs(qLb);
             
-            // Filter unik nama (biar 1 orang gak menuhin top 3)
-            let uniqueRank = [];
-            let seenNames = new Set();
+            // 1. Grouping: Kumpulkan semua nilai per User
+            let userTotals = {}; // Format: { 'Budi': {modul1: 100, modul2: 90}, 'Ani': ... }
 
             snapLb.forEach(doc => {
                 const d = doc.data();
-                if (!seenNames.has(d.nama) && uniqueRank.length < 3) {
-                    seenNames.add(d.nama);
-                    uniqueRank.push(d);
+                const score = parseInt(d.score) || 0;
+                
+                if (!userTotals[d.nama]) userTotals[d.nama] = {};
+                
+                // Hanya simpan skor TERTINGGI per modul untuk user tersebut
+                if (!userTotals[d.nama][d.modul] || score > userTotals[d.nama][d.modul]) {
+                    userTotals[d.nama][d.modul] = score;
                 }
             });
 
+            // 2. Summing: Hitung Total Poin Akumulasi
+            let rankingList = [];
+            for (let [nama, modules] of Object.entries(userTotals)) {
+                const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
+                rankingList.push({ nama: nama, total: totalPoints });
+            }
+
+            // 3. Sorting: Urutkan dari poin terbanyak
+            rankingList.sort((a, b) => b.total - a.total);
+
+            // 4. Rendering: Ambil Top 3
             const lbContainer = document.getElementById('miniLeaderboardList');
             if (lbContainer) {
-                if (uniqueRank.length === 0) {
-                    lbContainer.innerHTML = '<small style="color:#999; display:block; text-align:center; padding:10px;">Belum ada data.</small>';
+                if (rankingList.length === 0) {
+                    lbContainer.innerHTML = '<small style="color:#999; display:block; text-align:center;">Belum ada data.</small>';
                 } else {
                     let html = '';
-                    uniqueRank.forEach((u, i) => {
+                    rankingList.slice(0, 3).forEach((u, i) => {
+                        let medal = i===0 ? '🥇' : (i===1 ? '🥈' : '🥉');
                         html += `
                             <div class="mini-rank-item">
-                                <span class="rank-num">#${i+1}</span>
+                                <span class="rank-num">${medal}</span>
                                 <span class="rank-name">${u.nama}</span>
-                                <span class="rank-score">${u.skor}</span>
+                                <span class="rank-score">${u.total} Pts</span>
                             </div>
                         `;
                     });
                     lbContainer.innerHTML = html;
                 }
             }
-
-        } catch (e) {
-            console.error("Gagal load leaderboard lobby:", e);
-        }
+        } catch (e) { console.error("Err Leaderboard:", e); }
     };
 </script>
 
@@ -3057,6 +3075,7 @@
 
 </body>
 </html>
+
 
 
 
