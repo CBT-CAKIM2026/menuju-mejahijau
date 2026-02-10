@@ -427,20 +427,53 @@
             z-index: 10;
         }
         
+        /* --- REVISI TAMPILAN SIDEBAR UJIAN (MODERN GRID) --- */
         .right-header {
-            padding: 15px; border-bottom: 1px solid #eee; display: flex;
-            justify-content: space-between; background: #fff; gap: 5px; flex-wrap: wrap;
+            padding: 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #eee;
+            /* Grid 2 Kolom biar rapi kotak-kotak */
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px;
         }
 
-        .btn-small {
-            border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;
-            font-size: 0.75rem; font-weight: bold; display: flex; align-items: center;
-            gap: 5px; transition: 0.2s; color: white; flex: 1; justify-content: center;
+        /* Ganti btn-small jadi btn-action biar lebih modern */
+        .btn-action {
+            border: none;
+            padding: 15px 5px;
+            border-radius: 12px; /* Sudut tumpul elegan */
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            flex-direction: column; /* Icon di atas teks */
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Shadow halus */
+            width: 100%;
+            letter-spacing: 0.5px;
         }
-        .btn-logout { background: var(--danger); }
-        .btn-stats { background: var(--accent); }
-        .btn-rank { background: var(--warning); color: black; }
-        .btn-small:hover { opacity: 0.9; }
+
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            filter: brightness(1.1);
+        }
+
+        .btn-action:active { transform: scale(0.98); }
+
+        .btn-action i { font-size: 1.4rem; margin-bottom: 2px; }
+
+        /* Palette Warna Gradient Modern */
+        .act-nilai { background: linear-gradient(135deg, #9b59b6, #8e44ad); grid-column: span 2; } /* Ungu (Nilai Full Lebar) */
+        .act-admin { background: linear-gradient(135deg, #34495e, #2c3e50); } /* Biru Gelap (Admin) */
+        .act-rank  { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.1); } /* Emas */
+        .act-data  { background: linear-gradient(135deg, #2ecc71, #27ae60); } /* Hijau Stats */
+        .act-exit  { background: linear-gradient(135deg, #e74c3c, #c0392b); grid-column: span 2; margin-top: 5px; } /* Merah (Full Lebar) */
 
         .sidebar-info {
             padding: 15px; font-size: 0.8rem; text-align: center;
@@ -945,15 +978,29 @@
         </div>
     </div>
 
-
     <div id="examSidebarContent" style="display: none; flex-direction: column; height: 100%;">
         <div class="right-header">
-            <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
-            <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
-            <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
-            <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
-            <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
+            <button class="btn-action act-nilai" id="btnShowScore" onclick="showResult()" style="display:none;">
+                <i class="fas fa-star"></i> LIHAT NILAI
+            </button>
+            
+            <button class="btn-action act-admin" id="btnAdminPanel" onclick="openAdminPanel()" style="display:none;">
+                <i class="fas fa-cogs"></i> Admin
+            </button>
+
+            <button class="btn-action act-rank" onclick="openLeaderboard()">
+                <i class="fas fa-trophy"></i> Peringkat
+            </button>
+            
+            <button class="btn-action act-data" onclick="openStats()">
+                <i class="fas fa-chart-bar"></i> Data
+            </button>
+            
+            <button class="btn-action act-exit" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
         </div>
+
         <div class="sidebar-info">
             <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
             <div style="display:flex; justify-content:center; gap:15px;">
@@ -968,8 +1015,6 @@
         <div class="finish-container" style="padding-bottom: 60px;"> <button class="btn btn-finish" onclick="confirmFinish()">Selesai</button>
         </div>
     </div>
-
-</div>
 
     <div id="resultOverlay" class="result-overlay">
         <div class="result-box" style="width:400px;">
@@ -3166,6 +3211,7 @@
 
 </body>
 </html>
+
 
 
 
