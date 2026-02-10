@@ -2843,30 +2843,28 @@
         btnHukum.style.color = '#333';
     }
 }
-// --- FUNGSI LOAD DATA DASHBOARD (SMART AGGREGATION V2) ---
+// --- FUNGSI LOAD DATA DASHBOARD (FIX SKOR VS SCORE) ---
     window.loadLobbyData = async () => {
-        // Kita pakai auth.currentUser langsung biar realtime
         const user = auth.currentUser;
         if (!user || !db) return;
 
-        // --- BAGIAN 1: RATA-RATA NILAI USER (Best Score per Modul) ---
+        // --- BAGIAN 1: GRAFIK DONUT (Baca dari 'riwayat_belajar' -> field: score) ---
         try {
             const qHistory = query(collection(db, "riwayat_belajar"), where("uid", "==", user.uid));
             const snapHistory = await getDocs(qHistory);
             
-            // Logika: Cari nilai TERTINGGI untuk setiap modul unik
-            let bestScoresMap = {}; // Contoh: { 'modul1': 80, 'modul2': 90 }
+            let bestScoresMap = {}; 
 
             snapHistory.forEach(doc => {
                 const d = doc.data();
-                const score = parseInt(d.score) || 0;
-                // Jika belum ada record modul ini ATAU skor baru lebih tinggi, simpan
-                if (!bestScoresMap[d.modul] || score > bestScoresMap[d.modul]) {
-                    bestScoresMap[d.modul] = score;
+                // Di riwayat_belajar, namanya 'score'
+                const nilai = parseInt(d.score) || 0; 
+                
+                if (!bestScoresMap[d.modul] || nilai > bestScoresMap[d.modul]) {
+                    bestScoresMap[d.modul] = nilai;
                 }
             });
 
-            // Hitung Rata-rata dari nilai terbaik
             const modulesTaken = Object.values(bestScoresMap);
             let avg = 0;
             if (modulesTaken.length > 0) {
@@ -2874,11 +2872,9 @@
                 avg = Math.round(totalBest / modulesTaken.length);
             }
             
-            // Update Teks Angka
             const txtAvg = document.getElementById('avgScoreText');
             if(txtAvg) txtAvg.innerText = avg;
 
-            // Render Grafik Donut
             const ctx = document.getElementById('lobbyMiniChart');
             if (ctx) {
                 if (window.lobbyChartInstance) window.lobbyChartInstance.destroy();
@@ -2888,7 +2884,7 @@
                         labels: ['Pencapaian', 'Gap'],
                         datasets: [{
                             data: [avg, 100 - avg],
-                            backgroundColor: [avg >= 70 ? '#2e7d32' : '#f39c12', '#eeeeee'], // Hijau kalau lulus, Kuning kalau belum
+                            backgroundColor: [avg >= 70 ? '#2e7d32' : '#f39c12', '#eeeeee'], 
                             borderWidth: 0,
                             cutout: '75%'
                         }]
@@ -2902,38 +2898,38 @@
             }
         } catch (e) { console.error("Err History:", e); }
 
-        // --- BAGIAN 2: TOP 3 GLOBAL (Akumulasi Total Poin) ---
+        // --- BAGIAN 2: TOP 3 GLOBAL (Baca dari 'leaderboard' -> field: skor) ---
         try {
-            // Ambil data leaderboard (kita ambil agak banyak untuk diolah client-side)
+            // FIX: Urutkan berdasarkan 'skor' bukan 'score'
             const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(500));
             const snapLb = await getDocs(qLb);
             
-            // 1. Grouping: Kumpulkan semua nilai per User
-            let userTotals = {}; // Format: { 'Budi': {modul1: 100, modul2: 90}, 'Ani': ... }
+            let userTotals = {}; 
 
             snapLb.forEach(doc => {
                 const d = doc.data();
-                const score = parseInt(d.score) || 0;
+                // NAH INI DIA FIXNYA: Pakai 'd.skor' (Bhs Indonesia)
+                const nilai = parseInt(d.skor) || 0; 
                 
                 if (!userTotals[d.nama]) userTotals[d.nama] = {};
                 
-                // Hanya simpan skor TERTINGGI per modul untuk user tersebut
-                if (!userTotals[d.nama][d.modul] || score > userTotals[d.nama][d.modul]) {
-                    userTotals[d.nama][d.modul] = score;
+                // Simpan skor tertinggi per modul
+                if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
+                    userTotals[d.nama][d.modul] = nilai;
                 }
             });
 
-            // 2. Summing: Hitung Total Poin Akumulasi
+            // Hitung Total Akumulasi
             let rankingList = [];
             for (let [nama, modules] of Object.entries(userTotals)) {
                 const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
                 rankingList.push({ nama: nama, total: totalPoints });
             }
 
-            // 3. Sorting: Urutkan dari poin terbanyak
+            // Urutkan dari Poin Terbanyak
             rankingList.sort((a, b) => b.total - a.total);
 
-            // 4. Rendering: Ambil Top 3
+            // Render HTML
             const lbContainer = document.getElementById('miniLeaderboardList');
             if (lbContainer) {
                 if (rankingList.length === 0) {
@@ -3075,6 +3071,7 @@
 
 </body>
 </html>
+
 
 
 
