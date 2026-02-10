@@ -427,54 +427,51 @@
             z-index: 10;
         }
         
-        /* --- REVISI TAMPILAN SIDEBAR UJIAN (MODERN GRID) --- */
+/* --- REVISI TAMPILAN SIDEBAR UJIAN (SLIM & ELEGANT V2) --- */
         .right-header {
-            padding: 20px;
+            padding: 12px; /* Padding wadah lebih rapat */
             background: #ffffff;
             border-bottom: 1px solid #eee;
-            /* Grid 2 Kolom biar rapi kotak-kotak */
+            /* Grid 2 Kolom tetap dipertahankan biar rapi */
             display: grid;
             grid-template-columns: 1fr 1fr; 
-            gap: 12px;
+            gap: 8px; /* Jarak antar tombol dirapatkan */
         }
 
-        /* Ganti btn-small jadi btn-action biar lebih modern */
         .btn-action {
             border: none;
-            padding: 15px 5px;
-            border-radius: 12px; /* Sudut tumpul elegan */
+            padding: 8px 10px; /* Padding tombol DIKECILKAN drastis */
+            border-radius: 8px; /* Radius lebih sopan (gak terlalu bulat) */
             cursor: pointer;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
             color: white;
             display: flex;
-            flex-direction: column; /* Icon di atas teks */
+            flex-direction: row; /* KUNCI: Icon di samping teks (biar tipis) */
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Shadow halus */
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
-            letter-spacing: 0.5px;
         }
 
         .btn-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            opacity: 0.95;
         }
 
-        .btn-action:active { transform: scale(0.98); }
+        /* Ukuran Icon dipaskan */
+        .btn-action i { font-size: 0.9rem; margin-bottom: 0; }
 
-        .btn-action i { font-size: 1.4rem; margin-bottom: 2px; }
-
-        /* Palette Warna Gradient Modern */
-        .act-nilai { background: linear-gradient(135deg, #9b59b6, #8e44ad); grid-column: span 2; } /* Ungu (Nilai Full Lebar) */
-        .act-admin { background: linear-gradient(135deg, #34495e, #2c3e50); } /* Biru Gelap (Admin) */
-        .act-rank  { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.1); } /* Emas */
-        .act-data  { background: linear-gradient(135deg, #2ecc71, #27ae60); } /* Hijau Stats */
-        .act-exit  { background: linear-gradient(135deg, #e74c3c, #c0392b); grid-column: span 2; margin-top: 5px; } /* Merah (Full Lebar) */
-
+        /* Warna Tetap Modern */
+        .act-nilai { background: linear-gradient(135deg, #9b59b6, #8e44ad); grid-column: span 2; font-weight: 700; }
+        .act-admin { background: linear-gradient(135deg, #34495e, #2c3e50); }
+        .act-rank  { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; }
+        .act-data  { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .act-exit  { background: linear-gradient(135deg, #e74c3c, #c0392b); grid-column: span 2; }
+        
         .sidebar-info {
             padding: 15px; font-size: 0.8rem; text-align: center;
             background: #f9f9f9; border-bottom: 1px solid #eee;
@@ -1004,7 +1001,7 @@
         <div class="sidebar-info">
             <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
             <div style="display:flex; justify-content:center; gap:15px;">
-                <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Isi</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:#1e3799; border-radius:2px;"></span> Isi</div>
                 <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
                 <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Kosong</div>
             </div>
@@ -2569,7 +2566,7 @@
                     if(statsTitle) statsTitle.innerText = "Data Modul: " + targetModul;
 
                     const thead = document.querySelector('.stats-table thead tr');
-                    if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Skor</th><th>Benar</th><th>Salah</th>';
+                    if(thead) thead.innerHTML = '<th>No</th><th>Nama</th><th>Skor</th><th>Tanggal</th>';
 
                     const currentModulHistory = allHistory.filter(h => h.modul === targetModul);
                     
@@ -3211,6 +3208,7 @@
 
 </body>
 </html>
+
 
 
 
