@@ -2307,6 +2307,9 @@
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
+    // ==========================================
+    // FUNGSI STATISTIK V6.1 (LOBBY LINE CHART UPDATE)
+    // ==========================================
     window.openStats = async function(mode = 'hukum') {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         
@@ -2426,7 +2429,7 @@
 
         } else {
             // ==========================================
-            // MODE 2: MENAMPILKAN DATA HUKUM (UPDATED LOGIC)
+            // MODE 2: MENAMPILKAN DATA HUKUM (UPDATED: LOBBY JADI LINE CHART)
             // ==========================================
             if(chartContainer) chartContainer.style.display = 'block'; 
             if(chartContainer2) chartContainer2.style.display = 'block';
@@ -2440,7 +2443,7 @@
                 let allHistory = [];
                 querySnapshot.forEach((doc) => { allHistory.push(doc.data()); });
 
-                // --- LOGIKA BARU: LOBBY vs UJIAN ---
+                // --- LOGIKA: LOBBY vs UJIAN ---
                 if (isLobbyMode) {
                     // === TAMPILAN LOBBY: SUMMARY ===
                     if(statsTitle) statsTitle.innerText = "Rangkuman Rata-Rata Seluruh Modul";
@@ -2480,7 +2483,7 @@
                         });
                     }
 
-                    // Render Grafik Bar (Summary)
+                    // --- UPDATE DI SINI: Render Grafik LINE (Summary Lobby) ---
                     setTimeout(() => {
                         const ctx = document.getElementById('statsChart').getContext('2d');
                         if (window.statsChartInstance) window.statsChartInstance.destroy();
@@ -2489,18 +2492,26 @@
                         const dataPoints = sortedKeys.map(k => Math.round(summaryStats[k].total / summaryStats[k].count));
 
                         window.statsChartInstance = new Chart(ctx, {
-                            type: 'bar',
+                            type: 'line', // <-- JADI LINE CHART
                             data: {
                                 labels: labels,
                                 datasets: [{
                                     label: 'Rata-Rata Nilai',
                                     data: dataPoints,
-                                    backgroundColor: 'rgba(46, 125, 50, 0.7)',
-                                    borderColor: '#1b5e20',
-                                    borderWidth: 1
+                                    // Styling Garis ala MA (Hijau Emas)
+                                    borderColor: '#004d00', // Hijau Botol Tua
+                                    backgroundColor: 'rgba(0, 77, 0, 0.2)', // Fill Hijau Transparan
+                                    borderWidth: 3,
+                                    tension: 0.3, // Garis agak melengkung
+                                    fill: true, // Isi warna di bawah garis
+                                    pointBackgroundColor: '#d4af37', // Titik Emas
+                                    pointBorderColor: '#004d00',
+                                    pointRadius: 5,
+                                    pointHoverRadius: 7
                                 }]
                             },
                             options: { 
+                                animation: { duration: 1500, easing: 'easeOutQuart' },
                                 responsive: true, maintainAspectRatio: false, 
                                 scales: { y: { beginAtZero: true, max: 100 } } 
                             }
@@ -2556,7 +2567,7 @@
                     }, 100);
                 }
 
-                // --- GRAFIK PETA KEKUATAN (TETAP MUNCUL DI KEDUA MODE) ---
+                // --- GRAFIK BAWAH: PETA KEKUATAN (TETAP BALOK/BAR) ---
                 let modulStats = {};
                 allHistory.forEach(h => {
                     if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
@@ -2599,7 +2610,6 @@
             } catch (e) { console.error("Error load data hukum:", e); }
         }
     };
-
     window.closeStats = function() {
         document.getElementById('statsOverlay').style.display = 'none';
         const wm = document.getElementById('watermark');
@@ -3156,4 +3166,5 @@
 
 </body>
 </html>
+
 
