@@ -706,6 +706,21 @@
             #prevBtn { margin-right: 0 !important; }
             .footer-nav > div:last-child { width: auto !important; gap: 15px !important; }
         }
+
+        /* Styling Tambahan Sidebar Lobby */
+    .stat-box-small {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+    .stat-box-small:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -879,33 +894,73 @@
             </div>
         </div>
 
-        <div class="sidebar-right">
-            <div class="right-header">
-                <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
-                <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
-                <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
-                <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
-                <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
-            </div>
+    <div class="sidebar-right">
+        <div id="lobbySidebarContent" style="padding: 20px; display: flex; flex-direction: column; height: 100%; gap: 15px;">
+        
+        <div style="background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%); padding: 20px; border-radius: 12px; border: 1px solid #eee; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="font-size: 3.5rem; margin-bottom: 5px;">⚖️</div>
+            <h3 style="margin: 0; color: var(--primary); font-weight:800; font-family:'Poppins',sans-serif;">STATISTIK</h3>
+            <p style="font-size: 0.85rem; color: #7f8c8d; margin-top:5px; font-weight:600;">Track Record Latihan</p>
             
-            <div class="sidebar-info">
-                <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
-                <div style="display:flex; justify-content:center; gap:15px;">
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
-                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
-                </div>
+            <div style="margin-top: 15px; background: #e0e0e0; height: 6px; border-radius: 10px; overflow: hidden;">
+                <div style="width: 40%; height: 100%; background: var(--gold);"></div>
             </div>
+            <div style="font-size: 0.7rem; color: #999; margin-top: 5px; text-align: right;">Level: Calon Hakim</div>
+        </div>
 
-            <div class="nav-container">
-                <div class="nav-grid" id="navGrid"></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="stat-box-small">
+                <i class="fas fa-clipboard-check" style="color: var(--success); font-size: 1.5rem; margin-bottom:5px;"></i>
+                <span style="font-weight:bold; color:#333;">Siap</span>
+                <span style="font-size:0.7rem; color:#888;">Mental</span>
             </div>
-
-            <div class="finish-container">
-                <button class="btn btn-finish" onclick="confirmFinish()">Selesai</button>
+            <div class="stat-box-small">
+                <i class="fas fa-brain" style="color: var(--purple); font-size: 1.5rem; margin-bottom:5px;"></i>
+                <span style="font-weight:bold; color:#333;">Fokus</span>
+                <span style="font-size:0.7rem; color:#888;">Maksimal</span>
             </div>
         </div>
+
+        <div style="margin-top: auto;">
+             <button class="btn" onclick="openLeaderboard()" style="width: 100%; margin-bottom: 10px; background: var(--warning); color: #000; font-weight: bold; border: 1px solid #e67e22; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <i class="fas fa-trophy"></i> Peringkat Global
+             </button>
+             <button class="btn" onclick="handleLogout()" style="width: 100%; background: var(--danger); box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <i class="fas fa-sign-out-alt"></i> Keluar Aplikasi
+             </button>
+        </div>
     </div>
+
+
+    <div id="examSidebarContent" style="display: none; flex-direction: column; height: 100%;">
+        
+        <div class="right-header">
+            <button class="btn-small" id="btnShowScore" onclick="showResult()" style="background:#9b59b6; display:none;">🏆 Nilai</button>
+            <button class="btn-small" id="btnAdminPanel" onclick="openAdminPanel()" style="background:#34495e; display:none;">⚙️ Admin</button>
+            <button class="btn-small btn-rank" onclick="openLeaderboard()">🏆 Peringkat</button>
+            <button class="btn-small btn-stats" onclick="openStats()">📊 Data</button>
+            <button class="btn-small btn-logout" onclick="handleLogout()">🚪 Keluar</button>
+        </div>
+        
+        <div class="sidebar-info">
+            <div id="progressText" style="font-weight:bold; margin-bottom:10px; color:var(--primary);">Menjawab: 0/0</div>
+            <div style="display:flex; justify-content:center; gap:15px;">
+                <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--filled); border-radius:2px;"></span> Dijawab</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:var(--warning); border-radius:2px;"></span> Ragu</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; background:white; border:1px solid #ccc; border-radius:2px;"></span> Belum</div>
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-grid" id="navGrid"></div>
+        </div>
+
+        <div class="finish-container">
+            <button class="btn btn-finish" onclick="confirmFinish()">Selesai</button>
+        </div>
+    </div>
+
+</div>
 
     <div id="resultOverlay" class="result-overlay">
         <div class="result-box" style="width:400px;">
@@ -1353,8 +1408,12 @@
 
     window.switchDatabase = async function(key) {
         if (typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
-        // Reset Audio saat ganti modul
         window.speechSynthesis.cancel();
+        
+        // --- UPDATE BARU: SWAP SIDEBAR KE MODE UJIAN ---
+        document.getElementById('lobbySidebarContent').style.display = 'none';
+        const examSide = document.getElementById('examSidebarContent');
+        if(examSide) examSide.style.display = 'flex';
         currentModulKey = key;
         window.currentDatabaseId = key;
         
@@ -2435,6 +2494,17 @@
     function tampilkanLobby() {
         document.querySelector('.question-header').style.visibility = 'hidden';
         document.querySelector('.footer-nav').style.visibility = 'hidden';
+        
+        // --- UPDATE BARU: SWAP SIDEBAR ---
+        // Sembunyikan Grid Ujian
+        const examSide = document.getElementById('examSidebarContent');
+        if(examSide) examSide.style.display = 'none';
+
+        // Tampilkan Statistik Lobby
+        const lobbySide = document.getElementById('lobbySidebarContent');
+        if(lobbySide) lobbySide.style.display = 'flex'; 
+        // ---------------------------------
+
         const qText = document.getElementById('questionText');
         qText.innerHTML = `
             <div style="text-align: center; padding: 60px 20px;">
@@ -2447,7 +2517,10 @@
         `;
         document.getElementById('optionsContainer').innerHTML = '';
         document.getElementById('feedbackBox').style.display = 'none';
-        document.querySelectorAll('.module-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.modul-btn').forEach(el => el.classList.remove('active-modul'));
+        
+        // Reset Timer Tampilan
+        document.getElementById('timerDisplay').innerText = "00:00:00";
     }
 
     // ==========================================
@@ -2875,6 +2948,7 @@
 
 </body>
 </html>
+
 
 
 
