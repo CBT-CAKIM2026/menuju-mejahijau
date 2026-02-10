@@ -1177,7 +1177,7 @@
                 document.getElementById('roleDisplay').innerText = user.displayName; 
                 document.getElementById('userAvatar').src = user.photoURL;
 
-                setTimeout(() => { window.loadLobbyData(); }, 1000);
+                setTimeout(() => { window.(); }, 1000);
                 // --- LOGIKA CEK ADMIN (ilhamnp22@gmail.com) ---
                 const roleLabel = document.querySelector('.user-role-label');
                 if (user.email === "ilhamnp22@gmail.com") {
@@ -2994,13 +2994,6 @@
                         html += `<div class="mini-rank-item"><span class="rank-num">${medal}</span><span class="rank-name">${u.nama}</span><span class="rank-score">${u.total} Pts</span></div>`;
                     });
                     lbContainer.innerHTML = html;
-                    
-                    // --- INI PERUBAHANNYA: TOMBOL DITAMBAH DI SINI ---
-                    const btnMore = document.createElement('button');
-                    btnMore.innerHTML = 'Lihat Selengkapnya >';
-                    btnMore.style = "width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;";
-                    btnMore.onclick = function() { window.openLeaderboard('global'); }; // PANGGIL MODE GLOBAL
-                    lbContainer.appendChild(btnMore);
                 }
             }
         } catch (e) { console.error("Err Leaderboard:", e); }
@@ -3125,6 +3118,7 @@
 
 </body>
 </html>
+
 
 
 
