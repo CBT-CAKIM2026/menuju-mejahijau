@@ -2465,101 +2465,146 @@
         }
 
          if (mode === 'psikotes') {
-            // ==========================================
-            // MODE 1: GLOBAL LEADERBOARD PSIKOTES (BEST RESULT PER USER)
-            // ==========================================
-            if(statsTitle) statsTitle.innerText = "Ranking Profil Kepribadian (Global)";
+            // Sembunyikan elemen grafik (karena PAPI cuma tabel)
             if(chartContainer) chartContainer.style.display = 'none'; 
             if(chartContainer2) chartContainer2.style.display = 'none';
             const title2 = document.querySelectorAll('.stats-section-title')[1];
             if(title2) title2.style.display = 'none';
-            
-            // --- HEADER TABEL BARU (SESUAI REQUEST) ---
-            const thead = document.querySelector('.stats-table thead tr');
-            if(thead) thead.innerHTML = '<th style="width:5%">No</th><th style="width:40%">Nama Peserta</th><th style="width:25%">Nilai</th><th style="width:30%">Keterangan</th>';
 
-            try {
-                // 1. TARIK SEMUA DATA
-                const q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                tableBody.innerHTML = '';
-                if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="4">Belum ada data psikotes masuk.</td></tr>';
-                } else {
-                    // 2. LOGIKA CARI HASIL TERBAIK PER USER
-                    let userBestMap = {};
+            // --- LOGIKA CABANG: LOBBY (GLOBAL) vs UJIAN (PERSONAL) ---
+            if (isLobbyMode) {
+                // ==========================================
+                // 1. TAMPILAN LOBBY: RANKING GLOBAL (No, Nama, Nilai, Keterangan)
+                // ==========================================
+                if(statsTitle) statsTitle.innerText = "Ranking Profil Kepribadian (Global)";
+                const thead = document.querySelector('.stats-table thead tr');
+                if(thead) thead.innerHTML = '<th style="width:5%">No</th><th style="width:40%">Nama Peserta</th><th style="width:25%">Nilai</th><th style="width:30%">Keterangan</th>';
 
-                    querySnapshot.forEach(doc => {
-                        let d = doc.data();
-                        d.id = doc.id;
-                        
-                        // Validasi data
-                        if (!d.createdAt || !d.nama) return;
-
-                        // Hitung skor prioritas (Sorting)
-                        // Disarankan = 1000 poin, Perlu Perbaikan = 500 poin.
-                        let skorPrioritas = 0;
-                        const statusTeks = d.status || "";
-                        const redFlag = d.fail_count || 0;
-
-                        if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) {
-                            skorPrioritas = 1000 - redFlag; 
-                        } else {
-                            skorPrioritas = 500 - redFlag; 
-                        }
-                        d.sortingScore = skorPrioritas;
-
-                        // Filter: Simpan yang terbaik
-                        if (!userBestMap[d.uid]) {
-                            userBestMap[d.uid] = d;
-                        } else {
-                            if (d.sortingScore > userBestMap[d.uid].sortingScore) {
-                                userBestMap[d.uid] = d;
-                            }
-                        }
-                    });
-
-                    // 3. UBAH KE ARRAY & SORTING FINAL
-                    let finalRanking = Object.values(userBestMap);
-                    finalRanking.sort((a, b) => b.sortingScore - a.sortingScore);
+                try {
+                    const q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
+                    const querySnapshot = await getDocs(q);
                     
-                    // 4. RENDER TABEL (FORMAT BARU: No, Nama, Nilai, Keterangan)
-                    finalRanking.forEach((d, idx) => {
-                        const statusTeks = d.status || "Selesai";
-                        const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
-                        
-                        let colorStatus = '#d35400'; 
-                        let bgStatus = '';
-                        
-                        // Styling Status
-                        if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) {
-                            colorStatus = 'green';
-                        }
-                        if (statusTeks.includes('PERLU')) {
-                            colorStatus = '#c0392b'; // Merah
-                        }
-                        
-                        // Highlight baris punya sendiri
-                        let bgRow = (currentUser && d.uid === currentUser.uid) ? '#e3f2fd' : 'white';
-                        let nameDisplay = (currentUser && d.uid === currentUser.uid) ? `<b>${d.nama} (Anda)</b>` : d.nama;
+                    tableBody.innerHTML = '';
+                    if (querySnapshot.empty) {
+                        tableBody.innerHTML = '<tr><td colspan="4">Belum ada data psikotes masuk.</td></tr>';
+                    } else {
+                        // Filter Hasil Terbaik Per User
+                        let userBestMap = {};
+                        querySnapshot.forEach(doc => {
+                            let d = doc.data();
+                            if (!d.createdAt || !d.nama) return;
 
-                        const tr = document.createElement('tr');
-                        tr.style.borderBottom = "1px solid #eee";
-                        tr.style.backgroundColor = bgRow;
+                            let skorPrioritas = 0;
+                            const statusTeks = d.status || "";
+                            const redFlag = d.fail_count || 0;
+
+                            if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) {
+                                skorPrioritas = 1000 - redFlag; 
+                            } else {
+                                skorPrioritas = 500 - redFlag; 
+                            }
+                            d.sortingScore = skorPrioritas;
+
+                            if (!userBestMap[d.uid]) {
+                                userBestMap[d.uid] = d;
+                            } else {
+                                if (d.sortingScore > userBestMap[d.uid].sortingScore) {
+                                    userBestMap[d.uid] = d;
+                                }
+                            }
+                        });
+
+                        let finalRanking = Object.values(userBestMap);
+                        finalRanking.sort((a, b) => b.sortingScore - a.sortingScore);
                         
-                        // ISI TABEL YANG DIPERBAIKI
-                        tr.innerHTML = `
-                            <td style="padding:10px; text-align:center;">${idx + 1}</td>
-                            <td style="padding:10px; text-align:left;">${nameDisplay}</td>
-                            <td style="padding:10px; font-weight:bold; color:${colorStatus}; text-align:center;">${statusTeks}</td>
-                            <td style="padding:10px; text-align:center;">${redFlagCount} Indikator (Red Flags)</td>
-                        `;
-                        tableBody.appendChild(tr);
-                    });
-                }
-            } catch (e) { console.error("ERROR LOAD PSIKOTES GLOBAL:", e); }
-    
+                        finalRanking.forEach((d, idx) => {
+                            const statusTeks = d.status || "Selesai";
+                            const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                            let colorStatus = statusTeks.includes('PERLU') ? '#c0392b' : 'green';
+                            let bgRow = (currentUser && d.uid === currentUser.uid) ? '#e3f2fd' : 'white';
+                            let nameDisplay = (currentUser && d.uid === currentUser.uid) ? `<b>${d.nama} (Anda)</b>` : d.nama;
+
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = "1px solid #eee";
+                            tr.style.backgroundColor = bgRow;
+                            
+                            tr.innerHTML = `
+                                <td style="padding:10px; text-align:center;">${idx + 1}</td>
+                                <td style="padding:10px; text-align:left;">${nameDisplay}</td>
+                                <td style="padding:10px; font-weight:bold; color:${colorStatus}; text-align:center;">${statusTeks}</td>
+                                <td style="padding:10px; text-align:center;">${redFlagCount} Indikator (Red Flags)</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    }
+                } catch (e) { console.error("ERROR LOAD PSIKOTES GLOBAL:", e); }
+
+            } else {
+                // ==========================================
+                // 2. TAMPILAN UJIAN: RIWAYAT PERSONAL (Ada Tombol Cek Data)
+                // ==========================================
+                if(statsTitle) statsTitle.innerText = "Riwayat Tes Kepribadian Anda";
+                const thead = document.querySelector('.stats-table thead tr');
+                if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
+
+                try {
+                    const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
+                    const querySnapshot = await getDocs(q);
+                    
+                    tableBody.innerHTML = '';
+                    if (querySnapshot.empty) {
+                        tableBody.innerHTML = '<tr><td colspan="5">Belum ada riwayat tes PAPI.</td></tr>';
+                    } else {
+                        let dataList = [];
+                        querySnapshot.forEach(doc => {
+                            let d = doc.data();
+                            d.id = doc.id; 
+                            if (!d.createdAt) {
+                                d.waktu_sortir = 0; d.tglTampil = "-";
+                            } else {
+                                const dateObj = d.createdAt.toDate();
+                                d.waktu_sortir = dateObj.getTime();
+                                d.tglTampil = dateObj.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                            }
+                            dataList.push(d);
+                        });
+                        dataList.sort((a, b) => b.waktu_sortir - a.waktu_sortir);
+                        
+                        dataList.forEach((d, idx) => {
+                            let statusTeks = "", redFlagInfo = "", btnCek = "", colorStatus = "black";
+
+                            // Logic: Kalau Data Kosong (-), Jangan Tampilkan Apa-apa
+                            if (d.tglTampil !== "-") {
+                                statusTeks = d.status || "Selesai";
+                                const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                                redFlagInfo = `${redFlagCount} Indikator`;
+                                colorStatus = statusTeks.includes('PERLU') ? '#c0392b' : 'green';
+
+                                btnCek = `
+                                    <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')" 
+                                        style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
+                                        Cek Data
+                                    </button>
+                                `;
+                            } else {
+                                d.tglTampil = ""; 
+                            }
+                            
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = "1px solid #eee";
+                            tr.innerHTML = `
+                                <td style="padding:8px; text-align:center;">${idx + 1}</td>
+                                <td style="padding:8px; font-size:0.75rem;">${d.tglTampil}</td>
+                                <td style="padding:8px; font-weight:bold; color:${colorStatus}">${statusTeks}</td>
+                                <td style="padding:8px; text-align:center;">${redFlagInfo}</td>
+                                <td style="padding:8px; text-align:center;">${btnCek}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    }
+                } catch (e) { console.error("ERROR LOAD PSIKOTES PERSONAL:", e); }
+            }
+
         } else {
             // ==========================================
             // MODE 2: MENAMPILKAN DATA HUKUM (UPDATED: LOBBY JADI LINE CHART)
@@ -3299,6 +3344,7 @@
 
 </body>
 </html>
+
 
 
 
