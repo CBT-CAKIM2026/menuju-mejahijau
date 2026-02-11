@@ -427,7 +427,7 @@
             <div id="miniLeaderboardList" style="font-size: 0.85rem;">
                 <p style="color:#ccc; text-align:center;">Memuat data...</p>
             </div>
-        <button onclick="openLeaderboard('global')" style="width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;">
+        <button onclick="('global')" style="width:100%; margin-top:10px; background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer; font-weight:bold;">
             Lihat Selengkapnya >
         </button>
         </div>
@@ -448,7 +448,7 @@
                 <i class="fas fa-cogs"></i> Admin
             </button>
 
-            <button class="btn-action act-rank" onclick="openLeaderboard()">
+            <button class="btn-action act-rank" onclick="()">
                 <i class="fas fa-trophy"></i> Peringkat
             </button>
             
@@ -499,7 +499,7 @@
                     <i class="fas fa-book-open"></i> Lihat Pembahasan
                 </button>
                 
-                <button onclick="closeResult(); openLeaderboard();" style="width:100%; background: #00bcd4; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <button onclick="closeResult(); ();" style="width:100%; background: #00bcd4; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fas fa-users"></i> Lihat Peringkat Teman
                 </button>
                 
@@ -812,30 +812,42 @@
         }
     };
 
-// --- FUNGSI DUAL MODE LEADERBOARD (GLOBAL vs MODUL) ---
-    window.openLeaderboard = async (mode = 'local') => {
+    // --- FUNGSI DUAL MODE LEADERBOARD (GLOBAL vs MODUL) ---
+     window.openLeaderboard = async (mode = 'local') => {
         if (!db) { alert("Database belum connect"); return; }
         
         document.getElementById('leaderboardOverlay').style.display = 'flex';
         const tbody = document.getElementById('leaderboardBody');
         const titleEl = document.getElementById('lbModulName');
+        // Ambil elemen Header Tabel buat diubah sesuai mode
+        const theadRow = document.querySelector('#leaderboardOverlay .stats-table thead tr');
         
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat Data...</td></tr>';
 
         try {
-            // === MODE 1: GLOBAL RANKING (AKUMULASI) ===
+            // === MODE 1: GLOBAL RANKING (AKUMULASI HUKUM & TPA SAJA) ===
             if (mode === 'global') {
-                titleEl.innerText = "Ranking Global";
+                titleEl.innerText = "Ranking Global (Hukum & TPA)";
+                // Ubah Header Tabel biar sesuai foto (No | Nama | Nilai | Total Tes)
+                if(theadRow) theadRow.innerHTML = '<th style="width:10%">No</th><th>Nama</th><th style="width:20%">Nilai</th><th style="width:25%">Total Tes</th>';
                 
-                // Ambil semua data (mirip logika sidebar tapi buat tabel)
-                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(1000));
+                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(2000)); // Limit gedein dikit biar kebaca semua
                 const snapLb = await getDocs(qLb);
                 
                 let userTotals = {}; 
                 snapLb.forEach(doc => {
                     const d = doc.data();
+                    
+                    // 🔥 FILTER PENTING: SKIP PAPI KOSTICK! 🔥
+                    // Kalau modulnya mengandung kata 'papi' atau id-nya 'modul18', JANGAN DIHITUNG.
+                    if (d.modul && (d.modul.toLowerCase().includes('papi') || d.modul === 'modul18')) {
+                        return; // Skip data ini
+                    }
+
                     const nilai = parseInt(d.skor) || 0;
                     if (!userTotals[d.nama]) userTotals[d.nama] = {};
+                    
+                    // Logic: Ambil nilai TERTINGGI per modul (biar gak double count kalo ngerjain ulang)
                     if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
                         userTotals[d.nama][d.modul] = nilai;
                     }
@@ -844,7 +856,6 @@
                 let rankingList = [];
                 for (let [nama, modules] of Object.entries(userTotals)) {
                     const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
-                    // Hitung jumlah modul yang dikerjakan juga biar keren
                     const moduleCount = Object.keys(modules).length;
                     rankingList.push({ nama: nama, total: totalPoints, count: moduleCount });
                 }
@@ -855,13 +866,14 @@
                 // Render Tabel
                 tbody.innerHTML = '';
                 if (rankingList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data Hukum/TPA.</td></tr>';
                 } else {
                     rankingList.forEach((val, index) => {
                         let rankDisplay = index + 1;
                         let rowStyle = '';
                         let icon = '';
                         
+                        // Styling Juara 1, 2, 3
                         if (index === 0) { rowStyle = 'background:#fff9c4; font-weight:bold;'; icon = '🥇 '; }
                         else if (index === 1) { rowStyle = 'background:#f5f5f5; font-weight:bold;'; icon = '🥈 '; }
                         else if (index === 2) { rowStyle = 'background:#fff; border:1px solid #d7ccc8; font-weight:bold;'; icon = '🥉 '; }
@@ -871,7 +883,7 @@
                             <td style="text-align:center; ${rowStyle}">${icon}${rankDisplay}</td>
                             <td style="${rowStyle}">${val.nama}</td>
                             <td style="text-align:center; ${rowStyle}">${val.total} Pts</td>
-                            <td style="text-align:center; font-size:0.8rem; ${rowStyle}">${val.count} Modul</td>
+                            <td style="text-align:center; font-size:0.85rem; ${rowStyle}">${val.count} Modul</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -880,9 +892,11 @@
             } 
             // === MODE 2: LOCAL RANKING (PER MODUL) ===
             else {
-                // Ini logika lama lo (tetap dipertahankan buat mode ujian)
                 const currentModul = window.currentDatabaseId || "modul1";
                 titleEl.innerText = document.getElementById('modulTitle').innerText || currentModul;
+                
+                // Balikin Header Tabel ke format biasa (No | Nama | Skor | Waktu)
+                if(theadRow) theadRow.innerHTML = '<th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th>';
 
                 const q = query(collection(db, "leaderboard"), where("modul", "==", currentModul), orderBy("skor", "desc"), limit(100));
                 const snapshot = await getDocs(q);
@@ -2771,3 +2785,4 @@
 
 </body>
 </html>
+
