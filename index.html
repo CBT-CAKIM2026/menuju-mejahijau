@@ -812,42 +812,45 @@
         }
     };
 
-    // --- FUNGSI DUAL MODE LEADERBOARD (GLOBAL vs MODUL) ---
-     window.openLeaderboard = async (mode = 'local') => {
-        if (!db) { alert("Database belum connect"); return; }
+// --- FUNGSI LEADERBOARD (FIXED & AMAN) ---
+    window.openLeaderboard = async (mode = 'local') => {
+        if (!db) { alert("Database belum connect! Cek koneksi internet."); return; }
         
-        document.getElementById('leaderboardOverlay').style.display = 'flex';
+        console.log("Membuka Leaderboard Mode:", mode); // Cek di Console (F12) kalau macet
+        
+        const overlay = document.getElementById('leaderboardOverlay');
         const tbody = document.getElementById('leaderboardBody');
         const titleEl = document.getElementById('lbModulName');
-        // Ambil elemen Header Tabel buat diubah sesuai mode
         const theadRow = document.querySelector('#leaderboardOverlay .stats-table thead tr');
         
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat Data...</td></tr>';
+        if (overlay) overlay.style.display = 'flex';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Sedang memuat data...</td></tr>';
 
         try {
-            // === MODE 1: GLOBAL RANKING (AKUMULASI HUKUM & TPA SAJA) ===
+            // === MODE 1: GLOBAL RANKING (FILTER HUKUM & TPA SAJA) ===
             if (mode === 'global') {
-                titleEl.innerText = "Ranking Global (Hukum & TPA)";
-                // Ubah Header Tabel biar sesuai foto (No | Nama | Nilai | Total Tes)
-                if(theadRow) theadRow.innerHTML = '<th style="width:10%">No</th><th>Nama</th><th style="width:20%">Nilai</th><th style="width:25%">Total Tes</th>';
+                if (titleEl) titleEl.innerText = "Ranking Global (Hukum & TPA)";
                 
-                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(2000)); // Limit gedein dikit biar kebaca semua
+                // Ubah Header Tabel: No | Nama | Nilai | Total Tes
+                if (theadRow) theadRow.innerHTML = '<th style="width:10%">No</th><th>Nama</th><th style="width:20%">Nilai</th><th style="width:25%">Total Tes</th>';
+                
+                // Ambil data (Limit 500 biar enteng)
+                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(500)); 
                 const snapLb = await getDocs(qLb);
                 
                 let userTotals = {}; 
                 snapLb.forEach(doc => {
                     const d = doc.data();
                     
-                    // 🔥 FILTER PENTING: SKIP PAPI KOSTICK! 🔥
-                    // Kalau modulnya mengandung kata 'papi' atau id-nya 'modul18', JANGAN DIHITUNG.
+                    // 🔥 FILTER SAKTI: Buang PAPI & Modul 18 🔥
                     if (d.modul && (d.modul.toLowerCase().includes('papi') || d.modul === 'modul18')) {
-                        return; // Skip data ini
+                        return; // Skip (Jangan dihitung)
                     }
 
                     const nilai = parseInt(d.skor) || 0;
                     if (!userTotals[d.nama]) userTotals[d.nama] = {};
                     
-                    // Logic: Ambil nilai TERTINGGI per modul (biar gak double count kalo ngerjain ulang)
+                    // Logika: Ambil nilai TERTINGGI dari setiap modul (biar gak dobel hitung)
                     if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
                         userTotals[d.nama][d.modul] = nilai;
                     }
@@ -860,43 +863,45 @@
                     rankingList.push({ nama: nama, total: totalPoints, count: moduleCount });
                 }
 
-                // Sortir Poin Tertinggi
+                // Urutkan dari Poin Tertinggi
                 rankingList.sort((a, b) => b.total - a.total);
 
-                // Render Tabel
-                tbody.innerHTML = '';
-                if (rankingList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data Hukum/TPA.</td></tr>';
-                } else {
-                    rankingList.forEach((val, index) => {
-                        let rankDisplay = index + 1;
-                        let rowStyle = '';
-                        let icon = '';
-                        
-                        // Styling Juara 1, 2, 3
-                        if (index === 0) { rowStyle = 'background:#fff9c4; font-weight:bold;'; icon = '🥇 '; }
-                        else if (index === 1) { rowStyle = 'background:#f5f5f5; font-weight:bold;'; icon = '🥈 '; }
-                        else if (index === 2) { rowStyle = 'background:#fff; border:1px solid #d7ccc8; font-weight:bold;'; icon = '🥉 '; }
+                // Tampilkan ke Tabel
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    if (rankingList.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4">Belum ada data Hukum/TPA.</td></tr>';
+                    } else {
+                        rankingList.forEach((val, index) => {
+                            let rankDisplay = index + 1;
+                            let rowStyle = '';
+                            let icon = '';
+                            
+                            // Warna Warni Juara
+                            if (index === 0) { rowStyle = 'background:#fff9c4; font-weight:bold;'; icon = '🥇 '; }
+                            else if (index === 1) { rowStyle = 'background:#f5f5f5; font-weight:bold;'; icon = '🥈 '; }
+                            else if (index === 2) { rowStyle = 'background:#fff; border:1px solid #d7ccc8; font-weight:bold;'; icon = '🥉 '; }
 
-                        let tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="text-align:center; ${rowStyle}">${icon}${rankDisplay}</td>
-                            <td style="${rowStyle}">${val.nama}</td>
-                            <td style="text-align:center; ${rowStyle}">${val.total} Pts</td>
-                            <td style="text-align:center; font-size:0.85rem; ${rowStyle}">${val.count} Modul</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
+                            let tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td style="text-align:center; ${rowStyle}">${icon}${rankDisplay}</td>
+                                <td style="${rowStyle}">${val.nama}</td>
+                                <td style="text-align:center; ${rowStyle}">${val.total} Pts</td>
+                                <td style="text-align:center; font-size:0.85rem; ${rowStyle}">${val.count} Modul</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
                 }
 
             } 
             // === MODE 2: LOCAL RANKING (PER MODUL) ===
             else {
                 const currentModul = window.currentDatabaseId || "modul1";
-                titleEl.innerText = document.getElementById('modulTitle').innerText || currentModul;
+                if (titleEl) titleEl.innerText = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : currentModul;
                 
-                // Balikin Header Tabel ke format biasa (No | Nama | Skor | Waktu)
-                if(theadRow) theadRow.innerHTML = '<th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th>';
+                // Balikin Header Tabel: No | Nama | Skor | Waktu
+                if (theadRow) theadRow.innerHTML = '<th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th>';
 
                 const q = query(collection(db, "leaderboard"), where("modul", "==", currentModul), orderBy("skor", "desc"), limit(100));
                 const snapshot = await getDocs(q);
@@ -911,22 +916,24 @@
                 
                 let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
                 
-                tbody.innerHTML = '';
-                if (sortedData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">Belum ada data modul ini.</td></tr>';
-                } else {
-                    sortedData.forEach((val, index) => {
-                        let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
-                        let tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${index + 1}</td><td>${val.nama}</td><td>${val.skor}</td><td>${tgl}</td>`;
-                        tbody.appendChild(tr);
-                    });
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    if (sortedData.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4">Belum ada data modul ini.</td></tr>';
+                    } else {
+                        sortedData.forEach((val, index) => {
+                            let tgl = val.tanggal && val.tanggal.seconds ? new Date(val.tanggal.seconds * 1000).toLocaleDateString('id-ID') : '-';
+                            let tr = document.createElement('tr');
+                            tr.innerHTML = `<td>${index + 1}</td><td>${val.nama}</td><td>${val.skor}</td><td>${tgl}</td>`;
+                            tbody.appendChild(tr);
+                        });
+                    }
                 }
             }
 
         } catch (error) { 
-            console.error(error); 
-            tbody.innerHTML = '<tr><td colspan="4" style="color:red;">Gagal memuat data.</td></tr>'; 
+            console.error("Error Leaderboard:", error); 
+            if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat: ${error.message}</td></tr>`; 
         }
     };
 
@@ -2785,4 +2792,5 @@
 
 </body>
 </html>
+
 
