@@ -812,50 +812,67 @@
         }
     };
 
-// --- FUNGSI LEADERBOARD (FIXED & AMAN) ---
+// --- FUNGSI DUAL MODE LEADERBOARD (FIXED & FILTER PAPI) ---
     window.openLeaderboard = async (mode = 'local') => {
-        if (!db) { alert("Database belum connect! Cek koneksi internet."); return; }
+        // 1. Cek Database
+        if (!window.db) { 
+            console.error("Database belum siap!"); 
+            alert("Tunggu sebentar, sedang menyambungkan ke server..."); 
+            return; 
+        }
         
-        console.log("Membuka Leaderboard Mode:", mode); // Cek di Console (F12) kalau macet
-        
+        console.log("Membuka Leaderboard Mode:", mode); // Cek Console (F12) kalau gak muncul
+
+        // 2. Siapkan UI Overlay
         const overlay = document.getElementById('leaderboardOverlay');
         const tbody = document.getElementById('leaderboardBody');
         const titleEl = document.getElementById('lbModulName');
-        const theadRow = document.querySelector('#leaderboardOverlay .stats-table thead tr');
-        
-        if (overlay) overlay.style.display = 'flex';
-        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Sedang memuat data...</td></tr>';
+        // Selector Header Tabel yang lebih aman
+        const tableHeader = document.querySelector('#leaderboardOverlay .stats-table thead tr');
+
+        if(overlay) overlay.style.display = 'flex';
+        if(tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat Data...</td></tr>';
 
         try {
-            // === MODE 1: GLOBAL RANKING (FILTER HUKUM & TPA SAJA) ===
+            // Import fungsi yang dibutuhkan dari Firebase (biar aman kalau belum ke-load)
+            const { collection, query, orderBy, limit, getDocs, where } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+
+            // === MODE 1: GLOBAL RANKING (HANYA HUKUM & TPA) ===
             if (mode === 'global') {
-                if (titleEl) titleEl.innerText = "Ranking Global (Hukum & TPA)";
+                if(titleEl) titleEl.innerText = "Ranking Global (Hukum & TPA)";
                 
                 // Ubah Header Tabel: No | Nama | Nilai | Total Tes
-                if (theadRow) theadRow.innerHTML = '<th style="width:10%">No</th><th>Nama</th><th style="width:20%">Nilai</th><th style="width:25%">Total Tes</th>';
+                if(tableHeader) tableHeader.innerHTML = '<th style="width:10%">No</th><th>Nama</th><th style="width:20%">Nilai</th><th style="width:25%">Total Tes</th>';
                 
-                // Ambil data (Limit 500 biar enteng)
-                const qLb = query(collection(db, "leaderboard"), orderBy("skor", "desc"), limit(500)); 
+                // Ambil 1000 data teratas
+                const qLb = query(collection(window.db, "leaderboard"), orderBy("skor", "desc"), limit(1000));
                 const snapLb = await getDocs(qLb);
                 
                 let userTotals = {}; 
+                
                 snapLb.forEach(doc => {
                     const d = doc.data();
                     
-                    // 🔥 FILTER SAKTI: Buang PAPI & Modul 18 🔥
-                    if (d.modul && (d.modul.toLowerCase().includes('papi') || d.modul === 'modul18')) {
-                        return; // Skip (Jangan dihitung)
+                    // --- 🔥 FILTER SAKTI: BUANG PAPI KOSTICK 🔥 ---
+                    // Cek apakah modul mengandung kata 'papi' atau id-nya 'modul18'
+                    const namaModul = d.modul ? d.modul.toString().toLowerCase() : "";
+                    if (namaModul.includes('papi') || namaModul === 'modul18') {
+                        return; // SKIP DATA INI (Gak dihitung)
                     }
 
                     const nilai = parseInt(d.skor) || 0;
+                    
+                    // Inisialisasi object user kalau belum ada
                     if (!userTotals[d.nama]) userTotals[d.nama] = {};
                     
-                    // Logika: Ambil nilai TERTINGGI dari setiap modul (biar gak dobel hitung)
+                    // Logic: Hanya ambil nilai TERTINGGI di setiap modul
+                    // (Supaya kalau ngerjain berkali-kali, yang dihitung cuma yang paling bagus)
                     if (!userTotals[d.nama][d.modul] || nilai > userTotals[d.nama][d.modul]) {
                         userTotals[d.nama][d.modul] = nilai;
                     }
                 });
 
+                // Hitung Total Poin
                 let rankingList = [];
                 for (let [nama, modules] of Object.entries(userTotals)) {
                     const totalPoints = Object.values(modules).reduce((a, b) => a + b, 0);
@@ -863,21 +880,22 @@
                     rankingList.push({ nama: nama, total: totalPoints, count: moduleCount });
                 }
 
-                // Urutkan dari Poin Tertinggi
+                // Urutkan Peringkat (Poin Tertinggi di Atas)
                 rankingList.sort((a, b) => b.total - a.total);
 
-                // Tampilkan ke Tabel
-                if (tbody) {
+                // Render ke Tabel
+                if(tbody) {
                     tbody.innerHTML = '';
                     if (rankingList.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4">Belum ada data Hukum/TPA.</td></tr>';
                     } else {
-                        rankingList.forEach((val, index) => {
+                        // Tampilkan Top 50 Aja biar gak berat
+                        rankingList.slice(0, 50).forEach((val, index) => {
                             let rankDisplay = index + 1;
                             let rowStyle = '';
                             let icon = '';
                             
-                            // Warna Warni Juara
+                            // Styling Juara
                             if (index === 0) { rowStyle = 'background:#fff9c4; font-weight:bold;'; icon = '🥇 '; }
                             else if (index === 1) { rowStyle = 'background:#f5f5f5; font-weight:bold;'; icon = '🥈 '; }
                             else if (index === 2) { rowStyle = 'background:#fff; border:1px solid #d7ccc8; font-weight:bold;'; icon = '🥉 '; }
@@ -898,12 +916,15 @@
             // === MODE 2: LOCAL RANKING (PER MODUL) ===
             else {
                 const currentModul = window.currentDatabaseId || "modul1";
-                if (titleEl) titleEl.innerText = document.getElementById('modulTitle') ? document.getElementById('modulTitle').innerText : currentModul;
-                
-                // Balikin Header Tabel: No | Nama | Skor | Waktu
-                if (theadRow) theadRow.innerHTML = '<th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th>';
+                if(titleEl) {
+                    const elJudul = document.getElementById('modulTitle');
+                    titleEl.innerText = elJudul ? elJudul.innerText : currentModul;
+                }
 
-                const q = query(collection(db, "leaderboard"), where("modul", "==", currentModul), orderBy("skor", "desc"), limit(100));
+                // Balikin Header Tabel: No | Nama | Skor | Waktu
+                if(tableHeader) tableHeader.innerHTML = '<th style="width:10%">#</th><th>Nama</th><th style="width:20%">Skor</th><th style="width:25%">Waktu</th>';
+
+                const q = query(collection(window.db, "leaderboard"), where("modul", "==", currentModul), orderBy("skor", "desc"), limit(50));
                 const snapshot = await getDocs(q);
                 
                 const bestScores = {};
@@ -916,7 +937,7 @@
                 
                 let sortedData = Object.values(bestScores).sort((a, b) => b.skor - a.skor);
                 
-                if (tbody) {
+                if(tbody) {
                     tbody.innerHTML = '';
                     if (sortedData.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4">Belum ada data modul ini.</td></tr>';
@@ -933,7 +954,7 @@
 
         } catch (error) { 
             console.error("Error Leaderboard:", error); 
-            if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat: ${error.message}</td></tr>`; 
+            if(tbody) tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat: ${error.message}</td></tr>`; 
         }
     };
 
@@ -2792,5 +2813,6 @@
 
 </body>
 </html>
+
 
 
