@@ -19,10 +19,10 @@
             --gold: #d4af37;      /* Emas Mewah */
             --purple: #8e44ad;    /* Ungu (Grafik) */
             --light: #f1f8e9;      
-            --filled: #7f8c8d;    
-            --success: #2e7d32;    
-            --danger: #c0392b;    
-            --warning: #f39c12;    
+            --filled: #7f8c8d;     
+            --success: #2e7d32;     
+            --danger: #c0392b;     
+            --warning: #f39c12;     
             --pass: #2ecc71;
             --fail: #e74c3c;
         }
@@ -499,7 +499,7 @@
                     <i class="fas fa-book-open"></i> Lihat Pembahasan
                 </button>
                 
-                <button onclick="closeResult(); ();" style="width:100%; background: #00bcd4; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <button onclick="closeResult(); openLeaderboard();" style="width:100%; background: #00bcd4; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fas fa-users"></i> Lihat Peringkat Teman
                 </button>
                 
@@ -1871,7 +1871,7 @@
             querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
             await batch.commit();
             alert("Data berhasil direset!");
-            window.openStats(); 
+            window.openStats(); // <--- GUE GANTI JADI openStats() BIAR REFRESH
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
@@ -2097,7 +2097,7 @@
                     
                     // Header Tabel Summary
                     const thead = document.querySelector('.stats-table thead tr');
-                    if(thead) thead.innerHTML = '<th>No</th><th>Nama</th><th>Nilai</th><th>Total Tes</th>';
+                    if(thead) thead.innerHTML = '<th>No</th><th>Modul</th><th>Rata-rata</th><th>Total Tes</th><th>Status</th>';
 
                     // Hitung Summary
                     let summaryStats = {};
@@ -2116,7 +2116,7 @@
                         sortedKeys.forEach((key, idx) => {
                             const data = summaryStats[key];
                             const avg = Math.round(data.total / data.count);
-                            const modulName = key.replace('modul', 'Modul ').toUpperCase();
+                            const modulName = key.replace('modul', 'MODUL ').toUpperCase();
                             
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
@@ -2171,7 +2171,7 @@
                     if(statsTitle) statsTitle.innerText = "Data Modul: " + targetModul;
 
                     const thead = document.querySelector('.stats-table thead tr');
-                    if(thead) thead.innerHTML = '<th>No</th><th>Nama</th><th>Skor</th><th>Tanggal</th>';
+                    if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Skor</th><th>Benar</th><th>Salah</th>';
 
                     const currentModulHistory = allHistory.filter(h => h.modul === targetModul);
                     
@@ -2804,8 +2804,9 @@
             });
 
             alert(report);
-        }
-    } catch (e) {
+        } // Menutup if (docSnap.exists())
+    } // <--- TAMBAHAN: Menutup try
+    catch (e) {
         alert("Gagal membedah data: " + e.message);
     }
 };
