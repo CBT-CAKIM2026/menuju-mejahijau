@@ -433,7 +433,7 @@
         </div>
 
         <div style="margin-top: auto; padding-bottom: 60px;">
-             <button class="btn" onclick="openStats()" style="width: 100%; margin-bottom: 10px; background: var(--purple); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+             <button class="btn" onclick="()" style="width: 100%; margin-bottom: 10px; background: var(--purple); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                 <i class="fas fa-chart-pie"></i> Detail Statistik
              </button>
              <button class="btn" onclick="handleLogout()" style="width: 100%; background: var(--danger); box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
@@ -452,7 +452,7 @@
                 <i class="fas fa-trophy"></i> Peringkat
             </button>
             
-            <button class="btn-action act-data" onclick="openStats()">
+            <button class="btn-action act-data" onclick="()">
                 <i class="fas fa-chart-bar"></i> Data
             </button>
 
@@ -503,7 +503,7 @@
                     <i class="fas fa-users"></i> Lihat Peringkat Teman
                 </button>
                 
-                <button class="btn btn-purple" onclick="closeResult(); openStats();" style="width:100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <button class="btn btn-purple" onclick="closeResult(); ();" style="width:100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fas fa-chart-line"></i> Lihat Grafik Lengkap
                 </button>
                 
@@ -1871,11 +1871,11 @@
             querySnapshot.forEach((doc) => { batch.delete(doc.ref); });
             await batch.commit();
             alert("Data berhasil direset!");
-            window.openStats(); 
+            window.(); 
         } catch (e) { console.error("Gagal reset:", e); alert("Gagal menghapus data."); }
     };
 
-// --- FUNGSI STATISTIK (4 FORMAT TABEL OTOMATIS) ---
+// --- FUNGSI STATISTIK (FIXED HEADER TABEL) ---
     window.openStats = async (mode = 'hukum') => {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         
@@ -1884,7 +1884,7 @@
         if(wm) wm.style.display = 'none';
         
         const tableBody = document.getElementById('statsTableBody');
-        const tableHeadRow = document.querySelector('#statsOverlay .stats-table thead tr'); 
+        const tableHeadRow = document.querySelector('#statsOverlay .stats-table thead tr'); // <-- INI KUNCINYA
         const statsTitle = document.getElementById('statsTitle');
         const chartCanvas = document.getElementById('statsChart');
         const chartContainer = chartCanvas.parentElement; 
@@ -1894,11 +1894,6 @@
         // Reset Tampilan
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Sedang mengambil data...</td></tr>';
         
-        // Cek Posisi: Lagi di Lobby atau di Dalem Modul?
-        const lobbySidebar = document.getElementById('lobbySidebarContent');
-        // Kalau sidebar lobby TIDAK none, berarti kita lagi di Lobby
-        const isLobbyMode = (lobbySidebar && getComputedStyle(lobbySidebar).display !== 'none');
-
         // Atur Warna Tombol Tab
         const btnHukum = document.getElementById('btnModeHukum');
         const btnPsi = document.getElementById('btnModePsikotes');
@@ -1912,212 +1907,153 @@
         }
 
         // ==========================================
-        // CABANG 1: PSIKOTES (PAPI KOSTICK)
+        // MODE 1: PSIKOTES (TABEL RANKING / RIWAYAT)
         // ==========================================
         if (mode === 'psikotes') {
+            // Sembunyikan Grafik
             if(chartContainer) chartContainer.style.display = 'none'; 
             if(chartContainer2) chartContainer2.style.display = 'none';
             document.querySelectorAll('.stats-section-title').forEach(el => el.style.display = 'none');
             
-            if(statsTitle) statsTitle.innerText = isLobbyMode ? "Ranking Profil (Global)" : "Riwayat Tes Kepribadian";
+            if(statsTitle) statsTitle.innerText = "Ranking Profil Kepribadian (Global)";
             
-            // 🔥 OTOMATIS GANTI HEADER 🔥
-            // Kalau Lobby: Tampilkan Nama Peserta
-            // Kalau Personal: Tampilkan Tanggal Tes
-            if(tableHeadRow) tableHeadRow.innerHTML = isLobbyMode 
-                ? `<th style="width:5%">No</th><th style="width:40%">Nama Peserta</th><th>Status</th><th>Detail</th>` 
-                : `<th style="width:5%">No</th><th>Tanggal Tes</th><th>Status</th><th>Red Flags</th><th>Detail</th>`;
+            // 🔥 UPDATE HEADER TABEL BIAR SESUAI ISI 🔥
+            if(tableHeadRow) tableHeadRow.innerHTML = `
+                <th style="width:5%">No</th>
+                <th style="width:40%">Nama Peserta</th>
+                <th style="width:25%">Status</th>
+                <th style="width:30%">Detail</th>
+            `;
 
             try {
-                // Query Data (Lobby = Semua Orang, Personal = User Sendiri)
-                let q;
-                if (isLobbyMode) {
-                    q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
-                } else {
-                    q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc"));
-                }
-                
+                // Ambil Data Psikotes
+                const q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
-                tableBody.innerHTML = '';
                 
+                tableBody.innerHTML = '';
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada data.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="4">Belum ada data.</td></tr>';
                 } else {
-                    let userBestMap = {}; // Helper buat filter duplikat di lobby
-                    let counter = 0;
-
+                    let userBestMap = {};
                     querySnapshot.forEach(doc => {
                         let d = doc.data();
                         if (!d.createdAt || !d.nama) return;
                         
-                        // Kalau Lobby: Jalankan logika "Ambil skor terbaik per user"
-                        if (isLobbyMode) {
-                            let skorPrioritas = 0;
-                            const statusTeks = d.status || "";
-                            const redFlag = d.fail_count || 0;
-                            if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) skorPrioritas = 1000 - redFlag; 
-                            else skorPrioritas = 500 - redFlag; 
-                            d.sortingScore = skorPrioritas;
+                        // Logic Sortir
+                        let skorPrioritas = 0;
+                        const statusTeks = d.status || "";
+                        const redFlag = d.fail_count || 0;
+                        if (statusTeks.includes('DISARANKAN') || statusTeks.includes('LULUS')) skorPrioritas = 1000 - redFlag; 
+                        else skorPrioritas = 500 - redFlag; 
+                        d.sortingScore = skorPrioritas;
 
-                            // Simpan hanya yang terbaik
-                            if (!userBestMap[d.uid] || d.sortingScore > userBestMap[d.uid].sortingScore) {
-                                userBestMap[d.uid] = d;
-                                userBestMap[d.uid].docId = doc.id; // Simpan ID dokumen
-                            }
-                        } else {
-                            // Kalau Personal: Langsung render semua history
-                            renderRowPsikotes(++counter, d, doc.id, isLobbyMode);
+                        // Ambil yang terbaik per user
+                        if (!userBestMap[d.uid] || d.sortingScore > userBestMap[d.uid].sortingScore) {
+                            userBestMap[d.uid] = d;
                         }
                     });
 
-                    // Render Lobby (Setelah disortir)
-                    if (isLobbyMode) {
-                        let finalRanking = Object.values(userBestMap).sort((a, b) => b.sortingScore - a.sortingScore);
-                        finalRanking.forEach((d, idx) => {
-                            renderRowPsikotes(idx + 1, d, d.docId, isLobbyMode);
-                        });
-                    }
+                    let finalRanking = Object.values(userBestMap).sort((a, b) => b.sortingScore - a.sortingScore);
+                    
+                    finalRanking.forEach((d, idx) => {
+                        const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
+                        let colorStatus = (d.status || "").includes('PERLU') ? '#c0392b' : 'green';
+                        let bgRow = (currentUser && d.uid === currentUser.uid) ? '#e3f2fd' : 'white'; // Highlight User Sendiri
+                        let nameDisplay = (currentUser && d.uid === currentUser.uid) ? `<b>${d.nama} (Anda)</b>` : d.nama;
+
+                        const tr = document.createElement('tr');
+                        tr.style.backgroundColor = bgRow;
+                        tr.innerHTML = `
+                            <td>${idx + 1}</td>
+                            <td style="text-align:left;">${nameDisplay}</td>
+                            <td style="font-weight:bold; color:${colorStatus}">${d.status}</td>
+                            <td style="font-size:0.8rem;">${redFlagCount} Flags (Indikator)</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
                 }
             } catch (e) { console.error(e); }
 
         } else {
             // ==========================================
-            // CABANG 2: AKADEMIK (HUKUM & TPA)
+            // MODE 2: AKADEMIK (HUKUM & TPA)
             // ==========================================
             if(chartContainer) chartContainer.style.display = 'block'; 
             if(chartContainer2) chartContainer2.style.display = 'block';
             document.querySelectorAll('.stats-section-title').forEach(el => el.style.display = 'block');
             
+            if(statsTitle) statsTitle.innerText = "Rata-Rata Seluruh Modul";
+
+            // 🔥 UPDATE HEADER TABEL UNTUK AKADEMIK 🔥
+            if(tableHeadRow) tableHeadRow.innerHTML = `
+                <th style="width:5%">No</th>
+                <th>Modul</th>
+                <th>Nilai Rata2</th>
+                <th>Percobaan</th>
+                <th>Ket</th>
+            `;
+
             try {
                 const q = query(collection(db, "riwayat_belajar"), where("uid", "==", currentUser.uid), orderBy("timestamp", "asc"));
                 const querySnapshot = await getDocs(q);
                 let allHistory = [];
                 querySnapshot.forEach((doc) => { allHistory.push(doc.data()); });
 
-                // --- POSISI DI LOBBY (TABEL RANGKUMAN) ---
-                if (isLobbyMode) {
-                    if(statsTitle) statsTitle.innerText = "Rangkuman Performa (Rata-Rata)";
-                    
-                    // 🔥 HEADER LOBBY 🔥
-                    if(tableHeadRow) tableHeadRow.innerHTML = `<th>No</th><th>Modul</th><th>Rata-Rata</th><th>Total Tes</th><th>Status</th>`;
+                let summaryStats = {};
+                allHistory.forEach(h => {
+                    if(!summaryStats[h.modul]) summaryStats[h.modul] = { total: 0, count: 0 };
+                    summaryStats[h.modul].total += parseInt(h.score);
+                    summaryStats[h.modul].count++;
+                });
 
-                    let summaryStats = {};
-                    allHistory.forEach(h => {
-                        if(!summaryStats[h.modul]) summaryStats[h.modul] = { total: 0, count: 0 };
-                        summaryStats[h.modul].total += parseInt(h.score);
-                        summaryStats[h.modul].count++;
+                tableBody.innerHTML = '';
+                const sortedKeys = Object.keys(summaryStats).sort();
+                
+                if (sortedKeys.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5">Belum ada data latihan.</td></tr>';
+                } else {
+                    sortedKeys.forEach((key, idx) => {
+                        const data = summaryStats[key];
+                        const avg = Math.round(data.total / data.count);
+                        const modulName = key.replace('modul', 'MODUL ').toUpperCase();
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${idx+1}</td>
+                            <td style="text-align:left;">${modulName}</td>
+                            <td style="font-weight:bold; color:${avg>=70?'green':'#d35400'}">${avg}</td>
+                            <td>${data.count}x</td>
+                            <td>${avg>=70 ? '✅ Aman' : '⚠️ Tingkatkan'}</td>
+                        `;
+                        tableBody.appendChild(tr);
                     });
-
-                    tableBody.innerHTML = '';
-                    const sortedKeys = Object.keys(summaryStats).sort();
-                    
-                    if (sortedKeys.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5">Belum ada data latihan.</td></tr>';
-                    } else {
-                        sortedKeys.forEach((key, idx) => {
-                            const data = summaryStats[key];
-                            const avg = Math.round(data.total / data.count);
-                            const modulName = key.replace('modul', 'MODUL ').toUpperCase();
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${idx+1}</td>
-                                <td style="text-align:left;">${modulName}</td>
-                                <td style="font-weight:bold; color:${avg>=70?'green':'#d35400'}">${avg}</td>
-                                <td>${data.count}x</td>
-                                <td>${avg>=70 ? '✅ Aman' : '⚠️ Tingkatkan'}</td>
-                            `;
-                            tableBody.appendChild(tr);
-                        });
-                    }
-                    // Render Chart Summary
-                    renderChart(sortedKeys.map(k=>k.replace('modul','M-').toUpperCase()), sortedKeys.map(k=>Math.round(summaryStats[k].total/summaryStats[k].count)));
-
-                } 
-                // --- POSISI DI MODUL (TABEL RIWAYAT DETAIL) --- 
-                else {
-                    let targetModul = window.currentDatabaseId || 'modul1';
-                    if(statsTitle) statsTitle.innerText = "Riwayat Pengerjaan: " + targetModul;
-
-                    // 🔥 HEADER DETAIL MODUL (FIXED DATE vs MODUL) 🔥
-                    if(tableHeadRow) tableHeadRow.innerHTML = `<th>No</th><th>Tanggal Tes</th><th>Skor</th><th>Benar</th><th>Salah</th>`;
-
-                    const currentModulHistory = allHistory.filter(h => h.modul === targetModul);
-                    
-                    tableBody.innerHTML = '';
-                    if (currentModulHistory.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5">Belum ada data untuk modul ini.</td></tr>';
-                    } else {
-                        [...currentModulHistory].reverse().forEach((d, idx) => {
-                            const tr = document.createElement('tr');
-                            // ISINYA DISINKRONKAN DENGAN HEADER: Date masuk ke kolom ke-2
-                            tr.innerHTML = `
-                                <td>${idx+1}</td>
-                                <td style="font-size:0.85rem;">${d.date}</td>
-                                <td style="font-weight:bold; font-size:1.1rem; color:${d.score>=70?'green':'red'}">${d.score}</td>
-                                <td style="color:green;">${d.correct} ✅</td>
-                                <td style="color:red;">${d.wrong} ❌</td>
-                            `;
-                            tableBody.appendChild(tr);
-                        });
-                    }
-                    // Render Chart Detail
-                    renderChart(currentModulHistory.map((_, i) => "Tes " + (i+1)), currentModulHistory.map(d => d.score));
                 }
 
-                // Render Bar Chart Bawah (Peta Kekuatan - Selalu Ada)
-                let modulStats = {};
-                allHistory.forEach(h => {
-                    if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
-                    modulStats[h.modul].total += h.score; modulStats[h.modul].count++;
-                });
-                const sortedKeys = Object.keys(modulStats).sort();
+                // Render Chart (Sama kayak sebelumnya)
+                setTimeout(() => {
+                    const ctx = document.getElementById('statsChart').getContext('2d');
+                    if (window.statsChartInstance) window.statsChartInstance.destroy();
+                    const labels = sortedKeys.map(k => k.replace('modul', 'M-').toUpperCase());
+                    const dataPoints = sortedKeys.map(k => Math.round(summaryStats[k].total / summaryStats[k].count));
+                    window.statsChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: { labels: labels, datasets: [{ label: 'Rata-Rata Nilai', data: dataPoints, borderColor: '#004d00', backgroundColor: 'rgba(0, 77, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointBackgroundColor: '#d4af37' }] },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+                    });
+                }, 100);
+
+                // Render Bar Chart Bawah
                 const ctxAll = document.getElementById('allModulesChart').getContext('2d');
                 if (window.allModulesChartInstance) window.allModulesChartInstance.destroy();
                 window.allModulesChartInstance = new Chart(ctxAll, {
                     type: 'bar',
-                    data: { labels: sortedKeys.map(k=>k.replace('modul','M-')), datasets: [{ label: 'Rata-rata', data: sortedKeys.map(k=>Math.round(modulStats[k].total/modulStats[k].count)), backgroundColor: '#e67e22' }] },
+                    data: { labels: sortedKeys.map(k=>k.replace('modul','M-')), datasets: [{ label: 'Rata-rata', data: sortedKeys.map(k=>Math.round(summaryStats[k].total/summaryStats[k].count)), backgroundColor: '#e67e22' }] },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
                 });
 
             } catch (e) { console.error(e); }
         }
-        
-        // Helper Rendering Row Psikotes (Biar rapi)
-        function renderRowPsikotes(num, d, docId, isLobby) {
-            const tableBody = document.getElementById('statsTableBody');
-            const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
-            let colorStatus = (d.status || "").includes('PERLU') ? '#c0392b' : 'green';
-            let bgRow = (currentUser && d.uid === currentUser.uid) ? '#e3f2fd' : 'white'; 
-            
-            // Kolom 2: Nama (Lobby) ATAU Tanggal (Personal)
-            let col2Content = isLobby ? d.nama : (d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleDateString('id-ID') : "-");
-            
-            // Kolom 4: Detail Flags (Lobby) ATAU Text Indikator (Personal)
-            let col4Content = isLobby ? `${redFlagCount} Flags` : `${redFlagCount} Indikator`;
-
-            const tr = document.createElement('tr');
-            tr.style.backgroundColor = bgRow;
-            tr.innerHTML = `
-                <td>${num}</td>
-                <td style="text-align:left;">${col2Content}</td>
-                <td><span style="font-weight:bold; color:${colorStatus}">${d.status}</span></td>
-                <td style="font-size:0.8rem;">${col4Content}</td>
-                <td><button onclick="bukaDetailPapi('${docId}')" style="cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px; font-size:0.7rem;">Cek</button></td>
-            `;
-            tableBody.appendChild(tr);
-        }
     };
-
-    // Helper Chart Render
-    function renderChart(labels, dataPoints) {
-        const ctx = document.getElementById('statsChart').getContext('2d');
-        if (window.statsChartInstance) window.statsChartInstance.destroy();
-        window.statsChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labels, datasets: [{ label: 'Nilai', data: dataPoints, borderColor: '#004d00', backgroundColor: 'rgba(0, 77, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointBackgroundColor: '#d4af37' }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
-        });
-    }
             } else {
                 // ==========================================
                 // 2. TAMPILAN UJIAN: RIWAYAT PERSONAL (Ada Tombol Cek Data)
@@ -2923,6 +2859,7 @@
 
 </body>
 </html>
+
 
 
 
