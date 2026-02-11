@@ -1876,9 +1876,9 @@
     };
 
     // ==========================================
-    // FUNGSI STATISTIK V6.1 (LOBBY LINE CHART UPDATE)
+    // FUNGSI STATISTIK V6.2 (FIXED TABLE HEADERS)
     // ==========================================
-    window.openStats = async function(mode = 'hukum') {
+     window.openStats = async function(mode = 'hukum') {
         if(!currentUser) { alert("Login dulu bro!"); return; }
         
         document.getElementById('statsOverlay').style.display = 'flex';
@@ -1943,11 +1943,13 @@
             // --- LOGIKA CABANG: LOBBY (GLOBAL) vs UJIAN (PERSONAL) ---
             if (isLobbyMode) {
                 // ==========================================
-                // 1. TAMPILAN LOBBY: RANKING GLOBAL (No, Nama, Nilai, Keterangan)
+                // 1. TAMPILAN LOBBY: RANKING GLOBAL 
+                // REQUEST 1b: No, Nama, Nilai, Indikator
                 // ==========================================
                 if(statsTitle) statsTitle.innerText = "Ranking Profil Kepribadian (Global)";
                 const thead = document.querySelector('.stats-table thead tr');
-                if(thead) thead.innerHTML = '<th style="width:5%">No</th><th style="width:40%">Nama Peserta</th><th style="width:25%">Nilai</th><th style="width:30%">Keterangan</th>';
+                // FIX HEADER DISINI
+                if(thead) thead.innerHTML = '<th style="width:5%">No</th><th style="width:40%">Nama</th><th style="width:25%">Nilai</th><th style="width:30%">Indikator</th>';
 
                 try {
                     const q = query(collection(db, "riwayat_psikotes"), orderBy("createdAt", "desc"));
@@ -1997,11 +1999,12 @@
                             tr.style.borderBottom = "1px solid #eee";
                             tr.style.backgroundColor = bgRow;
                             
+                            // ISI TABEL DISESUAIKAN DENGAN HEADER: No, Nama, Nilai, Indikator
                             tr.innerHTML = `
                                 <td style="padding:10px; text-align:center;">${idx + 1}</td>
                                 <td style="padding:10px; text-align:left;">${nameDisplay}</td>
                                 <td style="padding:10px; font-weight:bold; color:${colorStatus}; text-align:center;">${statusTeks}</td>
-                                <td style="padding:10px; text-align:center;">${redFlagCount} Indikator (Red Flags)</td>
+                                <td style="padding:10px; text-align:center;">${redFlagCount} Red Flags</td>
                             `;
                             tableBody.appendChild(tr);
                         });
@@ -2010,11 +2013,13 @@
 
             } else {
                 // ==========================================
-                // 2. TAMPILAN UJIAN: RIWAYAT PERSONAL (Ada Tombol Cek Data)
+                // 2. TAMPILAN UJIAN: RIWAYAT PERSONAL 
+                // REQUEST 2b: No, Tanggal, Nilai, Indikator, Ket
                 // ==========================================
                 if(statsTitle) statsTitle.innerText = "Riwayat Tes Kepribadian Anda";
                 const thead = document.querySelector('.stats-table thead tr');
-                if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Status</th><th>Red Flags</th><th>Detail</th>';
+                // FIX HEADER DISINI
+                if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Nilai</th><th>Indikator</th><th>Ket</th>';
 
                 try {
                     const q = query(collection(db, "riwayat_psikotes"), where("uid", "==", currentUser.uid));
@@ -2042,17 +2047,16 @@
                         dataList.forEach((d, idx) => {
                             let statusTeks = "", redFlagInfo = "", btnCek = "", colorStatus = "black";
 
-                            // Logic: Kalau Data Kosong (-), Jangan Tampilkan Apa-apa
                             if (d.tglTampil !== "-") {
                                 statusTeks = d.status || "Selesai";
                                 const redFlagCount = d.fail_count !== undefined ? d.fail_count : 0;
-                                redFlagInfo = `${redFlagCount} Indikator`;
+                                redFlagInfo = `${redFlagCount} Flags`;
                                 colorStatus = statusTeks.includes('PERLU') ? '#c0392b' : 'green';
 
                                 btnCek = `
                                     <button class="btn-cek" onclick="bukaDetailPapi('${d.id}')" 
                                         style="font-size:0.7rem; cursor:pointer; background:#3498db; color:white; border:none; padding:3px 8px; border-radius:4px;">
-                                        Cek Data
+                                        Cek
                                     </button>
                                 `;
                             } else {
@@ -2061,6 +2065,8 @@
                             
                             const tr = document.createElement('tr');
                             tr.style.borderBottom = "1px solid #eee";
+                            
+                            // ISI TABEL: No, Tanggal, Nilai, Indikator, Ket
                             tr.innerHTML = `
                                 <td style="padding:8px; text-align:center;">${idx + 1}</td>
                                 <td style="padding:8px; font-size:0.75rem;">${d.tglTampil}</td>
@@ -2076,7 +2082,7 @@
 
         } else {
             // ==========================================
-            // MODE 2: MENAMPILKAN DATA HUKUM (UPDATED: LOBBY JADI LINE CHART)
+            // MODE 2: MENAMPILKAN DATA HUKUM 
             // ==========================================
             if(chartContainer) chartContainer.style.display = 'block'; 
             if(chartContainer2) chartContainer2.style.display = 'block';
@@ -2092,12 +2098,12 @@
 
                 // --- LOGIKA: LOBBY vs UJIAN ---
                 if (isLobbyMode) {
-                    // === TAMPILAN LOBBY: SUMMARY ===
+                    // === TAMPILAN LOBBY: SUMMARY (REQUEST 1a: Sudah Sesuai) ===
                     if(statsTitle) statsTitle.innerText = "Rata-Rata Seluruh Modul";
                     
-                    // Header Tabel Summary
+                    // Header Tabel Summary (No, Modul, Nilai, Percobaan, Ket) - SESUAI
                     const thead = document.querySelector('.stats-table thead tr');
-                    if(thead) thead.innerHTML = '<th>No</th><th>Modul</th><th>Rata-rata</th><th>Total Tes</th><th>Status</th>';
+                    if(thead) thead.innerHTML = '<th>No</th><th>Modul</th><th>Nilai</th><th>Percobaan</th><th>Ket</th>';
 
                     // Hitung Summary
                     let summaryStats = {};
@@ -2130,7 +2136,7 @@
                         });
                     }
 
-                    // --- UPDATE DI SINI: Render Grafik LINE (Summary Lobby) ---
+                    // Render Grafik LINE (Summary Lobby)
                     setTimeout(() => {
                         const ctx = document.getElementById('statsChart').getContext('2d');
                         if (window.statsChartInstance) window.statsChartInstance.destroy();
@@ -2139,19 +2145,18 @@
                         const dataPoints = sortedKeys.map(k => Math.round(summaryStats[k].total / summaryStats[k].count));
 
                         window.statsChartInstance = new Chart(ctx, {
-                            type: 'line', // <-- JADI LINE CHART
+                            type: 'line', 
                             data: {
                                 labels: labels,
                                 datasets: [{
                                     label: 'Rata-Rata Nilai',
                                     data: dataPoints,
-                                    // Styling Garis ala MA (Hijau Emas)
-                                    borderColor: '#004d00', // Hijau Botol Tua
-                                    backgroundColor: 'rgba(0, 77, 0, 0.2)', // Fill Hijau Transparan
+                                    borderColor: '#004d00',
+                                    backgroundColor: 'rgba(0, 77, 0, 0.2)',
                                     borderWidth: 3,
-                                    tension: 0.3, // Garis agak melengkung
-                                    fill: true, // Isi warna di bawah garis
-                                    pointBackgroundColor: '#d4af37', // Titik Emas
+                                    tension: 0.3,
+                                    fill: true, 
+                                    pointBackgroundColor: '#d4af37',
                                     pointBorderColor: '#004d00',
                                     pointRadius: 5,
                                     pointHoverRadius: 7
@@ -2166,12 +2171,15 @@
                     }, 100);
 
                 } else {
-                    // === TAMPILAN UJIAN: DETAIL MODUL SPESIFIK (LOGIKA LAMA) ===
+                    // === TAMPILAN UJIAN: DETAIL MODUL SPESIFIK ===
+                    // REQUEST 2a: No, Tanggal, Nilai, Salah, Benar
+                    // ==============================================
                     let targetModul = window.currentDatabaseId || 'modul1';
                     if(statsTitle) statsTitle.innerText = "Data Modul: " + targetModul;
 
                     const thead = document.querySelector('.stats-table thead tr');
-                    if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Skor</th><th>Benar</th><th>Salah</th>';
+                    // FIX HEADER DISINI
+                    if(thead) thead.innerHTML = '<th>No</th><th>Tanggal</th><th>Nilai</th><th>Salah</th><th>Benar</th>';
 
                     const currentModulHistory = allHistory.filter(h => h.modul === targetModul);
                     
@@ -2181,7 +2189,14 @@
                     } else {
                         [...currentModulHistory].reverse().forEach((d, idx) => {
                             const tr = document.createElement('tr');
-                            tr.innerHTML = `<td>${idx+1}</td><td>${d.date}</td><td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td><td>${d.correct} ✅</td><td>${d.wrong} ❌</td>`;
+                            // ISI BODY: No, Tanggal, Skor, Salah, Benar
+                            tr.innerHTML = `
+                                <td>${idx+1}</td>
+                                <td>${d.date}</td>
+                                <td style="font-weight:bold; color:${d.score>=70?'green':'red'}">${d.score}</td>
+                                <td>${d.wrong} ❌</td>
+                                <td>${d.correct} ✅</td>
+                            `;
                             tableBody.appendChild(tr);
                         });
                     }
@@ -2214,7 +2229,7 @@
                     }, 100);
                 }
 
-                // --- GRAFIK BAWAH: PETA KEKUATAN (TETAP BALOK/BAR) ---
+                // --- GRAFIK BAWAH: PETA KEKUATAN ---
                 let modulStats = {};
                 allHistory.forEach(h => {
                     if(!modulStats[h.modul]) modulStats[h.modul] = { total: 0, count: 0 };
@@ -2257,6 +2272,7 @@
             } catch (e) { console.error("Error load data hukum:", e); }
         }
     };
+    
     window.closeStats = function() {
         document.getElementById('statsOverlay').style.display = 'none';
         const wm = document.getElementById('watermark');
