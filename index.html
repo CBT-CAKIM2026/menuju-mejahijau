@@ -1611,19 +1611,34 @@
         
         document.getElementById('prevBtn').disabled = (isReviewMode ? false : idx === 0);
         
+        // --- LOGIKA TOMBOL NAVIGATION (FIXED) ---
         const btnNext = document.getElementById('nextBtn');
-        btnNext.style.display = 'block'; 
-
-        if (!isSubmitted && !isReviewMode && idx === currentQuestions.length - 1) {
-            if (window.innerWidth > 768) {
-                btnNext.style.display = 'none';
+        btnNext.style.display = 'block'; // Reset dulu jadi muncul
+        
+        // Cek apakah ini soal terakhir?
+        if (idx === currentQuestions.length - 1) {
+            
+            if (isSubmitted) {
+                // Kalo SUDAH submit (lagi review) & soal terakhir -> UMPETIN TOMBOL
+                btnNext.style.display = 'none'; 
             } else {
-                btnNext.innerHTML = "Selesai";
-                btnNext.className = "btn btn-finish"; 
-                btnNext.onclick = confirmFinish; 
+                // Kalo BELUM submit (lagi ujian) & soal terakhir -> TAMPILKAN 'SELESAI'
+                if (window.innerWidth <= 768) {
+                    btnNext.innerHTML = "Selesai";
+                    btnNext.className = "btn btn-finish"; 
+                    btnNext.onclick = confirmFinish; 
+                } else {
+                    // Di Laptop tombol selesai ada di sidebar, jadi tombol next dihilangkan
+                    btnNext.style.display = 'none';
+                }
             }
+
         } else {
-            btnNext.innerHTML = "Selanjutnya ❯";
+            // Kalo BUKAN soal terakhir -> TAMPILKAN 'SELANJUTNYA'
+            // (Baik lagi ujian maupun review, tetep butuh tombol next buat geser)
+            btnNext.innerHTML = isReviewMode ? "Lanjut (Salah) ❯" : "Selanjutnya ❯";
+            if(isSubmitted) btnNext.innerHTML = "Selanjutnya ❯"; // Normalin teks pas review biasa
+            
             btnNext.className = "btn btn-next"; 
             btnNext.onclick = () => changeQuestion(1);
         }
@@ -1709,18 +1724,19 @@
         // 🔥 TAMBAHAN FIX TAMPILAN HP (SIDEBAR & FOOTER) 🔥
         // Taruh di paling atas biar sidebar langsung ketutup pas submit
         // ============================================================
+// --- FIX 1: Tutup Sidebar HP (TAPI JANGAN HILANGIN FOOTER) ---
         const sbRight = document.querySelector('.sidebar-right');
-        if (sbRight) {
-            sbRight.classList.remove('show-mobile'); // Tutup sidebar HP
+        if (sbRight) { 
+            sbRight.classList.remove('show-mobile'); 
             sbRight.style.display = ''; 
         }
         
-        const mobileFooter = document.getElementById('mobileFooter');
-        if(mobileFooter) mobileFooter.style.display = 'none'; // Sembunyikan footer HP
+        // HAPUS baris yang menyembunyikan mobileFooter di sini!
+        // Biarkan footer tetap ada biar user bisa akses daftar soal lagi.
         
         const floatTimer = document.getElementById('floatingTimer');
         if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
-        // ============================================================
+        // ---------------------------------------------------------------
 
 
         // ==========================================
@@ -1875,10 +1891,14 @@
             if(btnReview) btnReview.style.display = 'none';
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
             
-            // FIX HP: Paksa Overlay Muncul
+            // --- FIX 2: FORCE SHOW RESULT OVERLAY ---
             const overlay = document.getElementById('resultOverlay');
-            overlay.style.display = 'flex'; 
-            overlay.style.zIndex = '9999999';
+            overlay.style.display = 'flex'; // Paksa Flex
+            overlay.style.visibility = 'visible'; // Paksa Visible
+            overlay.style.zIndex = '2147483647'; // Angka Z-Index Tertinggi di Dunia Web
+            
+            // Opsional: Scroll ke atas biar popup kelihatan
+            window.scrollTo(0, 0);
 
             const btnShowScore = document.getElementById('btnShowScore');
             if(btnShowScore) {
@@ -3138,6 +3158,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
