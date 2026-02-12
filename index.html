@@ -1708,21 +1708,31 @@
             chk.disabled = isSubmitted;
         }
     }
-// ==========================================
-    // FUNGSI SUBMIT FINAL (FIX HP & RESULT OVERLAY)
-    // ==========================================
     window.submitQuiz = function() {
+        // 1. Matikan Timer & Audio
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
         
-        // 1. Matikan elemen pengganggu di HP
+        // --- 🔥 FIX MAUT: PAKSA MATIKAN SIDEBAR & FOOTER HP 🔥 ---
+        // Kita eksekusi di AWAL biar gak nge-block pandangan
         const sbRight = document.querySelector('.sidebar-right');
-        if (sbRight) { sbRight.classList.remove('show-mobile'); sbRight.style.display = ''; }
+        if (sbRight) { 
+            sbRight.classList.remove('show-mobile'); 
+            // Paksa hide pake important biar CSS sidebar kalah
+            sbRight.style.setProperty('display', 'none', 'important'); 
+        }
+        
+        const mobileFooter = document.getElementById('mobileFooter');
+        if (mobileFooter) {
+            // Footer biarin ada (sesuai request), tapi pastikan z-index nya kalah sama overlay
+            mobileFooter.style.zIndex = '1'; 
+        }
         
         const floatTimer = document.getElementById('floatingTimer');
         if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
+        // -------------------------------------------------------------
 
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
@@ -1918,13 +1928,12 @@
             return;
         }
         
-   // ==========================================
-        // CABANG 2: MODE NORMAL (HUKUM) - UPDATE FINAL FORCE SHOW
+ // ==========================================
+        // CABANG 2: MODE NORMAL (HUKUM)
         // ==========================================
         isSubmitted = true;
         document.body.classList.remove('mode-focus');
 
-        // 1. Hitung Nilai (Logika Standar)
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
@@ -1943,80 +1952,74 @@
         
         const final = Math.round((score/currentQuestions.length)*100);
         
-        // 2. 🔥 FORCE SHOW RESULT OVERLAY (JURUS SAPU JAGAT) 🔥
-        const overlay = document.getElementById('resultOverlay');
+        // --- UPDATE UI SEBELUM OVERLAY ---
+        // Render ulang soal biar tombol 'Selesai' di bawah berubah/hilang
+        loadQuestion(currentIdx);
         
-        if (overlay) {
-            // Kita reset style dulu baru paksa muncul pakai !important borongan
-            overlay.style.cssText = `
-                display: flex !important; 
-                visibility: visible !important; 
-                opacity: 1 !important; 
-                z-index: 2147483647 !important; /* Paling Depan Sedunia */
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                background: rgba(0,0,0,0.85) !important;
-            `;
-            
-            // Scroll layar ke paling atas biar popup pasti kelihatan
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            alert("Error: Elemen Popup Hasil (resultOverlay) Hilang dari HTML!");
-        }
-
-        // 3. Isi Data ke Dalam Popup
-        const scoreCircle = document.getElementById('finalScore');
-        const passStatus = document.getElementById('passStatus');
-        const msg = document.getElementById('resultMsg');
-        
-        if(scoreCircle) {
-            scoreCircle.innerText = final;
-            scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
-        }
-        if(passStatus) {
-            passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
-            passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
-        }
-        if(msg) msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
-
-        // 4. Atur Tombol-Tombol di Popup
-        const btnReview = document.getElementById('btnReviewWrong');
-        if(btnReview) {
-            if (wrongCount > 0) {
-                btnReview.style.display = 'flex';
-                btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
-            } else {
-                btnReview.style.display = 'none';
-            }
-        }
-        
-        const btnShowScore = document.getElementById('btnShowScore');
-        if(btnShowScore) {
-            btnShowScore.style.display = 'flex';
-            btnShowScore.innerHTML = "📝 Nilai"; 
-        }
-
-        // 5. Update UI Lainnya
-        const modeInd = document.getElementById('modeIndicator');
-        if(modeInd) {
-            modeInd.innerText = "PEMBAHASAN";
-            modeInd.style.color = "var(--success)";
-        }
-        
+        // Sembunyikan tombol selesai di sidebar (Laptop)
         const finishCont = document.querySelector('.finish-container');
-        if(finishCont) finishCont.style.display = 'none'; // Sembunyikan tombol selesai sidebar
+        if(finishCont) finishCont.style.display = 'none';
 
-        // 6. Simpan Data ke Firebase
+        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
+        document.getElementById('modeIndicator').style.color = "var(--success)";
+
+        // --- 🔥 MUNCULIN HASIL (OVERLAY) DENGAN JEDA 🔥 ---
+        setTimeout(() => {
+            // 1. Double Kill Sidebar (Jaga-jaga kalau dia nongol lagi pas render ulang)
+            if (sbRight) sbRight.style.setProperty('display', 'none', 'important');
+
+            // 2. Munculin Overlay
+            const overlay = document.getElementById('resultOverlay');
+            if (overlay) {
+                // Reset & Paksa Style
+                overlay.style.cssText = ''; 
+                overlay.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 2147483647 !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);');
+                
+                // Isi Data
+                const scoreCircle = document.getElementById('finalScore');
+                const passStatus = document.getElementById('passStatus');
+                const msg = document.getElementById('resultMsg');
+                
+                if(scoreCircle) {
+                    scoreCircle.innerText = final;
+                    scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
+                }
+                if(passStatus) {
+                    passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
+                    passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
+                }
+                if(msg) msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
+
+                // Tombol Review Salah
+                const btnReview = document.getElementById('btnReviewWrong');
+                if(btnReview) {
+                    if (wrongCount > 0) {
+                        btnReview.style.display = 'flex';
+                        btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
+                    } else {
+                        btnReview.style.display = 'none';
+                    }
+                }
+                
+                // Tombol Nilai (Backup)
+                const btnShowScore = document.getElementById('btnShowScore');
+                if(btnShowScore) {
+                    btnShowScore.style.display = 'flex';
+                    btnShowScore.innerHTML = "📝 Nilai"; 
+                    btnShowScore.onclick = function() {
+                        const ov = document.getElementById('resultOverlay');
+                        ov.style.setProperty('display', 'flex', 'important');
+                        ov.style.setProperty('z-index', '2147483647', 'important');
+                    };
+                }
+            }
+        }, 100); // Jeda dikit biar browser napas
+
+        // Simpan Data
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
         
-        // 7. Render Ulang Soal Terakhir (Biar tombol 'Selanjutnya' hilang sesuai fix sebelumnya)
-        loadQuestion(currentIdx);
-        
-        console.log("✅ Ujian Selesai. Nilai:", final);
+        console.log("✅ Ujian Selesai. Sidebar dimatikan paksa.");
     };
     
     window.confirmFinish = function() {
@@ -3180,6 +3183,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
