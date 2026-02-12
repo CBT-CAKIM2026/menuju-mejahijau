@@ -322,7 +322,16 @@
 
         .watermark { position: fixed; left: 0; bottom: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); border-top: 1px solid #ddd; text-align: center; padding: 8px 0; color: #666; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; height: 35px; box-sizing: border-box; }
         
-        .result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999999 !important; backdrop-filter: blur(5px); }
+       .result-overlay { 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.92); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000000 !important; /* 🔥 Layer tertinggi di atas sidebar HP */
+            backdrop-filter: blur(5px); 
+        }
         .result-box { background: white; padding: 25px; border-radius: 15px; text-align: center; width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; padding-bottom: 80px !important; animation: slideUp 0.5s ease-out; border-top: 5px solid var(--primary); position: relative; z-index: 1000000; }
         .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
@@ -3287,6 +3296,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
