@@ -2287,7 +2287,7 @@ window.openStats = async function(mode = 'hukum') {
                                 y: {
                                     type: 'number',
                                     easing: 'linear',
-                                    duration: 2000,
+                                    duration: 1500,
                                     from: NaN,
                                     delay(ctx) {
                                         if (ctx.type !== 'data' || ctx.yStarted) return 0;
@@ -2774,9 +2774,10 @@ window.openStats = async function(mode = 'hukum') {
             const txtAvg = document.getElementById('avgScoreText');
             if(txtAvg) txtAvg.innerText = avg;
             const ctx = document.getElementById('lobbyMiniChart');
-        // Grafik Donut Lobby (Animasi Bounce) - VERSI FINAL AMAN
+        // Grafik Donut Lobby (Animasi Bounce Kenceng)
             if (ctx) {
                 if (window.lobbyChartInstance) window.lobbyChartInstance.destroy();
+                
                 window.lobbyChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
@@ -2785,12 +2786,13 @@ window.openStats = async function(mode = 'hukum') {
                             data: [avg, 100 - avg],
                             backgroundColor: [avg >= 70 ? '#2e7d32' : '#f39c12', '#eeeeee'], 
                             borderWidth: 0,
-                            cutout: '75%'
+                            hoverOffset: 10
                         }]
                     },
                     options: {
                         responsive: true, 
                         maintainAspectRatio: false,
+                        cutout: '70%',
                         plugins: { 
                             legend: { display: false }, 
                             tooltip: { enabled: false } 
@@ -2798,7 +2800,7 @@ window.openStats = async function(mode = 'hukum') {
                         animation: {
                             animateScale: true,
                             animateRotate: true,
-                            duration: 1500,
+                            duration: 2000,
                             easing: 'easeOutBounce'
                         }
                     }
@@ -2966,6 +2968,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
