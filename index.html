@@ -59,92 +59,170 @@
             overflow-y: auto; overflow-x: hidden; font-family: 'Poppins', sans-serif; color: #333; display: block !important; 
         }
 
-/* --- NAVIGASI: TAMPILAN LAPTOP (DEFAULT) --- */
+/* ========================================= */
+        /* 1. TAMPILAN LAPTOP/PC (BALIK KE AWAL)     */
+        /* ========================================= */
         .landing-nav { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 40px; width: 100%; background-color: var(--primary); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; 
-            box-sizing: border-box; border-bottom: 3px solid var(--gold); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 40px; 
+            width: 100%; 
+            background-color: var(--primary); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 100; 
+            box-sizing: border-box; 
+            border-bottom: 3px solid var(--gold); 
         }
 
         .nav-brand { 
-            display: flex; align-items: center; gap: 15px; /* Jarak logo ke teks di Laptop */
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
         }
 
         .landing-logo {
-            height: 45px; width: auto; 
+            height: 45px; 
+            width: auto;
         }
 
+        /* Di Laptop: Teks sejajar samping (Row) */
         .brand-text-wrapper {
             display: flex; 
-            flex-direction: row; /* LAPTOP: SEJAJAR SAMPING */
+            flex-direction: row; 
             align-items: center; 
-            gap: 8px;
+            gap: 8px; /* Jarak antara 'PRO-TAMA' dan '(CBT...)' */
             color: white;
         }
 
+        /* Ukuran Font Laptop (Besar & Putih) */
         .brand-title {
-            font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
         }
 
         .brand-subtitle {
-            font-size: 1.3rem; font-weight: 700; /* Ukuran sama dgn judul di laptop */
-            color: white; /* Warna putih di laptop biar kebaca jelas */
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: white; /* Di laptop putih aja biar sama kayak asli */
         }
 
         .nav-login-btn { 
-            background-color: #ffffff; color: var(--primary); border: none; 
-            padding: 10px 20px; border-radius: 6px; font-weight: 600; 
-            font-size: 0.95rem; cursor: pointer; display: flex; 
-            align-items: center; gap: 10px; transition: all 0.2s; 
+            background-color: #ffffff; 
+            color: var(--primary); 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            transition: all 0.2s; 
+            white-space: nowrap; 
         }
         
-        .nav-login-btn img { width: 25px; height: 25px; }
+        .nav-login-btn img { width: 22px; height: 22px; }
 
-        /* --- NAVIGASI: KHUSUS TAMPILAN HP (MOBILE) --- */
-        @media (max-width: 768px) {
+       /* ========================================= */
+        /* RESPONSIVE: GABUNGAN FIX HEADER + ORIGINAL BODY */
+        /* ========================================= */
+        @media (max-width: 992px) {
+            /* --- 1. BAGIAN HEADER (INI YANG BARU & RAPI) --- */
             .landing-nav { 
-                padding: 10px 15px; /* Padding lebih kecil */
+                padding: 10px 15px; 
+                gap: 10px; 
             }
-            
-            .landing-logo {
-                height: 38px; /* Logo sedikit mengecil */
-            }
-
             .nav-brand {
                 gap: 10px;
             }
-
+            .landing-logo { 
+                height: 38px; 
+            }
+            
+            /* Teks Jadi Atas Bawah (Simetris) */
             .brand-text-wrapper {
-                flex-direction: column; /* HP: JADI ATAS BAWAH */
-                align-items: flex-start; /* Rata kiri */
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 0;
                 line-height: 1.2;
             }
-
             .brand-title {
-                font-size: 1.1rem; /* Judul pas di HP */
+                font-size: 1.1rem;
             }
-
             .brand-subtitle {
-                font-size: 0.75rem; /* Subjudul kecil */
-                color: var(--gold); /* Aksen emas cuma di HP biar manis */
+                font-size: 0.7rem;
+                color: var(--gold);
                 font-weight: 600;
             }
 
+            /* Tombol Login Kompak */
             .nav-login-btn { 
                 padding: 6px 12px; 
                 font-size: 0.8rem; 
                 border-radius: 50px; 
             }
-            
             .nav-login-btn img { 
                 width: 18px; height: 18px; 
             }
+            .nav-login-btn span { display: none; } /* Umpetin teks panjang */
+            .nav-login-btn::after { content: "Masuk"; } /* Ganti jadi pendek */
 
-            /* Ubah teks tombol jadi pendek di HP */
-            .nav-login-btn span { display: none; } 
-            .nav-login-btn::after { content: "Masuk"; }
+
+            /* --- 2. BAGIAN BODY & FOOTER (INI DIBALIKIN KE ASALNYA) --- */
+            .hero-section { 
+                display: flex; 
+                flex-direction: column; 
+                padding: 20px 20px; /* Padding asli balik lagi */
+                gap: 20px; 
+                justify-content: center; 
+                min-height: 80vh; 
+            }
+            
+            .hero-left { 
+                margin-left: 0; 
+                padding-right: 0; 
+                text-align: center; 
+                margin-top: 10px; 
+            }
+            
+            .hero-quote { 
+                font-size: 1.6rem; 
+            } 
+            
+            .hero-right { 
+                padding-left: 0; 
+                align-items: center; 
+                justify-content: center; 
+                width: 100%; 
+                padding-bottom: 40px; 
+            }
+            
+            .hero-features li { 
+                background: rgba(255,255,255,0.6); 
+                padding: 8px 12px; 
+                border-radius: 6px; 
+                width: 100%; 
+                justify-content: flex-start; 
+                font-size: 0.85rem; 
+                margin-bottom: 5px; 
+            }
+            
+            .dev-footer { 
+                position: fixed; 
+                bottom: 0; 
+                left: 0; 
+                width: 100%; 
+                text-align: center; 
+                font-size: 0.65rem; 
+                padding: 8px 0; 
+                margin: 0; 
+                background: rgba(255,255,255,0.8); 
+                border-top: none; 
+                z-index: 101; 
+            }
         }
         /* APP STYLES */
         #appSection { display: none; width: 100%; height: 100%; display: flex; background-color: #f4f7f6; position: fixed; top: 0; left: 0; z-index: 10; }
@@ -3030,6 +3108,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
