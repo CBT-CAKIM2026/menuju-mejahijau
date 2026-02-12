@@ -1918,12 +1918,13 @@
             return;
         }
         
-        // ==========================================
-        // JIKA MODUL HUKUM / BIASA (YANG ERROR KEMARIN)
+   // ==========================================
+        // CABANG 2: MODE NORMAL (HUKUM) - UPDATE FINAL FORCE SHOW
         // ==========================================
         isSubmitted = true;
         document.body.classList.remove('mode-focus');
 
+        // 1. Hitung Nilai (Logika Standar)
         let score = 0;
         let correctCount = 0;
         let wrongCount = 0;
@@ -1942,32 +1943,54 @@
         
         const final = Math.round((score/currentQuestions.length)*100);
         
-        // --- 🔥 BAGIAN PERBAIKAN UTAMA (FORCE SHOW OVERLAY) 🔥 ---
+        // 2. 🔥 FORCE SHOW RESULT OVERLAY (JURUS SAPU JAGAT) 🔥
         const overlay = document.getElementById('resultOverlay');
         
-        // Kita pakai setProperty 'important' biar CSS lama kalah
-        overlay.style.setProperty('display', 'flex', 'important');
-        overlay.style.setProperty('visibility', 'visible', 'important');
-        overlay.style.setProperty('z-index', '2147483647', 'important'); 
-        overlay.style.opacity = '1';
+        if (overlay) {
+            // Kita reset style dulu baru paksa muncul pakai !important borongan
+            overlay.style.cssText = `
+                display: flex !important; 
+                visibility: visible !important; 
+                opacity: 1 !important; 
+                z-index: 2147483647 !important; /* Paling Depan Sedunia */
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.85) !important;
+            `;
+            
+            // Scroll layar ke paling atas biar popup pasti kelihatan
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            alert("Error: Elemen Popup Hasil (resultOverlay) Hilang dari HTML!");
+        }
 
-        // Isi konten overlay
+        // 3. Isi Data ke Dalam Popup
         const scoreCircle = document.getElementById('finalScore');
         const passStatus = document.getElementById('passStatus');
         const msg = document.getElementById('resultMsg');
         
-        scoreCircle.innerText = final;
-        scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
-        passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
-        passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
-        msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
+        if(scoreCircle) {
+            scoreCircle.innerText = final;
+            scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
+        }
+        if(passStatus) {
+            passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
+            passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
+        }
+        if(msg) msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
 
+        // 4. Atur Tombol-Tombol di Popup
         const btnReview = document.getElementById('btnReviewWrong');
-        if (wrongCount > 0) {
-            btnReview.style.display = 'flex'; // Pakai Flex biar icon rapi
-            btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
-        } else {
-            btnReview.style.display = 'none';
+        if(btnReview) {
+            if (wrongCount > 0) {
+                btnReview.style.display = 'flex';
+                btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
+            } else {
+                btnReview.style.display = 'none';
+            }
         }
         
         const btnShowScore = document.getElementById('btnShowScore');
@@ -1976,16 +1999,24 @@
             btnShowScore.innerHTML = "📝 Nilai"; 
         }
 
-        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
-        document.getElementById('modeIndicator').style.color = "var(--success)";
-        document.querySelector('.finish-container').style.display = 'none';
+        // 5. Update UI Lainnya
+        const modeInd = document.getElementById('modeIndicator');
+        if(modeInd) {
+            modeInd.innerText = "PEMBAHASAN";
+            modeInd.style.color = "var(--success)";
+        }
+        
+        const finishCont = document.querySelector('.finish-container');
+        if(finishCont) finishCont.style.display = 'none'; // Sembunyikan tombol selesai sidebar
 
-        // Save Data
+        // 6. Simpan Data ke Firebase
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
         
-        // Refresh soal terakhir (biar tombolnya update)
+        // 7. Render Ulang Soal Terakhir (Biar tombol 'Selanjutnya' hilang sesuai fix sebelumnya)
         loadQuestion(currentIdx);
+        
+        console.log("✅ Ujian Selesai. Nilai:", final);
     };
     
     window.confirmFinish = function() {
@@ -3149,6 +3180,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
