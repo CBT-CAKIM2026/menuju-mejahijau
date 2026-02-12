@@ -91,28 +91,36 @@
             width: auto;
         }
 
-        .brand-text-wrapper {
+       .brand-text-wrapper {
             display: flex;
-            flex-direction: row; 
+            flex-direction: row !important; /* 🔥 KUNCI: DI LAPTOP WAJIB SEJAJAR */
             align-items: center;
             gap: 10px;
         }
-
+        
         .brand-title {
             font-size: 1.5rem; 
             font-weight: 800;
-            letter-spacing: 1px;
             color: white;
         }
 
-        /* --- INI YANG GUE UBAH JADI EMAS --- */
         .brand-subtitle {
             font-size: 1.3rem; 
-            font-weight: 700; /* Sedikit ditebalkan biar Emasnya kelihatan jelas */
-            color: var(--gold); /* SEKARANG WARNANYA EMAS */
+            font-weight: 700;
+            color: var(--gold); /* Emas di Laptop */
         }
-        /* ----------------------------------- */
 
+        /* --- 2. SETTINGAN HP (MASUK DI MEDIA QUERY) --- */
+        @media (max-width: 992px) {
+            .brand-text-wrapper {
+                flex-direction: column !important; /* 🔥 DI HP BARU NUMPUK */
+                align-items: flex-start;
+                gap: 0;
+                line-height: 1.2;
+            }
+            .brand-title { font-size: 1.1rem; }
+            .brand-subtitle { font-size: 0.7rem; }
+        }
         .nav-login-btn { 
             background-color: #ffffff; 
             color: var(--primary); 
@@ -1708,30 +1716,28 @@
             chk.disabled = isSubmitted;
         }
     }
-    window.submitQuiz = function() {
+   window.submitQuiz = function() {
         // 1. Matikan Timer & Audio
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
         
-        // --- 🔥 FIX MAUT: PAKSA MATIKAN SIDEBAR & FOOTER HP 🔥 ---
-        // Kita eksekusi di AWAL biar gak nge-block pandangan
-        const sbRight = document.querySelector('.sidebar-right');
-        if (sbRight) { 
-            sbRight.classList.remove('show-mobile'); 
-            // Paksa hide pake important biar CSS sidebar kalah
-            sbRight.style.setProperty('display', 'none', 'important'); 
+        // --- 🔥 FIX PENTING: CUMA MATIKAN SIDEBAR KALO DI HP 🔥 ---
+        // Kita cek lebar layar dulu. Kalo Laptop (> 768px), JANGAN GANGGU SIDEBAR!
+        if (window.innerWidth <= 768) {
+            const sbRight = document.querySelector('.sidebar-right');
+            if (sbRight) { 
+                sbRight.classList.remove('show-mobile'); 
+                sbRight.style.setProperty('display', 'none', 'important'); 
+            }
+            
+            const mobileFooter = document.getElementById('mobileFooter');
+            if (mobileFooter) mobileFooter.style.zIndex = '1'; 
+            
+            const floatTimer = document.getElementById('floatingTimer');
+            if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
         }
-        
-        const mobileFooter = document.getElementById('mobileFooter');
-        if (mobileFooter) {
-            // Footer biarin ada (sesuai request), tapi pastikan z-index nya kalah sama overlay
-            mobileFooter.style.zIndex = '1'; 
-        }
-        
-        const floatTimer = document.getElementById('floatingTimer');
-        if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
         // -------------------------------------------------------------
 
         // ==========================================
