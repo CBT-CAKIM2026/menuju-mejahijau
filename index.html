@@ -1722,16 +1722,16 @@
         
         const currentDB = window.currentDatabaseId || "";
         
-        // --- FIX HP: TUTUP SIDEBAR TANPA MENGHAPUS (Biar Fitur Ga Hilang) ---
+        // --- FIX HP: TUTUP SIDEBAR BIAR HASIL KELIHATAN ---
         if (window.innerWidth <= 768) {
             const sbRight = document.querySelector('.sidebar-right');
             if (sbRight) { 
-                sbRight.classList.remove('show-mobile'); // Cukup tutup, jangan di-hide permanen
+                sbRight.classList.remove('show-mobile'); // Cukup tutup slide-nya
             }
+            // Timer melayang dimatikan saja biar gak ganggu hasil
             const floatTimer = document.getElementById('floatingTimer');
             if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
         }
-        // --------------------------------------------------------------------
 
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
@@ -1885,32 +1885,31 @@
             if(btnReview) btnReview.style.display = 'none';
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
             
-// --- 🔥 FORCE SHOW RESULT OVERLAY (DI ATAS SEGALANYA) 🔥 ---
+        const final = Math.round((score/currentQuestions.length)*100);
+        
+        // --- 🔥 FORCE SHOW OVERLAY (CARA PALING AMAN) 🔥 ---
         const overlay = document.getElementById('resultOverlay');
         if (overlay) {
-            overlay.style.cssText = `
-                display: flex !important; 
-                visibility: visible !important; 
-                opacity: 1 !important; 
-                z-index: 999999 !important; /* Jauh lebih tinggi dari sidebar HP */
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                background: rgba(0,0,0,0.85) !important;
-            `;
-            window.scrollTo(0, 0); 
+            // Paksa muncul tanpa menghapus isi di dalamnya
+            overlay.style.setProperty('display', 'flex', 'important');
+            overlay.style.setProperty('z-index', '2147483647', 'important'); 
+            overlay.style.setProperty('visibility', 'visible', 'important');
+            
+            // Biar user langsung lihat hasilnya tanpa perlu scroll manual
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-            const btnShowScore = document.getElementById('btnShowScore');
-            if(btnShowScore) {
-                btnShowScore.style.display = 'flex'; 
-                btnShowScore.innerHTML = "📝 Nilai"; 
-                btnShowScore.onclick = function() {
-                    document.getElementById('resultOverlay').style.display = 'flex';
-                };
-            }
+        const btnShowScore = document.getElementById('btnShowScore');
+        if(btnShowScore) {
+            btnShowScore.style.display = 'flex';
+            btnShowScore.innerHTML = "📝 Nilai"; 
+            // Tambahkan ini biar kalau diklik, overlay-nya maksa muncul lagi
+            btnShowScore.onclick = function() {
+                const ov = document.getElementById('resultOverlay');
+                ov.style.setProperty('display', 'flex', 'important');
+                ov.style.setProperty('z-index', '2147483647', 'important');
+            };
+        }
             
             // 1. CATAT MAPPING NOMOR SOAL KE ELEMEN
             let elementMapping = {};
@@ -3191,6 +3190,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
