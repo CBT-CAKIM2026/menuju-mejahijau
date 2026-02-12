@@ -662,10 +662,10 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut,  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // --- CONFIG FIREBASE ---
+    // --- 1. KONFIGURASI FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyAC4Tskg8XC1N0a13xcsV3A1Mq_8mDnY-A",
         authDomain: "simulasi-cbt-cakim-2026.firebaseapp.com",
@@ -675,144 +675,123 @@
         appId: "1:209182753461:web:1aa2201fa7c73e581234fc",
         measurementId: "G-NDNKMSMWV2"
     };
-
-    // --- EMAIL ADMIN (GANTI DENGAN EMAIL LO) ---
+    
     const ADMIN_EMAIL = "ilhamnp22@gmail.com"; 
-
     let db, auth, provider, currentUser;
+    
+    // Inisialisasi Firebase
     if (firebaseConfig.apiKey) {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
-        window.db = db;
+        window.db = db; // Bikin global biar console aman
         provider = new GoogleAuthProvider();
     }
-
-    window.handleLogin = async () => {
-        if(!auth) { alert("Konfigurasi Firebase belum dipasang!"); return; }
-        try { await signInWithPopup(auth, provider); } 
-        catch (error) { document.getElementById('loginError').innerText = error.message; }
-    };
-
-    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
-
-// --- 1. DAFTAR KODE UNIK (TARUH DI LUAR if(auth)) ---
-const legalTerms = [
-    "PACTA-SUNT-SERVANDA", "IUS-CURIA-NOVIT", "LEX-SPECIALIS", "AUDI-ALTERAM-PARTEM", "ULTIMUM-REMEDIUM", "FIKSI-HUKUM", 
-    "LEGAL-STANDING", "DUE-PROCESS", "EQUITY-BEFORE-LAW", "RESTORATIVE-JUSTICE", "CONTEMPT-OF-COURT", "EX-AEQUO-ET-BONO",
-    "PRO-BONO", "HAK-IMUNITAS", "PRADUGA-TAK-BERSALAH", "EQUALITY-BEFORE-THE-LAW", "DUE-PROCESS-OF-LAW", "RESTITUTIO-IN-INTEGRUM", 
-    "SALUS-POPULI-SUPREMA-LEX", "LEX-POSTERIORI", "LEX-SUPERIOR", "UBI-SOCIETAS-IBI-IUS", "NULLUM-DELICTUM", "IN-DUBIO-PRO-REO", 
-    "NE-BIS-IN-IDEM", "ACTUS-REUS", "MENS-REA", "AD-MALA-RES-PULSA", "BONA-FIDES", "UNJUST-ENRICHMENT", "NON-DEROGABLE-RIGHTS", 
-    "VERBA-VOLANT", "AL-ADALAH", "AL-MUSAWWAH", "AL-AMANAH", "AL-HURIYYAH", "AS-SHULHU-SAYYIDUL-AHKAM", "AL-YAQINU-LA-YUZALU", 
-    "AL-UMURU-BIMAQASHIDIHA", "AL-ADATU-MUHAKKAMAH", "SUMMUM-IUS", "COGITATIONIS-POENAM", "EI-INCUMBIT-PROBATIO", 
-    "FACTA-SUNT-POTENTIORA", "IGNORANTIA-EXCUSAT", "INDEX-ANIMI-SERMO", "IUSTITIA-EST-CONSTANS", "LEX-DIVINA", 
-    "NEMO-JUDEX", "SIMILIA-SIMILIBUS", "TESTIMONIUM-DE-AUDITU"
-];
-
-if(auth) {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            const gateOverlay = document.getElementById('gatekeeperOverlay');
-
-            // ============================================================
-            // 1. FITUR MAINTENACE
-            // ============================================================
-            if (typeof watchMaintenance === 'function') {
+    
+    // --- 2. DAFTAR KODE UNIK (ASAS HUKUM) ---
+    const legalTerms = [
+        "PACTA-SUNT-SERVANDA", "IUS-CURIA-NOVIT", "LEX-SPECIALIS", "AUDI-ALTERAM-PARTEM", "ULTIMUM-REMEDIUM", "FIKSI-HUKUM", 
+        "LEGAL-STANDING", "DUE-PROCESS", "EQUITY-BEFORE-LAW", "RESTORATIVE-JUSTICE", "CONTEMPT-OF-COURT", "EX-AEQUO-ET-BONO",
+        "PRO-BONO", "HAK-IMUNITAS", "PRADUGA-TAK-BERSALAH", "EQUALITY-BEFORE-THE-LAW", "DUE-PROCESS-OF-LAW", "RESTITUTIO-IN-INTEGRUM", 
+        "SALUS-POPULI-SUPREMA-LEX", "LEX-POSTERIORI", "LEX-SUPERIOR", "UBI-SOCIETAS-IBI-IUS", "NULLUM-DELICTUM", "IN-DUBIO-PRO-REO", 
+        "NE-BIS-IN-IDEM", "ACTUS-REUS", "MENS-REA", "AD-MALA-RES-PULSA", "BONA-FIDES", "UNJUST-ENRICHMENT", "NON-DEROGABLE-RIGHTS", 
+        "VERBA-VOLANT", "AL-ADALAH", "AL-MUSAWWAH", "AL-AMANAH", "AL-HURIYYAH", "AS-SHULHU-SAYYIDUL-AHKAM", "AL-YAQINU-LA-YUZALU", 
+        "AL-UMURU-BIMAQASHIDIHA", "AL-ADATU-MUHAKKAMAH", "SUMMUM-IUS", "COGITATIONIS-POENAM", "EI-INCUMBIT-PROBATIO", 
+        "FACTA-SUNT-POTENTIORA", "IGNORANTIA-EXCUSAT", "INDEX-ANIMI-SERMO", "IUSTITIA-EST-CONSTANS", "LEX-DIVINA", 
+        "NEMO-JUDEX", "SIMILIA-SIMILIBUS", "TESTIMONIUM-DE-AUDITU"
+    ];
+    
+    // --- 3. LOGIKA UTAMA (GATEKEEPER + ADMIN + MAINTENANCE) ---
+    if(auth) {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const gateOverlay = document.getElementById('gatekeeperOverlay');
+    
+                // A. PANGGIL MAINTENACE (Supaya User Terpantau)
                 watchMaintenance(); 
-            }
-
-            // ============================================================
-            // 2. FITUR ADMIN (HANYA BUKA PRIVILEGES, TAPI TETAP DICEGAT)
-            // ============================================================
-            if (user.email === ADMIN_EMAIL) {
-                // Tetap kasih 'is-admin' supaya lo BISA COPY-PASTE & KLIK KANAN
-                document.body.classList.add('is-admin'); 
-                console.log("Welcome Admin! Anti-Cheat Disabled (VIP Check Active).");
-                
-                const btnAdmin = document.getElementById('btnAdminPanel');
-                if(btnAdmin) btnAdmin.style.display = 'flex'; 
-
-                // ❌ DULU: Langsung masuk (Bypass)
-                // lanjutKeAplikasi(); 
-                // return; 
-
-                // ✅ SEKARANG: Dibiarkan lanjut ke bawah supaya kena cek Gatekeeper
-            } else {
-                document.body.classList.remove('is-admin');
-            }
-
-            // ============================================================
-            // 3. FITUR GATEKEEPER (PINTU VIP UNTUK SEMUA)
-            // ============================================================
-            
-            // Sembunyikan Login, Tampilkan Loading Gatekeeper
-            document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
-            if(gateOverlay) gateOverlay.style.display = 'flex';
-            document.getElementById('gateLoading').style.display = 'block';
-            document.getElementById('gateInputArea').style.display = 'none';
-
-            try {
-                const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-                const accessRef = doc(db, "vip_access", user.email);
-                const accessSnap = await getDoc(accessRef);
-
-                if (accessSnap.exists()) {
-                    if (accessSnap.data().isVerified === true) {
-                        // SUDAH VERIFIKASI -> MASUK
-                        lanjutKeAplikasi();
-                    } else {
-                        // BELUM VERIFIKASI -> TAMPILKAN INPUT
-                        showGateInput(user.displayName, user.email);
-                    }
+    
+                // B. CEK ADMIN (Fitur Copy Paste Nyala, TAPI TETAP KENA CEK VIP)
+                if (user.email === ADMIN_EMAIL) {
+                    document.body.classList.add('is-admin'); 
+                    const btnAdmin = document.getElementById('btnAdminPanel');
+                    if(btnAdmin) btnAdmin.style.display = 'flex'; 
+                    console.log("Admin Login: Anti-Cheat OFF, tapi wajib verifikasi kode.");
                 } else {
-                    // USER BARU (TERMASUK ADMIN PERTAMA KALI) -> GENERATE KODE
-                    const randomAsas = legalTerms[Math.floor(Math.random() * legalTerms.length)];
-                    const randomNum = Math.floor(100 + Math.random() * 899);
-                    const finalCode = `${randomAsas}-${randomNum}`;
-
-                    await setDoc(accessRef, {
-                        name: user.displayName,
-                        email: user.email,
-                        code: finalCode,
-                        isVerified: false,
-                        createdAt: new Date()
-                    });
-
-                    fetch("https://script.google.com/macros/s/AKfycbzO18J1LzCVpqetirC52C-VkbTFBt0s3SwpPY3dAOno2oIYwA2hZHyGlUdyXsCwcxIMQg/exec", {
-                        method: "POST",
-                        mode: "no-cors",
-                        body: JSON.stringify({
-                            user_name: user.displayName,
-                            user_email: user.email,
-                            vip_code: finalCode
-                        })
-                    }).then(() => {
-                        showGateInput(user.displayName, user.email);
-                    }).catch(err => {
-                        console.error("Gagal kirim email:", err);
-                        showGateInput(user.displayName, user.email);
-                    });
+                    document.body.classList.remove('is-admin');
                 }
-            } catch (e) { 
-                console.error("Gate Error:", e);
-                alert("Database Error: " + e.message);
+    
+                // C. PROSES GATEKEEPER (Pintu VIP)
+                document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
+                if(gateOverlay) gateOverlay.style.display = 'flex';
+                
+                // Reset Tampilan Gatekeeper
+                document.getElementById('gateLoading').style.display = 'block';
+                document.getElementById('gateInputArea').style.display = 'none';
+    
+                try {
+                    // Cek Database VIP
+                    const accessRef = doc(db, "vip_access", user.email);
+                    const accessSnap = await getDoc(accessRef);
+    
+                    if (accessSnap.exists()) {
+                        if (accessSnap.data().isVerified === true) {
+                            // SUDAH VERIFIKASI -> MASUK
+                            lanjutKeAplikasi();
+                        } else {
+                            // BELUM INPUT KODE -> TAMPILKAN FORM
+                            showGateInput(user.displayName, user.email);
+                        }
+                    } else {
+                        // USER BARU (Atau Admin Baru) -> BIKIN KODE + KIRIM EMAIL
+                        const randomAsas = legalTerms[Math.floor(Math.random() * legalTerms.length)];
+                        const randomNum = Math.floor(100 + Math.random() * 899);
+                        const finalCode = `${randomAsas}-${randomNum}`;
+    
+                        await setDoc(accessRef, {
+                            name: user.displayName,
+                            email: user.email,
+                            code: finalCode,
+                            isVerified: false,
+                            createdAt: new Date()
+                        });
+    
+                        // KIRIM EMAIL PAKE GOOGLE APPS SCRIPT
+                        // GANTI URL DI BAWAH DENGAN URL WEB APP GAS LO !!
+                        fetch("https://script.google.com/macros/s/AKfycbzO18J1LzCVpqetirC52C-VkbTFBt0s3SwpPY3dAOno2oIYwA2hZHyGlUdyXsCwcxIMQg/exec", {
+                            method: "POST",
+                            mode: "no-cors",
+                            body: JSON.stringify({
+                                user_name: user.displayName,
+                                user_email: user.email,
+                                vip_code: finalCode
+                            })
+                        }).then(() => {
+                            showGateInput(user.displayName, user.email);
+                        }).catch(err => {
+                            console.error("Gagal fetch GAS:", err);
+                            // Tetap tampilkan input walau email gagal (fallback)
+                            showGateInput(user.displayName, user.email);
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error Gatekeeper:", e);
+                    alert("Gagal memuat data akses: " + e.message);
+                }
+    
+            } else {
+                // STATE LOGOUT
+                document.body.classList.remove('is-admin');
+                document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
+                document.getElementById('appSection').style.display = 'none';
+                if(document.getElementById('gatekeeperOverlay')) document.getElementById('gatekeeperOverlay').style.display = 'none';
             }
-
-        } else {
-            // STATE LOGOUT
-            document.body.classList.remove('is-admin');
-            document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
-            document.getElementById('appSection').style.display = 'none';
-            document.getElementById('floatingTimer').style.display = 'none';
-            document.getElementById('mobileFooter').style.display = 'none';
-            if(document.getElementById('gatekeeperOverlay')) document.getElementById('gatekeeperOverlay').style.display = 'none';
-        }
-    });
-}
-
-    // --- FUNGSI PEMBANTU (SUPAYA KODINGAN LEBIH RAPI & AMAN) ---
-    // Fungsi ini dipanggil kalau user: 1. Admin, atau 2. Sudah Verifikasi Kode
+        });
+    }
+    
+    // --- 4. FUNGSI PEMBANTU (WAJIB ADA) ---
+    
+    // Fungsi Masuk Dashboard (Setelah Lolos VIP)
     function lanjutKeAplikasi() {
         // Matikan semua overlay
         document.getElementById('loginOverlay').style.setProperty('display', 'none', 'important');
@@ -822,20 +801,20 @@ if(auth) {
         // Buka Dashboard Utama
         document.getElementById('appSection').style.display = 'flex';
         
-        // Panggil Logic Lobby & Data User (SESUAI PERMINTAAN LO)
-        tampilkanLobby();
+        // Panggil Logic Lobby
+        if(typeof tampilkanLobby === 'function') tampilkanLobby();
         
-        // Update Nama & Avatar
-        let namaPendek = currentUser.displayName.split(" ")[0]; 
-        document.getElementById('roleDisplay').innerText = currentUser.displayName; 
-        document.getElementById('userAvatar').src = currentUser.photoURL;
-    
-        // Set Role Label
-        const roleLabel = document.querySelector('.user-role-label');
-        if (currentUser.email === ADMIN_EMAIL) {
-            if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-shield" style="color:#ffd700;"></i> Administrator';
-        } else {
-            if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-tie"></i> Peserta Ujian';
+        // Update Profil Sidebar
+        if(currentUser) {
+            document.getElementById('roleDisplay').innerText = currentUser.displayName; 
+            document.getElementById('userAvatar').src = currentUser.photoURL;
+            
+            const roleLabel = document.querySelector('.user-role-label');
+            if (currentUser.email === ADMIN_EMAIL) {
+                if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-shield" style="color:#ffd700;"></i> Administrator';
+            } else {
+                if(roleLabel) roleLabel.innerHTML = '<i class="fas fa-user-tie"></i> Peserta Ujian';
+            }
         }
     
         // Sembunyikan elemen ujian saat di lobby
@@ -867,7 +846,6 @@ if(auth) {
         btn.disabled = true;
     
         try {
-            const { doc, getDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
             const accessRef = doc(db, "vip_access", currentUser.email);
             const accessSnap = await getDoc(accessRef);
     
@@ -876,7 +854,7 @@ if(auth) {
                 await updateDoc(accessRef, { isVerified: true, verifiedAt: new Date() });
                 
                 alert("✅ Akses VIP Terbuka! Selamat Belajar.");
-                // Masuk Aplikasi Tanpa Reload (Biar Smooth)
+                // Masuk Aplikasi
                 lanjutKeAplikasi();
             } else {
                 document.getElementById('vipError').style.display = 'block';
@@ -888,25 +866,27 @@ if(auth) {
             btn.disabled = false; 
         }
     };
-
-   // ==========================================
-// 🔥 MESIN MAINTENANCE (JANGAN HAPUS) 🔥
-// ==========================================
-// 1. Fungsi Pemantau Status (Dipanggil saat Login)
-function watchMaintenance() {
-    if (!db) return;
-    const { doc, onSnapshot } = window._firebaseUtils || {}; // Fallback safe
-    // Kita pakai import manual di dalam atau asumsi db global sudah ready
-    // Karena ini module, kita pakai db global yang sudah di-init di atas
     
-    try {
-        const docRef = doc(db, "settings", "app_status");
-        onSnapshot(docRef, (docSnap) => {
+    // Fungsi Login & Logout
+    window.handleLogin = async () => {
+        if(!auth) { alert("Firebase Error!"); return; }
+        try { await signInWithPopup(auth, provider); } 
+        catch (error) { document.getElementById('loginError').innerText = error.message; }
+    };
+    window.handleLogout = () => { if(auth) signOut(auth).then(() => location.reload()); };
+    
+    
+    // --- 5. FUNGSI MAINTENANCE (WAJIB DITARUH DISINI BIAR GAK ERROR) ---
+    function watchMaintenance() {
+        if (!db) return;
+        const statusRef = doc(db, "settings", "app_status");
+        
+        onSnapshot(statusRef, (docSnap) => {
             if (docSnap.exists()) {
                 const isMaintenance = docSnap.data().maintenance;
                 const btn = document.getElementById('btnToggleMaintenance');
                 const overlay = document.getElementById('maintenanceOverlay');
-
+    
                 // Update Tombol Admin
                 if (btn) {
                     if (isMaintenance) {
@@ -917,8 +897,8 @@ function watchMaintenance() {
                         btn.style.background = "#2e7d32"; 
                     }
                 }
-
-                // Kunci Layar User Biasa
+    
+                // Kunci Layar untuk User Biasa
                 if (isMaintenance && currentUser?.email !== ADMIN_EMAIL) {
                     if (overlay) overlay.style.display = 'block';
                 } else {
@@ -926,33 +906,28 @@ function watchMaintenance() {
                 }
             }
         });
-    } catch (e) {
-        console.log("Maintenance watcher init error (ignore if logged out):", e);
     }
-}
-
-// 2. Fungsi Tombol Admin (Toggle ON/OFF)
-window.toggleMaintenanceStatus = async () => {
-    try {
-        const { doc, getDoc, updateDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    
+    window.toggleMaintenanceStatus = async () => {
         const statusRef = doc(db, "settings", "app_status");
-        const docSnap = await getDoc(statusRef);
-        
-        if (docSnap.exists()) {
-            const currentStatus = docSnap.data().maintenance;
-            await updateDoc(statusRef, {
-                maintenance: !currentStatus,
-                lastUpdated: new Date(),
-                updatedBy: currentUser.displayName
-            });
-        } else {
-            await setDoc(statusRef, { maintenance: true });
-            alert("Status Maintenance dibuat: AKTIF");
+        try {
+            const docSnap = await getDoc(statusRef);
+            if (docSnap.exists()) {
+                const currentStatus = docSnap.data().maintenance;
+                await updateDoc(statusRef, {
+                    maintenance: !currentStatus,
+                    lastUpdated: new Date(),
+                    updatedBy: currentUser.displayName
+                });
+            } else {
+                await setDoc(statusRef, { maintenance: true });
+                alert("Status Maintenance dibuat: AKTIF");
+            }
+        } catch (e) {
+            alert("Gagal mengubah status: " + e.message);
         }
-    } catch (e) {
-        alert("Gagal mengubah status: " + e.message);
-    }
-};
+    };
+
 // ==========================================
     window.saveScoreToCloud = async (modulId, skor) => {
         if (!currentUser || !db) return;
@@ -2946,6 +2921,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
