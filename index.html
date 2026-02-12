@@ -2262,7 +2262,7 @@ window.openStats = async function(mode = 'hukum') {
                                 pointBackgroundColor: '#d4af37', pointBorderColor: '#004d00', pointRadius: 5
                             }]
                         },
-                    options: {
+                                options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         animation: {
@@ -2293,6 +2293,8 @@ window.openStats = async function(mode = 'hukum') {
                             y: { beginAtZero: true, max: 100 }
                         }
                     }
+                });
+            }, 100);
             // --- CABANG 4: UJIAN + HUKUM ---
             else {
                 let targetModul = window.currentDatabaseId || 'modul1';
@@ -2947,6 +2949,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
