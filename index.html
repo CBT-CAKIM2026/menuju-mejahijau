@@ -91,36 +91,28 @@
             width: auto;
         }
 
-       .brand-text-wrapper {
+        .brand-text-wrapper {
             display: flex;
-            flex-direction: row !important; /* 🔥 KUNCI: DI LAPTOP WAJIB SEJAJAR */
+            flex-direction: row; 
             align-items: center;
             gap: 10px;
         }
-        
+
         .brand-title {
             font-size: 1.5rem; 
             font-weight: 800;
+            letter-spacing: 1px;
             color: white;
         }
 
+        /* --- INI YANG GUE UBAH JADI EMAS --- */
         .brand-subtitle {
             font-size: 1.3rem; 
-            font-weight: 700;
-            color: var(--gold); /* Emas di Laptop */
+            font-weight: 700; /* Sedikit ditebalkan biar Emasnya kelihatan jelas */
+            color: var(--gold); /* SEKARANG WARNANYA EMAS */
         }
+        /* ----------------------------------- */
 
-        /* --- 2. SETTINGAN HP (MASUK DI MEDIA QUERY) --- */
-        @media (max-width: 992px) {
-            .brand-text-wrapper {
-                flex-direction: column !important; /* 🔥 DI HP BARU NUMPUK */
-                align-items: flex-start;
-                gap: 0;
-                line-height: 1.2;
-            }
-            .brand-title { font-size: 1.1rem; }
-            .brand-subtitle { font-size: 0.7rem; }
-        }
         .nav-login-btn { 
             background-color: #ffffff; 
             color: var(--primary); 
@@ -322,16 +314,7 @@
 
         .watermark { position: fixed; left: 0; bottom: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); border-top: 1px solid #ddd; text-align: center; padding: 8px 0; color: #666; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; height: 35px; box-sizing: border-box; }
         
-       .result-overlay { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.92); 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 2000000 !important; /* 🔥 Layer tertinggi di atas sidebar HP */
-            backdrop-filter: blur(5px); 
-        }
+        .result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999999 !important; backdrop-filter: blur(5px); }
         .result-box { background: white; padding: 25px; border-radius: 15px; text-align: center; width: 800px; max-width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; padding-bottom: 80px !important; animation: slideUp 0.5s ease-out; border-top: 5px solid var(--primary); position: relative; z-index: 1000000; }
         .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; margin: 20px auto; border: 5px solid var(--gold); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
@@ -1725,20 +1708,22 @@
             chk.disabled = isSubmitted;
         }
     }
-   window.submitQuiz = function() {
+// ==========================================
+    // FUNGSI SUBMIT FINAL (FIX HP & RESULT OVERLAY)
+    // ==========================================
+    window.submitQuiz = function() {
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
+        
+        // 1. Matikan elemen pengganggu di HP
+        const sbRight = document.querySelector('.sidebar-right');
+        if (sbRight) { sbRight.classList.remove('show-mobile'); sbRight.style.display = ''; }
+        
+        const floatTimer = document.getElementById('floatingTimer');
+        if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
 
-        // --- 1. PAKSA TUTUP SIDEBAR HP (BIAR HASIL KELIHATAN) ---
-        if (window.innerWidth <= 768) {
-            const sbRight = document.querySelector('.sidebar-right');
-            if (sbRight) sbRight.classList.remove('show-mobile'); 
-            
-            const timer = document.getElementById('floatingTimer');
-            if(timer) timer.style.setProperty('display', 'none', 'important');
-        }
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
         // ==========================================
@@ -1891,31 +1876,23 @@
             if(btnReview) btnReview.style.display = 'none';
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
             
-        const final = Math.round((score/currentQuestions.length)*100);
-        
-        // --- 🔥 FORCE SHOW OVERLAY (CARA PALING AMAN) 🔥 ---
-        const overlay = document.getElementById('resultOverlay');
-        if (overlay) {
-            // Paksa muncul tanpa menghapus isi di dalamnya
-            overlay.style.setProperty('display', 'flex', 'important');
-            overlay.style.setProperty('z-index', '2147483647', 'important'); 
-            overlay.style.setProperty('visibility', 'visible', 'important');
+            // --- FIX 2: FORCE SHOW RESULT OVERLAY ---
+            const overlay = document.getElementById('resultOverlay');
+            overlay.style.display = 'flex'; // Paksa Flex
+            overlay.style.visibility = 'visible'; // Paksa Visible
+            overlay.style.zIndex = '2147483647'; // Angka Z-Index Tertinggi di Dunia Web
             
-            // Biar user langsung lihat hasilnya tanpa perlu scroll manual
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            // Opsional: Scroll ke atas biar popup kelihatan
+            window.scrollTo(0, 0);
 
-        const btnShowScore = document.getElementById('btnShowScore');
-        if(btnShowScore) {
-            btnShowScore.style.display = 'flex';
-            btnShowScore.innerHTML = "📝 Nilai"; 
-            // Tambahkan ini biar kalau diklik, overlay-nya maksa muncul lagi
-            btnShowScore.onclick = function() {
-                const ov = document.getElementById('resultOverlay');
-                ov.style.setProperty('display', 'flex', 'important');
-                ov.style.setProperty('z-index', '2147483647', 'important');
-            };
-        }
+            const btnShowScore = document.getElementById('btnShowScore');
+            if(btnShowScore) {
+                btnShowScore.style.display = 'flex'; 
+                btnShowScore.innerHTML = "📝 Nilai"; 
+                btnShowScore.onclick = function() {
+                    document.getElementById('resultOverlay').style.display = 'flex';
+                };
+            }
             
             // 1. CATAT MAPPING NOMOR SOAL KE ELEMEN
             let elementMapping = {};
@@ -1941,198 +1918,105 @@
             return;
         }
         
-// ==========================================
-    // FUNGSI SUBMIT V6.0 (FINAL MEGA FIX)
-    // ==========================================
-    window.submitQuiz = function() {
-        if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
-        window.speechSynthesis.cancel();
-        
-        const currentDB = window.currentDatabaseId || "";
-
-        // --- 1. PAKSA TUTUP SIDEBAR HP (BIAR HASIL KELIHATAN) ---
-        if (window.innerWidth <= 768) {
-            const sbRight = document.querySelector('.sidebar-right');
-            if (sbRight) sbRight.classList.remove('show-mobile'); 
-            
-            const timer = document.getElementById('floatingTimer');
-            if(timer) timer.style.setProperty('display', 'none', 'important');
-        }
-
-        // --- 2. LOGIKA PAPI / PSIKOLOG (MODUL 18) ---
-        if (currentDB === 'modul18' || currentDB.includes('papi') || currentDB === 'modul_papi') {
-            document.body.classList.remove('mode-focus');
-            isSubmitted = true;
-
-            let papiScores = {}; 
-            const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
-            traits.forEach(t => papiScores[t] = 0);
-
-            userAnswers.forEach((choiceIndex, qIndex) => {
-                if (choiceIndex !== null && currentQuestions[qIndex]) {
-                    const qData = currentQuestions[qIndex];
-                    if (qData.papi_keys && qData.papi_keys.length === 2) {
-                        const aspect = qData.papi_keys[choiceIndex];
-                        if(papiScores[aspect] !== undefined) papiScores[aspect]++; 
-                    }
-                }
-            });
-
-            const pdfTargets = [
-                { id: 'R', mapTo: 'R', min: 6, max: 9, label: "Role Consistency (Rasional)", cat: "WAJIB" },
-                { id: 'D', mapTo: 'I', min: 5, max: 7, label: "Decision Making", cat: "WAJIB" },
-                { id: 'E', mapTo: 'E', min: 6, max: 9, label: "Emotional Restraint", cat: "WAJIB" },
-                { id: 'M', mapTo: 'F', min: 6, max: 9, label: "Discipline / Order", cat: "WAJIB" },
-                { id: 'B', mapTo: 'B', min: 6, max: 9, label: "Perseverance", cat: "WAJIB" },
-                { id: 'N', mapTo: 'N', min: 6, max: 9, label: "Need to Finish", cat: "WAJIB" },
-                { id: 'C', mapTo: 'C', min: 6, max: 9, label: "Conformity", cat: "WAJIB" },
-                { id: 'A', mapTo: 'D', min: 6, max: 9, label: "Attention to Detail", cat: "WAJIB" },
-                { id: 'Z', mapTo: 'Z', min: 5, max: 7, label: "Self Control", cat: "WAJIB" },
-                { id: 'W', mapTo: 'W', min: 7, max: 9, label: "Need for Rules", cat: "WAJIB" },
-                { id: 'L', mapTo: 'L', min: 4, max: 6, label: "Leadership", cat: "NORMAL" },
-                { id: 'T', mapTo: 'T', min: 4, max: 6, label: "Work Tempo", cat: "NORMAL" },
-                { id: 'V', mapTo: 'V', min: 4, max: 6, label: "Vigor", cat: "NORMAL" },
-                { id: 'P', mapTo: 'P', min: 5, max: 7, label: "Independence", cat: "NORMAL" },
-                { id: 'X', mapTo: 'X', min: 0, max: 4, label: "Need to be Noticed", cat: "RISK" },
-                { id: 'S', mapTo: 'S', min: 0, max: 4, label: "Social Extension", cat: "RISK" },
-                { id: 'G', mapTo: 'G', min: 0, max: 4, label: "Influence", cat: "RISK" },
-                { id: 'K', mapTo: 'K', min: 0, max: 3, label: "Aggression", cat: "RISK" },
-                { id: 'O', mapTo: 'O', min: 0, max: 3, label: "Need for Closeness", cat: "RISK" }
-            ];
-
-            let analysisTableRows = "";
-            let riskCount = 0;
-            let wajibFailCount = 0;
-            let detailNotes = [];
-
-            pdfTargets.forEach(t => {
-                const score = papiScores[t.mapTo] || 0;
-                let status = "✅ OK"; let color = "green"; let rowBg = "";
-                if (score < t.min || score > t.max) {
-                    if (t.cat === "RISK" && score > t.max) { status = "⛔ BAHAYA"; color = "red"; rowBg = "#ffebee"; riskCount++; detailNotes.push(`⚠️ <b>${t.label}</b> Tinggi (${score}).`); }
-                    else if (t.cat === "WAJIB") { status = score < t.min ? "KURANG" : "BERLEBIH"; color = "#d35400"; rowBg = "#fff3e0"; wajibFailCount++; }
-                    else { status = "⚠️ Cek"; color = "#f39c12"; }
-                }
-                analysisTableRows += `<tr style="background:${rowBg}"><td>${t.id}-${t.label}</td><td>${t.min}-${t.max}</td><td style="font-weight:bold">${score}</td><td style="color:${color}">${status}</td></tr>`;
-            });
-
-            let statusAkhir = (riskCount > 0 || wajibFailCount > 2) ? "PERLU PERBAIKAN" : "DISARANKAN";
-            let statusColor = statusAkhir === "DISARANKAN" ? "#2ecc71" : "#c0392b";
-
-            document.getElementById('finalScore').innerText = statusAkhir === "DISARANKAN" ? "⚖️" : "⛔";
-            document.getElementById('finalScore').style.background = statusColor;
-            document.getElementById('passStatus').innerText = statusAkhir;
-            document.getElementById('passStatus').style.color = statusColor;
-            document.getElementById('resultMsg').innerHTML = `<div style="max-height:200px; overflow-y:auto; font-size:0.8rem;"><table class="stats-table"><tr><th>Aspek</th><th>Target</th><th>Skor</th><th>Status</th></tr>${analysisTableRows}</table></div>`;
-            
-            // PAKSA MUNCUL OVERLAY & TOMBOL NILAI
-            document.getElementById('resultOverlay').style.setProperty('display', 'flex', 'important');
-            document.getElementById('btnShowScore').style.setProperty('display', 'flex', 'important');
-            
-            let elementMapping = {};
-            userAnswers.forEach((val, idx) => {
-                let aspect = currentQuestions[idx].papi_keys[val];
-                if(!elementMapping[aspect]) elementMapping[aspect] = [];
-                elementMapping[aspect].push(idx+1);
-            });
-            savePapiToCloud(statusAkhir, (riskCount + wajibFailCount), JSON.stringify({scores: papiScores, mapping: elementMapping}));
-            return;
-        }
-
-        // --- 3. LOGIKA MODE NORMAL (HUKUM) ---
+   // ==========================================
+        // CABANG 2: MODE NORMAL (HUKUM) - UPDATE FINAL FORCE SHOW
+        // ==========================================
         isSubmitted = true;
         document.body.classList.remove('mode-focus');
-        let score = 0; let correct = 0; let wrong = 0; wrongIndices = [];
+
+        // 1. Hitung Nilai (Logika Standar)
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        wrongIndices = []; 
+
         userAnswers.forEach((a, i) => {
-            if (a === currentQuestions[i].answer) { score++; correct++; }
-            else { wrong++; wrongIndices.push(i); }
-        });
-        const final = Math.round((score/currentQuestions.length)*100);
-
-        // UPDATE UI
-        document.getElementById('finalScore').innerText = final;
-        document.getElementById('finalScore').style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
-        document.getElementById('passStatus').innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
-        document.getElementById('passStatus').style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
-        document.getElementById('resultMsg').innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
-        document.getElementById('btnReviewWrong').style.display = wrong > 0 ? 'flex' : 'none';
-        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
-        
-        // --- 4. EKSEKUSI KERAMAT (FORCE SHOW) ---
-        document.getElementById('resultOverlay').style.setProperty('display', 'flex', 'important');
-        document.getElementById('btnShowScore').style.setProperty('display', 'flex', 'important');
-        document.querySelector('.finish-container').style.display = 'none';
-
-        window.scrollTo(0, 0); 
-        saveScoreToCloud(currentDB, final);
-        saveAndShowChart(final, correct, wrong);
-        loadQuestion(currentIdx);
-    };
-        
-        // Sembunyikan tombol selesai di sidebar (Laptop)
-        const finishCont = document.querySelector('.finish-container');
-        if(finishCont) finishCont.style.display = 'none';
-
-        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
-        document.getElementById('modeIndicator').style.color = "var(--success)";
-
-        // --- 🔥 MUNCULIN HASIL (OVERLAY) DENGAN JEDA 🔥 ---
-        setTimeout(() => {
-            // 1. Double Kill Sidebar (Jaga-jaga kalau dia nongol lagi pas render ulang)
-            if (sbRight) sbRight.style.setProperty('display', 'none', 'important');
-
-            // 2. Munculin Overlay
-            const overlay = document.getElementById('resultOverlay');
-            if (overlay) {
-                // Reset & Paksa Style
-                overlay.style.cssText = ''; 
-                overlay.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 2147483647 !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);');
-                
-                // Isi Data
-                const scoreCircle = document.getElementById('finalScore');
-                const passStatus = document.getElementById('passStatus');
-                const msg = document.getElementById('resultMsg');
-                
-                if(scoreCircle) {
-                    scoreCircle.innerText = final;
-                    scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
-                }
-                if(passStatus) {
-                    passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
-                    passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
-                }
-                if(msg) msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
-
-                // Tombol Review Salah
-                const btnReview = document.getElementById('btnReviewWrong');
-                if(btnReview) {
-                    if (wrongCount > 0) {
-                        btnReview.style.display = 'flex';
-                        btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
-                    } else {
-                        btnReview.style.display = 'none';
-                    }
-                }
-                
-                // Tombol Nilai (Backup)
-                const btnShowScore = document.getElementById('btnShowScore');
-                if(btnShowScore) {
-                    btnShowScore.style.display = 'flex';
-                    btnShowScore.innerHTML = "📝 Nilai"; 
-                    btnShowScore.onclick = function() {
-                        const ov = document.getElementById('resultOverlay');
-                        ov.style.setProperty('display', 'flex', 'important');
-                        ov.style.setProperty('z-index', '2147483647', 'important');
-                    };
+            if (currentQuestions[i]) {
+                if(a === currentQuestions[i].answer) {
+                    score++; correctCount++;
+                } else {
+                    wrongCount++;
+                    wrongIndices.push(i);
                 }
             }
-        }, 100); // Jeda dikit biar browser napas
+        });
+        
+        const final = Math.round((score/currentQuestions.length)*100);
+        
+        // 2. 🔥 FORCE SHOW RESULT OVERLAY (JURUS SAPU JAGAT) 🔥
+        const overlay = document.getElementById('resultOverlay');
+        
+        if (overlay) {
+            // Kita reset style dulu baru paksa muncul pakai !important borongan
+            overlay.style.cssText = `
+                display: flex !important; 
+                visibility: visible !important; 
+                opacity: 1 !important; 
+                z-index: 2147483647 !important; /* Paling Depan Sedunia */
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.85) !important;
+            `;
+            
+            // Scroll layar ke paling atas biar popup pasti kelihatan
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            alert("Error: Elemen Popup Hasil (resultOverlay) Hilang dari HTML!");
+        }
 
-        // Simpan Data
+        // 3. Isi Data ke Dalam Popup
+        const scoreCircle = document.getElementById('finalScore');
+        const passStatus = document.getElementById('passStatus');
+        const msg = document.getElementById('resultMsg');
+        
+        if(scoreCircle) {
+            scoreCircle.innerText = final;
+            scoreCircle.style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
+        }
+        if(passStatus) {
+            passStatus.innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
+            passStatus.style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
+        }
+        if(msg) msg.innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
+
+        // 4. Atur Tombol-Tombol di Popup
+        const btnReview = document.getElementById('btnReviewWrong');
+        if(btnReview) {
+            if (wrongCount > 0) {
+                btnReview.style.display = 'flex';
+                btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
+            } else {
+                btnReview.style.display = 'none';
+            }
+        }
+        
+        const btnShowScore = document.getElementById('btnShowScore');
+        if(btnShowScore) {
+            btnShowScore.style.display = 'flex';
+            btnShowScore.innerHTML = "📝 Nilai"; 
+        }
+
+        // 5. Update UI Lainnya
+        const modeInd = document.getElementById('modeIndicator');
+        if(modeInd) {
+            modeInd.innerText = "PEMBAHASAN";
+            modeInd.style.color = "var(--success)";
+        }
+        
+        const finishCont = document.querySelector('.finish-container');
+        if(finishCont) finishCont.style.display = 'none'; // Sembunyikan tombol selesai sidebar
+
+        // 6. Simpan Data ke Firebase
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
         
-        console.log("✅ Ujian Selesai. Sidebar dimatikan paksa.");
+        // 7. Render Ulang Soal Terakhir (Biar tombol 'Selanjutnya' hilang sesuai fix sebelumnya)
+        loadQuestion(currentIdx);
+        
+        console.log("✅ Ujian Selesai. Nilai:", final);
     };
     
     window.confirmFinish = function() {
@@ -3296,12 +3180,6 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
-
-
-
-
-
-
 
 
 
