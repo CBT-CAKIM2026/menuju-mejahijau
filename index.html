@@ -1708,36 +1708,21 @@
             chk.disabled = isSubmitted;
         }
     }
-
 // ==========================================
-    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH + FIX TAMPILAN HP)
+    // FUNGSI SUBMIT FINAL (FIX HP & RESULT OVERLAY)
     // ==========================================
     window.submitQuiz = function() {
-        // 1. Matikan Timer & Suara
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
-        console.log("DEBUG: ID Modul ->", currentDB);
-
-        // ============================================================
-        // 🔥 TAMBAHAN FIX TAMPILAN HP (SIDEBAR & FOOTER) 🔥
-        // Taruh di paling atas biar sidebar langsung ketutup pas submit
-        // ============================================================
-// --- FIX 1: Tutup Sidebar HP (TAPI JANGAN HILANGIN FOOTER) ---
-        const sbRight = document.querySelector('.sidebar-right');
-        if (sbRight) { 
-            sbRight.classList.remove('show-mobile'); 
-            sbRight.style.display = ''; 
-        }
         
-        // HAPUS baris yang menyembunyikan mobileFooter di sini!
-        // Biarkan footer tetap ada biar user bisa akses daftar soal lagi.
+        // 1. Matikan elemen pengganggu di HP
+        const sbRight = document.querySelector('.sidebar-right');
+        if (sbRight) { sbRight.classList.remove('show-mobile'); sbRight.style.display = ''; }
         
         const floatTimer = document.getElementById('floatingTimer');
         if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
-        // ---------------------------------------------------------------
-
 
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
@@ -1934,7 +1919,7 @@
         }
         
         // ==========================================
-        // CABANG 2: MODE NORMAL (HUKUM)
+        // JIKA MODUL HUKUM / BIASA (YANG ERROR KEMARIN)
         // ==========================================
         isSubmitted = true;
         document.body.classList.remove('mode-focus');
@@ -1957,11 +1942,16 @@
         
         const final = Math.round((score/currentQuestions.length)*100);
         
-        // FIX HP: Paksa Overlay Muncul & Z-Index Tinggi
+        // --- 🔥 BAGIAN PERBAIKAN UTAMA (FORCE SHOW OVERLAY) 🔥 ---
         const overlay = document.getElementById('resultOverlay');
-        overlay.style.display = 'flex';
-        overlay.style.zIndex = '9999999';
+        
+        // Kita pakai setProperty 'important' biar CSS lama kalah
+        overlay.style.setProperty('display', 'flex', 'important');
+        overlay.style.setProperty('visibility', 'visible', 'important');
+        overlay.style.setProperty('z-index', '2147483647', 'important'); 
+        overlay.style.opacity = '1';
 
+        // Isi konten overlay
         const scoreCircle = document.getElementById('finalScore');
         const passStatus = document.getElementById('passStatus');
         const msg = document.getElementById('resultMsg');
@@ -1974,7 +1964,7 @@
 
         const btnReview = document.getElementById('btnReviewWrong');
         if (wrongCount > 0) {
-            btnReview.style.display = 'block';
+            btnReview.style.display = 'flex'; // Pakai Flex biar icon rapi
             btnReview.innerText = `🔍 Review ${wrongCount} Jawaban Salah`;
         } else {
             btnReview.style.display = 'none';
@@ -1990,10 +1980,11 @@
         document.getElementById('modeIndicator').style.color = "var(--success)";
         document.querySelector('.finish-container').style.display = 'none';
 
-        // SIMPAN KE DATABASE NORMAL (GRAFIK)
+        // Save Data
         if (typeof window.saveScoreToCloud === 'function') window.saveScoreToCloud(currentDB, final);
         if (typeof window.saveAndShowChart === 'function') window.saveAndShowChart(final, correctCount, wrongCount);
         
+        // Refresh soal terakhir (biar tombolnya update)
         loadQuestion(currentIdx);
     };
     
@@ -3158,6 +3149,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
