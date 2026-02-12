@@ -1721,18 +1721,15 @@
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
-        
-        // --- FIX HP: TUTUP SIDEBAR BIAR HASIL KELIHATAN ---
+
+        // --- 1. PAKSA TUTUP SIDEBAR HP (BIAR HASIL KELIHATAN) ---
         if (window.innerWidth <= 768) {
             const sbRight = document.querySelector('.sidebar-right');
-            if (sbRight) { 
-                sbRight.classList.remove('show-mobile'); // Cukup tutup slide-nya
-            }
-            // Timer melayang dimatikan saja biar gak ganggu hasil
-            const floatTimer = document.getElementById('floatingTimer');
-            if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
+            if (sbRight) sbRight.classList.remove('show-mobile'); 
+            
+            const timer = document.getElementById('floatingTimer');
+            if(timer) timer.style.setProperty('display', 'none', 'important');
         }
-
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
         // ==========================================
@@ -1935,33 +1932,133 @@
             return;
         }
         
- // ==========================================
-        // CABANG 2: MODE NORMAL (HUKUM)
-        // ==========================================
+// ==========================================
+    // FUNGSI SUBMIT V6.0 (FINAL MEGA FIX)
+    // ==========================================
+    window.submitQuiz = function() {
+        if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
+        window.speechSynthesis.cancel();
+        
+        const currentDB = window.currentDatabaseId || "";
+
+        // --- 1. PAKSA TUTUP SIDEBAR HP (BIAR HASIL KELIHATAN) ---
+        if (window.innerWidth <= 768) {
+            const sbRight = document.querySelector('.sidebar-right');
+            if (sbRight) sbRight.classList.remove('show-mobile'); 
+            
+            const timer = document.getElementById('floatingTimer');
+            if(timer) timer.style.setProperty('display', 'none', 'important');
+        }
+
+        // --- 2. LOGIKA PAPI / PSIKOLOG (MODUL 18) ---
+        if (currentDB === 'modul18' || currentDB.includes('papi') || currentDB === 'modul_papi') {
+            document.body.classList.remove('mode-focus');
+            isSubmitted = true;
+
+            let papiScores = {}; 
+            const traits = ['G','L','I','T','V','S','R','D','C','E','N','A','P','X','B','O','Z','K','F','W'];
+            traits.forEach(t => papiScores[t] = 0);
+
+            userAnswers.forEach((choiceIndex, qIndex) => {
+                if (choiceIndex !== null && currentQuestions[qIndex]) {
+                    const qData = currentQuestions[qIndex];
+                    if (qData.papi_keys && qData.papi_keys.length === 2) {
+                        const aspect = qData.papi_keys[choiceIndex];
+                        if(papiScores[aspect] !== undefined) papiScores[aspect]++; 
+                    }
+                }
+            });
+
+            const pdfTargets = [
+                { id: 'R', mapTo: 'R', min: 6, max: 9, label: "Role Consistency (Rasional)", cat: "WAJIB" },
+                { id: 'D', mapTo: 'I', min: 5, max: 7, label: "Decision Making", cat: "WAJIB" },
+                { id: 'E', mapTo: 'E', min: 6, max: 9, label: "Emotional Restraint", cat: "WAJIB" },
+                { id: 'M', mapTo: 'F', min: 6, max: 9, label: "Discipline / Order", cat: "WAJIB" },
+                { id: 'B', mapTo: 'B', min: 6, max: 9, label: "Perseverance", cat: "WAJIB" },
+                { id: 'N', mapTo: 'N', min: 6, max: 9, label: "Need to Finish", cat: "WAJIB" },
+                { id: 'C', mapTo: 'C', min: 6, max: 9, label: "Conformity", cat: "WAJIB" },
+                { id: 'A', mapTo: 'D', min: 6, max: 9, label: "Attention to Detail", cat: "WAJIB" },
+                { id: 'Z', mapTo: 'Z', min: 5, max: 7, label: "Self Control", cat: "WAJIB" },
+                { id: 'W', mapTo: 'W', min: 7, max: 9, label: "Need for Rules", cat: "WAJIB" },
+                { id: 'L', mapTo: 'L', min: 4, max: 6, label: "Leadership", cat: "NORMAL" },
+                { id: 'T', mapTo: 'T', min: 4, max: 6, label: "Work Tempo", cat: "NORMAL" },
+                { id: 'V', mapTo: 'V', min: 4, max: 6, label: "Vigor", cat: "NORMAL" },
+                { id: 'P', mapTo: 'P', min: 5, max: 7, label: "Independence", cat: "NORMAL" },
+                { id: 'X', mapTo: 'X', min: 0, max: 4, label: "Need to be Noticed", cat: "RISK" },
+                { id: 'S', mapTo: 'S', min: 0, max: 4, label: "Social Extension", cat: "RISK" },
+                { id: 'G', mapTo: 'G', min: 0, max: 4, label: "Influence", cat: "RISK" },
+                { id: 'K', mapTo: 'K', min: 0, max: 3, label: "Aggression", cat: "RISK" },
+                { id: 'O', mapTo: 'O', min: 0, max: 3, label: "Need for Closeness", cat: "RISK" }
+            ];
+
+            let analysisTableRows = "";
+            let riskCount = 0;
+            let wajibFailCount = 0;
+            let detailNotes = [];
+
+            pdfTargets.forEach(t => {
+                const score = papiScores[t.mapTo] || 0;
+                let status = "✅ OK"; let color = "green"; let rowBg = "";
+                if (score < t.min || score > t.max) {
+                    if (t.cat === "RISK" && score > t.max) { status = "⛔ BAHAYA"; color = "red"; rowBg = "#ffebee"; riskCount++; detailNotes.push(`⚠️ <b>${t.label}</b> Tinggi (${score}).`); }
+                    else if (t.cat === "WAJIB") { status = score < t.min ? "KURANG" : "BERLEBIH"; color = "#d35400"; rowBg = "#fff3e0"; wajibFailCount++; }
+                    else { status = "⚠️ Cek"; color = "#f39c12"; }
+                }
+                analysisTableRows += `<tr style="background:${rowBg}"><td>${t.id}-${t.label}</td><td>${t.min}-${t.max}</td><td style="font-weight:bold">${score}</td><td style="color:${color}">${status}</td></tr>`;
+            });
+
+            let statusAkhir = (riskCount > 0 || wajibFailCount > 2) ? "PERLU PERBAIKAN" : "DISARANKAN";
+            let statusColor = statusAkhir === "DISARANKAN" ? "#2ecc71" : "#c0392b";
+
+            document.getElementById('finalScore').innerText = statusAkhir === "DISARANKAN" ? "⚖️" : "⛔";
+            document.getElementById('finalScore').style.background = statusColor;
+            document.getElementById('passStatus').innerText = statusAkhir;
+            document.getElementById('passStatus').style.color = statusColor;
+            document.getElementById('resultMsg').innerHTML = `<div style="max-height:200px; overflow-y:auto; font-size:0.8rem;"><table class="stats-table"><tr><th>Aspek</th><th>Target</th><th>Skor</th><th>Status</th></tr>${analysisTableRows}</table></div>`;
+            
+            // PAKSA MUNCUL OVERLAY & TOMBOL NILAI
+            document.getElementById('resultOverlay').style.setProperty('display', 'flex', 'important');
+            document.getElementById('btnShowScore').style.setProperty('display', 'flex', 'important');
+            
+            let elementMapping = {};
+            userAnswers.forEach((val, idx) => {
+                let aspect = currentQuestions[idx].papi_keys[val];
+                if(!elementMapping[aspect]) elementMapping[aspect] = [];
+                elementMapping[aspect].push(idx+1);
+            });
+            savePapiToCloud(statusAkhir, (riskCount + wajibFailCount), JSON.stringify({scores: papiScores, mapping: elementMapping}));
+            return;
+        }
+
+        // --- 3. LOGIKA MODE NORMAL (HUKUM) ---
         isSubmitted = true;
         document.body.classList.remove('mode-focus');
-
-        let score = 0;
-        let correctCount = 0;
-        let wrongCount = 0;
-        wrongIndices = []; 
-
+        let score = 0; let correct = 0; let wrong = 0; wrongIndices = [];
         userAnswers.forEach((a, i) => {
-            if (currentQuestions[i]) {
-                if(a === currentQuestions[i].answer) {
-                    score++; correctCount++;
-                } else {
-                    wrongCount++;
-                    wrongIndices.push(i);
-                }
-            }
+            if (a === currentQuestions[i].answer) { score++; correct++; }
+            else { wrong++; wrongIndices.push(i); }
         });
-        
         const final = Math.round((score/currentQuestions.length)*100);
+
+        // UPDATE UI
+        document.getElementById('finalScore').innerText = final;
+        document.getElementById('finalScore').style.background = final >= 70 ? "var(--pass)" : "var(--fail)";
+        document.getElementById('passStatus').innerText = final >= 70 ? "LULUS" : "TIDAK LULUS";
+        document.getElementById('passStatus').style.color = final >= 70 ? "var(--pass)" : "var(--fail)";
+        document.getElementById('resultMsg').innerText = final >= 70 ? "Selamat! Memenuhi Standar." : "Belajar lagi ya.";
+        document.getElementById('btnReviewWrong').style.display = wrong > 0 ? 'flex' : 'none';
+        document.getElementById('modeIndicator').innerText = "PEMBAHASAN";
         
-        // --- UPDATE UI SEBELUM OVERLAY ---
-        // Render ulang soal biar tombol 'Selesai' di bawah berubah/hilang
+        // --- 4. EKSEKUSI KERAMAT (FORCE SHOW) ---
+        document.getElementById('resultOverlay').style.setProperty('display', 'flex', 'important');
+        document.getElementById('btnShowScore').style.setProperty('display', 'flex', 'important');
+        document.querySelector('.finish-container').style.display = 'none';
+
+        window.scrollTo(0, 0); 
+        saveScoreToCloud(currentDB, final);
+        saveAndShowChart(final, correct, wrong);
         loadQuestion(currentIdx);
+    };
         
         // Sembunyikan tombol selesai di sidebar (Laptop)
         const finishCont = document.querySelector('.finish-container');
@@ -3190,6 +3287,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
