@@ -59,34 +59,109 @@
             overflow-y: auto; overflow-x: hidden; font-family: 'Poppins', sans-serif; color: #333; display: block !important; 
         }
 
-        .landing-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; width: 100%; background-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; box-sizing: border-box; border-bottom: 3px solid var(--gold); }
-        .nav-brand { font-size: 1.3rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
-        .nav-login-btn { background-color: #ffffff; color: var(--primary); border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-        .nav-login-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
-
-        .hero-section { display: grid; grid-template-columns: 1.2fr 0.8fr; padding: 40px 60px 10px 60px; max-width: 1300px; margin: 0 auto; min-height: 80vh; box-sizing: border-box; position: relative; }
-        .hero-left { display: flex; flex-direction: column; justify-content: center; padding-right: 20px; margin-left: -40px; }
-        .hero-quote { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; }
-        .highlight-text { color: var(--primary); }
-        .hero-right { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding-bottom: 25px; padding-left: 20px; }
-        .hero-features { list-style: none; padding: 0; margin: 0; }
-        .hero-features li { font-size: 1rem; color: #444; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; font-weight: 600; }
-        .feature-icon { color: var(--primary); font-size: 1.1rem; width: 25px; text-align: center; }
-        .dev-footer { grid-column: 1 / -1; font-size: 0.85rem; color: #666; margin-top: 5px; padding-top: 15px; border-top: 1px solid #bbb; font-weight: 600; }
-
-        @media (max-width: 992px) {
-            .landing-nav { padding: 10px 15px; gap: 5px; }
-            .nav-brand { font-size: 0.9rem; }
-            .nav-login-btn { padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; }
-            .nav-login-btn img { width: 18px; height: 18px; }
-            .hero-section { display: flex; flex-direction: column; padding: 20px 20px; gap: 20px; justify-content: center; min-height: 80vh; }
-            .hero-left { margin-left: 0; padding-right: 0; text-align: center; margin-top: 10px; }
-            .hero-quote { font-size: 1.6rem; } 
-            .hero-right { padding-left: 0; align-items: center; justify-content: center; width: 100%; padding-bottom: 40px; }
-            .hero-features li { background: rgba(255,255,255,0.6); padding: 8px 12px; border-radius: 6px; width: 100%; justify-content: flex-start; font-size: 0.85rem; margin-bottom: 5px; }
-            .dev-footer { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 0.65rem; padding: 8px 0; margin: 0; background: rgba(255,255,255,0.8); border-top: none; z-index: 101; }
+ /* --- UPDATE NAVIGASI RESPONSIF --- */
+        .landing-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 40px; 
+            width: 100%; 
+            background-color: var(--primary); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 100; 
+            box-sizing: border-box; 
+            border-bottom: 3px solid var(--gold); 
         }
 
+        .nav-brand { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; /* Jarak logo ke teks */
+        }
+
+        .landing-logo {
+            height: 45px; 
+            width: auto;
+        }
+
+        .brand-text-wrapper {
+            display: flex;
+            flex-direction: column; /* Biar bisa ditumpuk */
+            justify-content: center;
+            line-height: 1.1; /* Rapat biar simetris */
+            color: white;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold); /* Biar cakep dikasih warna emas */
+            opacity: 0.9;
+        }
+
+        .nav-login-btn { 
+            background-color: #ffffff; 
+            color: var(--primary); 
+            border: none; 
+            padding: 8px 20px; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: all 0.2s; 
+            white-space: nowrap; /* Biar teks login ga turun */
+        }
+        
+        .nav-login-btn img { width: 20px; height: 20px; }
+
+        /* --- TAMPILAN HP (KHUSUS BIAR RAPI) --- */
+        @media (max-width: 768px) {
+            .landing-nav { 
+                padding: 10px 15px; /* Padding diperkecil */
+            }
+            
+            .landing-logo {
+                height: 38px; /* Logo sedikit lebih kecil */
+            }
+
+            .nav-brand {
+                gap: 8px;
+            }
+
+            .brand-title {
+                font-size: 1.1rem; /* Judul pas */
+            }
+
+            .brand-subtitle {
+                font-size: 0.65rem; /* Subjudul kecil tapi terbaca */
+            }
+
+            .nav-login-btn { 
+                padding: 6px 12px; 
+                font-size: 0.8rem; 
+                border-radius: 50px; /* Biar lebih manis di HP */
+            }
+            
+            /* Opsional: Kalau layar sempit banget, teks 'Masuk' doang */
+            .nav-login-btn span::after {
+                content: " Google";
+            }
+        }
+        /* Layar Super Kecil (iPhone SE / Galaxy Fold) */
+        @media (max-width: 380px) {
+            .nav-login-btn span { display: none; } /* Umpetin teks */
+            .nav-login-btn::after { content: "Masuk"; font-size: 0.8rem; }
+            .nav-login-btn img { margin-right: 0; }
+        }
         /* APP STYLES */
         #appSection { display: none; width: 100%; height: 100%; display: flex; background-color: #f4f7f6; position: fixed; top: 0; left: 0; z-index: 10; }
         .sidebar-left { width: 280px; background-color: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10; transition: margin-left 0.3s ease; }
@@ -273,14 +348,17 @@
 
 <div id="loginOverlay">
     <nav class="landing-nav">
-        <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
-            <img src="PRO-TAMA.png" alt="Logo" style="height: 40px; width: auto;">
-            PRO-TAMA (CBT CAKIM PA 2026)
+        <div class="nav-brand">
+            <img src="PRO-TAMA.png" alt="Logo" class="landing-logo">
+            <div class="brand-text-wrapper">
+                <span class="brand-title">PRO-TAMA</span>
+                <span class="brand-subtitle">(CBT CAKIM PA 2026)</span>
+            </div>
         </div>
+
         <button class="nav-login-btn" onclick="handleLogin()">
-            <img src="https://img.icons8.com/color/48/google-logo.png" width="25" height="25" alt="G">
-            <span>Masuk dengan Google</span>
-        </button>
+            <img src="https://img.icons8.com/color/48/google-logo.png" alt="G">
+            <span>Masuk</span> </button>
     </nav>
     <section class="hero-section">
         <div class="hero-left">
@@ -2968,6 +3046,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
