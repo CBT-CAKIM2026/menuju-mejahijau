@@ -1614,7 +1614,7 @@
         const btnNext = document.getElementById('nextBtn');
         btnNext.style.display = 'block'; 
 
-        if (!isReviewMode && idx === currentQuestions.length - 1) {
+        if (!isSubmitted && !isReviewMode && idx === currentQuestions.length - 1) {
             if (window.innerWidth > 768) {
                 btnNext.style.display = 'none';
             } else {
@@ -1695,22 +1695,39 @@
     }
 
 // ==========================================
-    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH)
+    // FUNGSI SUBMIT V4.0 (DATABASE TERPISAH + FIX TAMPILAN HP)
     // ==========================================
     window.submitQuiz = function() {
+        // 1. Matikan Timer & Suara
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
         console.log("DEBUG: ID Modul ->", currentDB);
 
+        // ============================================================
+        // 🔥 TAMBAHAN FIX TAMPILAN HP (SIDEBAR & FOOTER) 🔥
+        // Taruh di paling atas biar sidebar langsung ketutup pas submit
+        // ============================================================
+        const sbRight = document.querySelector('.sidebar-right');
+        if (sbRight) {
+            sbRight.classList.remove('show-mobile'); // Tutup sidebar HP
+            sbRight.style.display = ''; 
+        }
+        
+        const mobileFooter = document.getElementById('mobileFooter');
+        if(mobileFooter) mobileFooter.style.display = 'none'; // Sembunyikan footer HP
+        
+        const floatTimer = document.getElementById('floatingTimer');
+        if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
+        // ============================================================
+
+
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
         // ==========================================
         if (currentDB === 'modul18' || currentDB.includes('papi') || currentDB === 'modul_papi') {
             
-            const floatTimer = document.getElementById('floatingTimer');
-            if(floatTimer) floatTimer.style.display = 'none';
             document.body.classList.remove('mode-focus');
             isSubmitted = true;
 
@@ -1731,9 +1748,6 @@
             });
 
             // 2. KONFIGURASI TARGET SESUAI PDF "FORMAT PENILAIAN HAKIM KHUSUS"
-            // Mapping: Key PDF -> Key PAPI Standard (Supaya sinkron dengan database)
-            // M -> F (Disiplin/Authority), D -> I (Decision Making), A -> D (Detail)
-            
             const pdfTargets = [
                 // === KELOMPOK WAJIB TINGGI ===
                 { id: 'R', mapTo: 'R', min: 6, max: 9, label: "Role Consistency (Rasional)", cat: "WAJIB" },
@@ -1768,15 +1782,12 @@
             let detailNotes = [];
 
             pdfTargets.forEach(t => {
-                // Ambil skor menggunakan key mapping (Standar PAPI)
-                // Jika mapping tidak ditemukan, pakai skor 0 sebagai fallback
                 const score = papiScores[t.mapTo] !== undefined ? papiScores[t.mapTo] : 0;
                 
                 let status = "✅ OK";
                 let color = "green";
                 let rowBg = "";
 
-                // Logika Evaluasi
                 if (score < t.min || score > t.max) {
                     if (t.cat === "RISK" && score > t.max) {
                         status = "⛔ BAHAYA";
@@ -1787,14 +1798,14 @@
                     } 
                     else if (t.cat === "WAJIB") {
                         status = score < t.min ? "KURANG" : "BERLEBIH";
-                        color = "#d35400"; // Orange Tua
+                        color = "#d35400"; 
                         rowBg = "#fff3e0";
                         wajibFailCount++;
                         if (score < t.min) detailNotes.push(`🔸 <b>${t.label}</b> Rendah (${score}). Perlu ditingkatkan.`);
                     } 
                     else {
                         status = "⚠️ Cek";
-                        color = "#f39c12"; // Kuning
+                        color = "#f39c12"; 
                     }
                 }
 
@@ -1827,12 +1838,12 @@
 
             if (riskCount > 0) {
                 statusAkhir = "PERLU PERBAIKAN";
-                statusColor = "#c0392b"; // Merah
+                statusColor = "#c0392b"; 
                 icon = "⛔";
                 headerMsg = `Ditemukan ${riskCount} Indikator Risiko Tinggi!`;
-            } else if (wajibFailCount > 2) { // Toleransi gagal wajib max 2
+            } else if (wajibFailCount > 2) { 
                 statusAkhir = "PERLU PERBAIKAN";
-                statusColor = "#e67e22"; // Orange
+                statusColor = "#e67e22"; 
                 icon = "⚠️";
                 headerMsg = `Profil belum konsisten (Gagal di ${wajibFailCount} aspek inti).`;
             }
@@ -1863,19 +1874,22 @@
 
             if(btnReview) btnReview.style.display = 'none';
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
-            document.getElementById('resultOverlay').style.display = 'flex';
+            
+            // FIX HP: Paksa Overlay Muncul
+            const overlay = document.getElementById('resultOverlay');
+            overlay.style.display = 'flex'; 
+            overlay.style.zIndex = '9999999';
 
             const btnShowScore = document.getElementById('btnShowScore');
             if(btnShowScore) {
-                btnShowScore.style.display = 'flex'; // Paksa tombol muncul
+                btnShowScore.style.display = 'flex'; 
                 btnShowScore.innerHTML = "📝 Nilai"; 
-                // Set onclick supaya ngebuka pop-up lagi
                 btnShowScore.onclick = function() {
                     document.getElementById('resultOverlay').style.display = 'flex';
                 };
             }
             
-      // 🔥 1. CATAT MAPPING NOMOR SOAL KE ELEMEN 🔥
+            // 1. CATAT MAPPING NOMOR SOAL KE ELEMEN
             let elementMapping = {};
             userAnswers.forEach((choiceIndex, qIndex) => {
                 if (choiceIndex !== null && currentQuestions[qIndex]) {
@@ -1883,15 +1897,14 @@
                     if (qData.papi_keys) {
                         const aspect = qData.papi_keys[choiceIndex];
                         if (!elementMapping[aspect]) elementMapping[aspect] = [];
-                        elementMapping[aspect].push(qIndex + 1); // Simpan nomor soal (1, 2, 3...)
+                        elementMapping[aspect].push(qIndex + 1); 
                     }
                 }
             });
     
-            // 🔥 2. SIMPAN KE DATABASE (LENGKAP DENGAN MAPPING) 🔥
+            // 2. SIMPAN KE DATABASE
             if (typeof window.savePapiToCloud === 'function') {
                 const totalFail = riskCount + wajibFailCount;
-                // Kita bungkus skor dan mapping soal dalam satu objek
                 window.savePapiToCloud(statusAkhir, totalFail, JSON.stringify({
                     scores: papiScores,
                     mapping: elementMapping
@@ -1904,7 +1917,6 @@
         // CABANG 2: MODE NORMAL (HUKUM)
         // ==========================================
         isSubmitted = true;
-        document.getElementById('floatingTimer').style.display = 'none';
         document.body.classList.remove('mode-focus');
 
         let score = 0;
@@ -1925,7 +1937,11 @@
         
         const final = Math.round((score/currentQuestions.length)*100);
         
-        document.getElementById('resultOverlay').style.display = 'flex';
+        // FIX HP: Paksa Overlay Muncul & Z-Index Tinggi
+        const overlay = document.getElementById('resultOverlay');
+        overlay.style.display = 'flex';
+        overlay.style.zIndex = '9999999';
+
         const scoreCircle = document.getElementById('finalScore');
         const passStatus = document.getElementById('passStatus');
         const msg = document.getElementById('resultMsg');
@@ -3122,6 +3138,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
