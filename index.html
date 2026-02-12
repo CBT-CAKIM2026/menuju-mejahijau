@@ -2257,44 +2257,50 @@ window.openStats = async function(mode = 'hukum') {
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Rata-Rata Nilai', data: dataPoints,
-                                borderColor: '#004d00', backgroundColor: 'rgba(0, 77, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, 
-                                pointBackgroundColor: '#d4af37', pointBorderColor: '#004d00', pointRadius: 5
+                                label: 'Rata-Rata Nilai', 
+                                data: dataPoints,
+                                borderColor: '#004d00', 
+                                backgroundColor: 'rgba(0, 77, 0, 0.2)', 
+                                borderWidth: 3, 
+                                tension: 0.3, 
+                                fill: true, 
+                                pointBackgroundColor: '#d4af37', 
+                                pointBorderColor: '#004d00', 
+                                pointRadius: 5
                             }]
                         },
-                                options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: {
-                            x: {
-                                type: 'number',
-                                easing: 'linear',
-                                duration: 2000,
-                                from: NaN, 
-                                delay(ctx) {
-                                    if (ctx.type !== 'data' || ctx.xStarted) return 0;
-                                    ctx.xStarted = true;
-                                    return ctx.index * 300;
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            animation: {
+                                x: {
+                                    type: 'number',
+                                    easing: 'linear',
+                                    duration: 2000,
+                                    from: NaN, 
+                                    delay(ctx) {
+                                        if (ctx.type !== 'data' || ctx.xStarted) return 0;
+                                        ctx.xStarted = true;
+                                        return ctx.index * 300;
+                                    }
+                                },
+                                y: {
+                                    type: 'number',
+                                    easing: 'linear',
+                                    duration: 2000,
+                                    from: NaN,
+                                    delay(ctx) {
+                                        if (ctx.type !== 'data' || ctx.yStarted) return 0;
+                                        ctx.yStarted = true;
+                                        return ctx.index * 300;
+                                    }
                                 }
                             },
-                            y: {
-                                type: 'number',
-                                easing: 'linear',
-                                duration: 2000,
-                                from: NaN,
-                                delay(ctx) {
-                                    if (ctx.type !== 'data' || ctx.yStarted) return 0;
-                                    ctx.yStarted = true;
-                                    return ctx.index * 300;
-                                }
-                            }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, max: 100 }
+                            scales: { y: { beginAtZero: true, max: 100 } } 
                         }
-                    }
-                });
-            }, 100);
+                    });
+                }, 100);
+                
             // --- CABANG 4: UJIAN + HUKUM ---
             else {
                 let targetModul = window.currentDatabaseId || 'modul1';
@@ -2949,6 +2955,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
