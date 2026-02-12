@@ -1717,28 +1717,21 @@
         }
     }
    window.submitQuiz = function() {
-        // 1. Matikan Timer & Audio
         if(typeof timerInterval !== 'undefined' && timerInterval) clearInterval(timerInterval);
         window.speechSynthesis.cancel();
         
         const currentDB = window.currentDatabaseId || "";
         
-        // --- 🔥 FIX PENTING: CUMA MATIKAN SIDEBAR KALO DI HP 🔥 ---
-        // Kita cek lebar layar dulu. Kalo Laptop (> 768px), JANGAN GANGGU SIDEBAR!
+        // --- FIX HP: TUTUP SIDEBAR TANPA MENGHAPUS (Biar Fitur Ga Hilang) ---
         if (window.innerWidth <= 768) {
             const sbRight = document.querySelector('.sidebar-right');
             if (sbRight) { 
-                sbRight.classList.remove('show-mobile'); 
-                sbRight.style.setProperty('display', 'none', 'important'); 
+                sbRight.classList.remove('show-mobile'); // Cukup tutup, jangan di-hide permanen
             }
-            
-            const mobileFooter = document.getElementById('mobileFooter');
-            if (mobileFooter) mobileFooter.style.zIndex = '1'; 
-            
             const floatTimer = document.getElementById('floatingTimer');
             if(floatTimer) floatTimer.style.setProperty('display', 'none', 'important');
         }
-        // -------------------------------------------------------------
+        // --------------------------------------------------------------------
 
         // ==========================================
         // CABANG 1: MODE PSIKOLOG (MODUL 18 / PAPI) - FINAL PDF VERSION
@@ -1892,14 +1885,23 @@
             if(btnReview) btnReview.style.display = 'none';
             document.getElementById('modeIndicator').innerText = "PSIKOGRAM";
             
-            // --- FIX 2: FORCE SHOW RESULT OVERLAY ---
-            const overlay = document.getElementById('resultOverlay');
-            overlay.style.display = 'flex'; // Paksa Flex
-            overlay.style.visibility = 'visible'; // Paksa Visible
-            overlay.style.zIndex = '2147483647'; // Angka Z-Index Tertinggi di Dunia Web
-            
-            // Opsional: Scroll ke atas biar popup kelihatan
-            window.scrollTo(0, 0);
+// --- 🔥 FORCE SHOW RESULT OVERLAY (DI ATAS SEGALANYA) 🔥 ---
+        const overlay = document.getElementById('resultOverlay');
+        if (overlay) {
+            overlay.style.cssText = `
+                display: flex !important; 
+                visibility: visible !important; 
+                opacity: 1 !important; 
+                z-index: 999999 !important; /* Jauh lebih tinggi dari sidebar HP */
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.85) !important;
+            `;
+            window.scrollTo(0, 0); 
+        }
 
             const btnShowScore = document.getElementById('btnShowScore');
             if(btnShowScore) {
@@ -3189,6 +3191,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
