@@ -662,7 +662,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut,  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, writeBatch, doc, getDoc, updateDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // --- CONFIG FIREBASE ---
@@ -716,31 +716,34 @@ if(auth) {
             const gateOverlay = document.getElementById('gatekeeperOverlay');
 
             // ============================================================
-            // 1. FITUR MAINTENACE (GAK GUE HAPUS, TETAP DISINI)
+            // 1. FITUR MAINTENACE
             // ============================================================
-            // Panggil fungsi watcher supaya status maintenance terpantau realtime
             if (typeof watchMaintenance === 'function') {
                 watchMaintenance(); 
             }
 
             // ============================================================
-            // 2. FITUR ADMIN SAKTI (BYPASS GATEKEEPER)
+            // 2. FITUR ADMIN (HANYA BUKA PRIVILEGES, TAPI TETAP DICEGAT)
             // ============================================================
             if (user.email === ADMIN_EMAIL) {
+                // Tetap kasih 'is-admin' supaya lo BISA COPY-PASTE & KLIK KANAN
                 document.body.classList.add('is-admin'); 
-                console.log("Welcome Admin! Anti-Cheat Disabled.");
+                console.log("Welcome Admin! Anti-Cheat Disabled (VIP Check Active).");
+                
                 const btnAdmin = document.getElementById('btnAdminPanel');
                 if(btnAdmin) btnAdmin.style.display = 'flex'; 
 
-                // ADMIN LANGSUNG MASUK (Skip Gatekeeper)
-                lanjutKeAplikasi();
-                return; 
+                // ❌ DULU: Langsung masuk (Bypass)
+                // lanjutKeAplikasi(); 
+                // return; 
+
+                // ✅ SEKARANG: Dibiarkan lanjut ke bawah supaya kena cek Gatekeeper
             } else {
                 document.body.classList.remove('is-admin');
             }
 
             // ============================================================
-            // 3. FITUR GATEKEEPER (PINTU VIP UNTUK USER BIASA)
+            // 3. FITUR GATEKEEPER (PINTU VIP UNTUK SEMUA)
             // ============================================================
             
             // Sembunyikan Login, Tampilkan Loading Gatekeeper
@@ -750,27 +753,24 @@ if(auth) {
             document.getElementById('gateInputArea').style.display = 'none';
 
             try {
-                // Import Firestore manual (biar aman)
                 const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
                 const accessRef = doc(db, "vip_access", user.email);
                 const accessSnap = await getDoc(accessRef);
 
                 if (accessSnap.exists()) {
-                    // Cek apakah statusnya sudah verified
                     if (accessSnap.data().isVerified === true) {
-                        // SUDAH VERIFIKASI -> MASUKKAN KE APLIKASI
+                        // SUDAH VERIFIKASI -> MASUK
                         lanjutKeAplikasi();
                     } else {
-                        // SUDAH PUNYA KODE TAPI BELUM MASUKIN -> TAMPILKAN INPUT
+                        // BELUM VERIFIKASI -> TAMPILKAN INPUT
                         showGateInput(user.displayName, user.email);
                     }
                 } else {
-                    // USER BARU -> GENERATE KODE + KIRIM EMAIL
+                    // USER BARU (TERMASUK ADMIN PERTAMA KALI) -> GENERATE KODE
                     const randomAsas = legalTerms[Math.floor(Math.random() * legalTerms.length)];
                     const randomNum = Math.floor(100 + Math.random() * 899);
                     const finalCode = `${randomAsas}-${randomNum}`;
 
-                    // Simpan Kode ke Firestore
                     await setDoc(accessRef, {
                         name: user.displayName,
                         email: user.email,
@@ -779,7 +779,6 @@ if(auth) {
                         createdAt: new Date()
                     });
 
-                    // Kirim Email via GAS (Kurir Baru)
                     fetch("https://script.google.com/macros/s/AKfycbzO18J1LzCVpqetirC52C-VkbTFBt0s3SwpPY3dAOno2oIYwA2hZHyGlUdyXsCwcxIMQg/exec", {
                         method: "POST",
                         mode: "no-cors",
@@ -791,17 +790,17 @@ if(auth) {
                     }).then(() => {
                         showGateInput(user.displayName, user.email);
                     }).catch(err => {
-                        console.error("Gagal kirim email, tapi lanjut tampilkan input:", err);
+                        console.error("Gagal kirim email:", err);
                         showGateInput(user.displayName, user.email);
                     });
                 }
             } catch (e) { 
                 console.error("Gate Error:", e);
-                alert("Terjadi kesalahan koneksi database: " + e.message);
+                alert("Database Error: " + e.message);
             }
 
         } else {
-            // STATE LOGOUT / BELUM LOGIN
+            // STATE LOGOUT
             document.body.classList.remove('is-admin');
             document.getElementById('loginOverlay').style.setProperty('display', 'block', 'important');
             document.getElementById('appSection').style.display = 'none';
@@ -2947,6 +2946,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
