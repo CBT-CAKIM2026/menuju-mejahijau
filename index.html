@@ -382,6 +382,49 @@
         .rank-num { font-weight: bold; width: 20px; color: var(--gold); }
         .rank-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 5px; color: #333; }
         .rank-score { font-weight: bold; color: var(--primary); }
+
+        /* --- TAMPILAN ADMIN MODERN --- */
+        .admin-header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .admin-nav-btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: white !important;
+        }
+        
+        .admin-nav-btn:hover { transform: translateY(-2px); opacity: 0.95; }
+        .admin-nav-btn i { font-size: 1.1rem; }
+        
+        /* WARNA TOMBOL */
+        .btn-maint-on { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .btn-maint-off { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .btn-add-json { background: linear-gradient(135deg, #2980b9, #3498db); }
+        .btn-edit-soal { background: linear-gradient(135deg, #f39c12, #f1c40f); text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .btn-review { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+        
+        /* TOMBOL EXCEL (HIJAU KHAS) */
+        .btn-excel { 
+            background: linear-gradient(135deg, #217346, #27ae60);
+            border: 1px solid #1e8449; 
+        }
     </style>
 </head>
 <body>
@@ -730,37 +773,49 @@
 
     <div id="adminOverlay" class="result-overlay">
         <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
+            
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
                 <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
                 <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
             </div>
-
-            <div style="background: #fff3e0; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong style="color: #e67e22;"><i class="fas fa-exclamation-triangle"></i> Kontrol Akses Pengguna</strong>
-                    <p style="margin: 0; font-size: 0.8rem; color: #666;">Aktifkan untuk mengunci aplikasi bagi pengguna umum.</p>
+        
+            <div style="background: #fff; padding: 5px; border-radius: 8px; margin-bottom: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <h4 style="margin:0; color: #444;">Status Aplikasi</h4>
+                        <small style="color: #888;">Klik tombol di kanan untuk buka/tutup akses ujian.</small>
+                    </div>
+                    <button id="btnToggleMaintenance" onclick="toggleMaintenanceStatus()" class="admin-nav-btn btn-maint-off">
+                        <i class="fas fa-lock-open"></i> Maintenance: OFF
+                    </button>
                 </div>
-                <button id="btnToggleMaintenance" onclick="toggleMaintenanceStatus()" class="btn-small" style="background: var(--secondary); min-width: 150px;">
-                    Memuat Status...
-                </button>
+        
+                <label style="font-weight:bold; display:block; margin-bottom:8px; color:#555;">Menu Navigasi:</label>
+                <div class="admin-header-controls">
+                    <button onclick="switchAdminTab('tambah')" class="admin-nav-btn btn-add-json">
+                        <i class="fas fa-file-import"></i> Upload JSON
+                    </button>
+                    <button onclick="switchAdminTab('edit')" class="admin-nav-btn btn-edit-soal">
+                        <i class="fas fa-edit"></i> Edit / Revisi
+                    </button>
+                    <button onclick="switchAdminTab('review')" class="admin-nav-btn btn-review">
+                        <i class="fas fa-tasks"></i> Review Jawaban
+                    </button>
+                    <button onclick="downloadSoalExcel()" class="admin-nav-btn btn-excel">
+                        <i class="fas fa-file-excel"></i> Download Excel (.xls)
+                    </button>
+                </div>
             </div>
-
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button onclick="switchAdminTab('tambah')" class="btn-small" style="background:var(--primary); font-size:1rem;">➕ Tambah Baru (JSON)</button>
-                <button onclick="switchAdminTab('edit')" class="btn-small" style="background:var(--warning); color:black; font-size:1rem;">✏️ Edit / Revisi</button>
-                <button onclick="switchAdminTab('review')" class="btn-small" style="background:#8e44ad; font-size:1rem;">📖 Review Pembahasan</button>
-            </div>
-
+        
             <div id="tabTambah">
                 <label style="font-weight:bold;">Target Modul (ID):</label>
-                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:8px; margin-bottom:10px;">
-                
+                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
                 <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
-                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc;" placeholder='[{"q": "Pertanyaan...", "options": ["A","B"], "answer": 0, "explanation": "..."}]'></textarea>
-                
+                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc; border-radius:8px;"></textarea>
                 <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
             </div>
-
+        
             <div id="tabEdit" style="display:none;">
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
@@ -768,8 +823,8 @@
                 </div>
                 
                 <div style="display:flex; gap:20px; height: 400px;">
-                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9;">
-                        <p style="padding:10px; color:gray;">Klik Load Soal dulu...</p>
+                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9; padding:10px;">
+                        <p style="color:gray;">Klik Load Soal dulu...</p>
                     </div>
                     
                     <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
@@ -780,19 +835,15 @@
                         <label>Opsi (Pisahkan dengan koma):</label>
                         <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
                         
-                        <div style="display:flex; gap:10px;">
-                            <div style="flex:1">
-                                <label>Indeks Jawaban (0=A, 1=B):</label>
-                                <input type="number" id="editAns" style="width:100%;">
-                            </div>
-                        </div>
-
+                        <label>Indeks Jawaban (0=A, 1=B):</label>
+                        <input type="number" id="editAns" style="width:100%;">
+        
                         <label>Pembahasan:</label>
                         <textarea id="editExp" rows="3" style="width:95%;"></textarea>
                         
                         <label>Sumber (Cite):</label>
                         <input type="text" id="editCite" style="width:95%;">
-
+        
                         <div style="display:flex; gap:5px; margin-top:10px;">
                             <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
                             <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
@@ -800,9 +851,9 @@
                     </div>
                 </div>
             </div>
-
+        
             <div id="tabReview" style="display:none;">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <input type="text" id="reviewModulTarget" placeholder="ID Modul (cth: modul1)" style="flex:1; padding:8px;">
                     <button onclick="loadReviewPembahasan()" class="btn-small" style="background:var(--primary);">Cek Semua Pembahasan</button>
                 </div>
@@ -810,9 +861,8 @@
                     <p style="color:gray;">Pilih modul untuk review pembahasan...</p>
                 </div>
             </div>
-
+        
         </div>
-    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -3058,7 +3108,75 @@ window.openStats = async function(mode = 'hukum') {
             }
         } catch (e) { console.error("Err Leaderboard:", e); }
     };
-    
+
+    // ==========================================
+    // FITUR BARU: DOWNLOAD SOAL KE EXCEL (.XLS)
+    // ==========================================
+    window.downloadSoalExcel = async () => {
+        const modulId = prompt("Masukkan ID Modul (contoh: modul1, modul8.4):");
+        if (!modulId) return;
+
+        alert(`⏳ OTW narik data ${modulId} ke Excel... Tunggu bentar.`);
+
+        try {
+            // Import manual biar aman
+            const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            
+            const qRef = collection(window.db, "bank_soal", modulId, "daftar_soal");
+            const snapshot = await getDocs(qRef);
+
+            if (snapshot.empty) {
+                alert("❌ Zonk! Modul kosong atau salah ID.");
+                return;
+            }
+
+            // Bikin Tabel HTML
+            let tableHTML = `
+                <html xmlns:x="urn:schemas-microsoft-com:office:excel">
+                <head><meta charset="UTF-8"></head>
+                <body>
+                    <table border="1">
+                        <thead>
+                            <tr style="background-color: #4CAF50; color: white;">
+                                <th>No</th><th>Soal</th><th>Opsi A</th><th>Opsi B</th><th>Opsi C</th><th>Opsi D</th>
+                                <th>Kunci (Angka)</th><th>Kunci (Huruf)</th><th>Pembahasan</th><th>Sumber</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            let no = 1;
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                const q = d.q || d.pertanyaan || "";
+                const opt = d.options || ["", "", "", ""];
+                const ans = d.answer !== undefined ? parseInt(d.answer) : -1;
+                const keyChar = ans >= 0 ? String.fromCharCode(65 + ans) : "?";
+
+                tableHTML += `<tr>
+                    <td>${no++}</td><td>${q}</td>
+                    <td>${opt[0]||""}</td><td>${opt[1]||""}</td><td>${opt[2]||""}</td><td>${opt[3]||""}</td>
+                    <td>${ans}</td><td>${keyChar}</td>
+                    <td>${d.explanation||""}</td><td>${d.cite||""}</td>
+                </tr>`;
+            });
+
+            tableHTML += `</tbody></table></body></html>`;
+
+            // Download File
+            const blob = new Blob([tableHTML], { type: "application/vnd.ms-excel" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `BankSoal_${modulId}.xls`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+        } catch (e) {
+            console.error(e);
+            alert("Gagal download: " + e.message);
+        }
+    };
 </script>
 
 <script>
