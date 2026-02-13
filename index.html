@@ -772,97 +772,107 @@
     </div>
 
     <div id="adminOverlay" class="result-overlay">
-        <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
-                <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
-            </div>
+    <div class="result-box" style="width: 800px; text-align: left; max-height: 90vh; overflow-y: auto;">
         
-            <div style="background: #fff; padding: 5px; border-radius: 8px; margin-bottom: 20px;">
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
-                    <div>
-                        <h4 style="margin:0; color: #444;">Status Aplikasi</h4>
-                        <small style="color: #888;">Klik tombol di kanan untuk buka/tutup akses ujian.</small>
-                    </div>
-                    <button id="btnToggleMaintenance" onclick="toggleMaintenanceStatus()" class="admin-nav-btn btn-maint-off">
-                        <i class="fas fa-lock-open"></i> Maintenance: OFF
-                    </button>
-                </div>
-        
-                <label style="font-weight:bold; display:block; margin-bottom:8px; color:#555;">Menu Navigasi:</label>
-                <div class="admin-header-controls">
-                    <button onclick="switchAdminTab('tambah')" class="admin-nav-btn btn-add-json">
-                        <i class="fas fa-file-import"></i> Upload JSON
-                    </button>
-                    <button onclick="switchAdminTab('edit')" class="admin-nav-btn btn-edit-soal">
-                        <i class="fas fa-edit"></i> Edit / Revisi
-                    </button>
-                    <button onclick="switchAdminTab('review')" class="admin-nav-btn btn-review">
-                        <i class="fas fa-tasks"></i> Review Jawaban
-                    </button>
-                    <button onclick="downloadSoalExcel()" class="admin-nav-btn btn-excel">
-                        <i class="fas fa-file-excel"></i> Download Excel (.xls)
-                    </button>
-                </div>
-            </div>
-        
-            <div id="tabTambah">
-                <label style="font-weight:bold;">Target Modul (ID):</label>
-                <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-                <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
-                <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc; border-radius:8px;"></textarea>
-                <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
-            </div>
-        
-            <div id="tabEdit" style="display:none;">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
-                    <button onclick="loadSoalAdmin()" class="btn-small" style="background:var(--primary);">🔍 Load Soal</button>
-                </div>
-                
-                <div style="display:flex; gap:20px; height: 400px;">
-                    <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9; padding:10px;">
-                        <p style="color:gray;">Klik Load Soal dulu...</p>
-                    </div>
-                    
-                    <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
-                        <input type="hidden" id="editDocId">
-                        <label>Pertanyaan:</label>
-                        <textarea id="editQ" rows="3" style="width:95%;"></textarea>
-                        
-                        <label>Opsi (Pisahkan dengan koma):</label>
-                        <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
-                        
-                        <label>Indeks Jawaban (0=A, 1=B):</label>
-                        <input type="number" id="editAns" style="width:100%;">
-        
-                        <label>Pembahasan:</label>
-                        <textarea id="editExp" rows="3" style="width:95%;"></textarea>
-                        
-                        <label>Sumber (Cite):</label>
-                        <input type="text" id="editCite" style="width:95%;">
-        
-                        <div style="display:flex; gap:5px; margin-top:10px;">
-                            <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
-                            <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-            <div id="tabReview" style="display:none;">
-                 <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" id="reviewModulTarget" placeholder="ID Modul (cth: modul1)" style="flex:1; padding:8px;">
-                    <button onclick="loadReviewPembahasan()" class="btn-small" style="background:var(--primary);">Cek Semua Pembahasan</button>
-                </div>
-                <div id="containerReview" style="max-height:500px; overflow-y:auto; border:1px solid #ddd; padding:10px; background:#fff;">
-                    <p style="color:gray;">Pilih modul untuk review pembahasan...</p>
-                </div>
-            </div>
-        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+            <h2 style="margin:0;">⚙️ Panel Admin CBT</h2>
+            <button onclick="document.getElementById('adminOverlay').style.display='none'" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
         </div>
+    
+        <div style="background: #fff; padding: 5px; border-radius: 8px; margin-bottom: 20px;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                <div>
+                    <h4 style="margin:0; color: #444;">Status Aplikasi</h4>
+                    <small style="color: #888;">Klik tombol di kanan untuk buka/tutup akses ujian.</small>
+                </div>
+                <button id="btnToggleMaintenance" onclick="toggleMaintenanceStatus()" class="admin-nav-btn btn-maint-off">
+                    <i class="fas fa-lock-open"></i> Maintenance: OFF
+                </button>
+            </div>
+    
+            <label style="font-weight:bold; display:block; margin-bottom:8px; color:#555;">Menu Navigasi:</label>
+            <div class="admin-header-controls">
+                <button onclick="switchAdminTab('tambah')" class="admin-nav-btn btn-add-json">
+                    <i class="fas fa-file-import"></i> Upload JSON
+                </button>
+                <button onclick="switchAdminTab('edit')" class="admin-nav-btn btn-edit-soal">
+                    <i class="fas fa-edit"></i> Edit / Revisi
+                </button>
+                <button onclick="switchAdminTab('review')" class="admin-nav-btn btn-review">
+                    <i class="fas fa-tasks"></i> Review Jawaban
+                </button>
+                
+                <div style="display:flex; gap:5px; margin-left:auto;">
+                    <button onclick="downloadSoalExcel()" class="admin-nav-btn btn-excel">
+                        <i class="fas fa-file-excel"></i> Excel (.xls)
+                    </button>
+                    <button onclick="downloadSoalJSON()" class="admin-nav-btn" style="background: #34495e; color:white;">
+                        <i class="fas fa-file-code"></i> JSON (Backup)
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+        <div id="tabTambah">
+            <label style="font-weight:bold;">Target Modul (ID):</label>
+            <input type="text" id="adminModulTarget" placeholder="contoh: modul1" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+            <label style="font-weight:bold;">Paste JSON Soal Disini:</label>
+            <textarea id="jsonUploadArea" style="width:100%; height:200px; font-family:monospace; padding:10px; border:1px solid #ccc; border-radius:8px;" placeholder='[{"q": "...", "options": [...], "answer": 0, "explanation": "..."}]'></textarea>
+            <button onclick="eksekusiUpload()" class="btn" style="background:var(--success); width:100%; margin-top:10px;">🚀 UPLOAD KE FIREBASE</button>
+        </div>
+    
+        <div id="tabEdit" style="display:none;">
+             <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input type="text" id="editModulTarget" placeholder="Nama Modul (cth: modul1)" style="flex:1; padding:8px;">
+                <button onclick="loadSoalAdmin()" class="btn-small" style="background:var(--primary); color: white !important;">
+                    🔍 Load Soal
+                </button>
+            </div>
+            
+            <div style="display:flex; gap:20px; height: 400px;">
+                <div id="listSoalAdmin" style="flex:1; border:1px solid #ddd; overflow-y:scroll; background:#f9f9f9; padding:10px;">
+                    <p style="color:gray;">Klik Load Soal dulu...</p>
+                </div>
+                
+                <div style="flex:1.5; display:flex; flex-direction:column; gap:8px; overflow-y:auto;">
+                    <input type="hidden" id="editDocId">
+                    <label>Pertanyaan:</label>
+                    <textarea id="editQ" rows="3" style="width:95%;"></textarea>
+                    
+                    <label>Opsi (Pisahkan dengan koma):</label>
+                    <textarea id="editOpt" rows="2" style="width:95%;" placeholder="Ayam,Kucing,Bebek"></textarea>
+                    
+                    <label>Indeks Jawaban (0=A, 1=B):</label>
+                    <input type="number" id="editAns" style="width:100%;">
+    
+                    <label>Pembahasan:</label>
+                    <textarea id="editExp" rows="3" style="width:95%;"></textarea>
+                    
+                    <label>Sumber (Cite):</label>
+                    <input type="text" id="editCite" style="width:95%;">
+    
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <button onclick="simpanPerubahan()" class="btn" style="background:var(--success); flex:1;">💾 Update</button>
+                        <button onclick="hapusSoal()" class="btn" style="background:var(--danger); flex:1;">🗑️ Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div id="tabReview" style="display:none;">
+             <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input type="text" id="reviewModulTarget" placeholder="ID Modul (cth: modul1)" style="flex:1; padding:8px;">
+                <button onclick="loadReviewPembahasan()" class="btn-small" style="background:var(--primary); color: white !important;">
+                    Cek Semua Pembahasan
+                </button>
+            </div>
+            <div id="containerReview" style="max-height:500px; overflow-y:auto; border:1px solid #ddd; padding:10px; background:#fff;">
+                <p style="color:gray;">Pilih modul untuk review pembahasan...</p>
+            </div>
+        </div>
+    
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -3177,6 +3187,57 @@ window.openStats = async function(mode = 'hukum') {
             alert("Gagal download: " + e.message);
         }
     };
+
+    // ==========================================
+    // FITUR BARU: DOWNLOAD JSON (BACKUP & RESTORE)
+    // ==========================================
+    window.downloadSoalJSON = async () => {
+        const modulId = prompt("Masukkan ID Modul untuk Backup JSON (misal: modul1):");
+        if (!modulId) return;
+
+        alert(`⏳ Mengambil data RAW JSON dari ${modulId}...`);
+
+        try {
+            const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            
+            const qRef = collection(window.db, "bank_soal", modulId, "daftar_soal");
+            const snapshot = await getDocs(qRef);
+
+            if (snapshot.empty) {
+                alert("❌ Modul kosong bro!");
+                return;
+            }
+
+            let dataBackup = [];
+            
+            // Ambil data murni
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                // Kita bersihkan field timestamp biar pas di-upload ulang gak error
+                delete d.createdAt; 
+                dataBackup.push(d);
+            });
+
+            // Convert ke String JSON yang rapi (Indentation 2 spasi)
+            const jsonString = JSON.stringify(dataBackup, null, 2);
+
+            // Download File
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Backup_${modulId}_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            alert("✅ File JSON siap! Bisa langsung di-upload ulang di menu 'Upload JSON' kalau mau revisi massal.");
+
+        } catch (e) {
+            console.error(e);
+            alert("Gagal download JSON: " + e.message);
+        }
+    };
 </script>
 
 <script>
@@ -3298,6 +3359,7 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
+
 
 
 
