@@ -2823,7 +2823,7 @@ window.openStats = async function(mode = 'hukum') {
             // Eksekusi semua batch
             for (let b of chunks) await b.commit();
             
-            alert(`✅ Sukses Upload ${count} Soal (PAPI Keys Tersimpan)!`);
+            alert(`✅ Sukses Upload ${count} Soal!`);
             document.getElementById('jsonUploadArea').value = ""; // Reset
             
         } catch (e) {
@@ -3359,19 +3359,3 @@ window.openStats = async function(mode = 'hukum') {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
